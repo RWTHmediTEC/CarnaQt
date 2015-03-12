@@ -54,11 +54,7 @@ option_default_to(INSTALL_LIBRARY_DIR "lib" String "Installation directory for l
 option_default_to(INSTALL_HEADERS_DIR "include" String "Installation directory for headers")
 
 # set default destination for CMake modules
-if( WIN32 )
-    option_default_to(INSTALL_CMAKE_DIR "share/cmake-3.0/Modules" String "Installation directory for CMake files")
-else( WIN32 )
-    option_default_to(INSTALL_CMAKE_DIR "share/cmake/Modules" String "Installation directory for CMake files")
-endif( WIN32 )
+option_default_to(INSTALL_CMAKE_DIR "${CMAKE_ROOT}/Modules" String "Installation directory for CMake files")
 
 ############################################
 # Normalize installation paths
@@ -72,7 +68,7 @@ file(   TO_CMAKE_PATH   ${INSTALL_CMAKE_DIR}    INSTALL_CMAKE_DIR )
 ############################################
 
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/misc/Version.h.in
-                ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/Version.h @ONLY)
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/Carna/qt/Version.h @ONLY)
 
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/src/doc/Doxyfile.in
                 ${CMAKE_CURRENT_SOURCE_DIR}/src/doc/Doxyfile @ONLY)
@@ -84,6 +80,11 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/misc/Find${PROJECT_NAME}.cmake.in
 # Find required dependencies
 ############################################
 
+# Qt
+find_package( Qt4 4.8.0 COMPONENTS QtCore QtGui QtOpenGL QtXml REQUIRED )
+include( ${QT_USE_FILE} )
+add_definitions( ${QT_DEFINITIONS} )
+
 # GLEW
 find_package( GLEW 1.7.0 REQUIRED )
 include_directories( ${GLEW_INCLUDE_DIRS} )
@@ -92,7 +93,7 @@ include_directories( ${GLEW_INCLUDE_DIRS} )
 find_package( Eigen3 REQUIRED )
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-# Eigen
+# Carna
 find_package( Carna 3.0.0 REQUIRED )
 include_directories( ${CARNA_INCLUDE_DIR} )
 
@@ -106,7 +107,9 @@ set( PUBLIC_QOBJECT_HEADERS
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
-        include/${PROJECT_NAME}/qt/Version.h
+        include/Carna/qt/CarnaQt.h
+        include/Carna/qt/Display.h
+        include/Carna/qt/Version.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
@@ -116,17 +119,27 @@ set( PRIVATE_HEADERS
         ${PRIVATE_QOBJECT_HEADERS}
     )
 set( SRC
-        ""
+        src/qt/Display.cpp
     )
 set( FORMS
         ""
     )
+set( RESOURCES
+		""
+	)
 set( DOC_SRC
         src/doc/Doxyfile.in
         src/doc/doc_extra.css
         src/doc/doc_main.dox
         src/doc/doc_version_log.dox
     )
+
+############################################
+
+QT4_WRAP_CPP( PUBLIC_HEADERS_MOC ${PUBLIC_QOBJECT_HEADERS} )
+QT4_WRAP_CPP( PRIVATE_HEADERS_MOC ${PRIVATE_QOBJECT_HEADERS} )
+QT4_WRAP_UI( FORMS_HEADERS ${FORMS} )
+QT4_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
 
 ############################################
 # Setup Visual Studio filters
@@ -175,6 +188,10 @@ foreach( SOURCE_FILE ${SRC} )
     file( APPEND    ${UNITY_BUILD_FILE} "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_FILE}\"\n" )
 endforeach( SOURCE_FILE )
 
+foreach( QT_GENERATED_SOURCE_FILE ${PUBLIC_HEADERS_MOC} ${PRIVATE_HEADERS_MOC} ${FORMS_HEADERS} ${RESOURCES_RCC} )
+	file( APPEND	${UNITY_BUILD_FILE}	"#include \"${QT_GENERATED_SOURCE_FILE}\"\n" )
+endforeach( QT_GENERATED_SOURCE_FILE )
+
 ############################################
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 ############################################
@@ -202,6 +219,7 @@ include( "misc/compiler_specific.cmake" )
 target_link_libraries( ${TARGET_NAME}
             ${OPENGL_LIBRARIES}
             ${GLEW_LIBRARIES}
+            ${QT_LIBRARIES}
         )
 
 ############################################
@@ -214,7 +232,7 @@ install(TARGETS ${TARGET_NAME}
         LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR})
 
 # install headers
-install(DIRECTORY ${CMAKE_PROJECT_DIR}include/${PROJECT_NAME}
+install(DIRECTORY ${CMAKE_PROJECT_DIR}include/Carna
         DESTINATION ${INSTALL_HEADERS_DIR})
 
 # also install '.PDB' files on Windows
