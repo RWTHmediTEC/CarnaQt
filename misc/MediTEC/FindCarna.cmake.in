@@ -1,13 +1,13 @@
 ############################################
 # Locates the latest patch-level compatible
-# Carna version installed in %MEDITEC_LIBS%.
+# CarnaQt version installed in %MEDITEC_LIBS%.
 #-------------------------------------------
 # The following variables are set:
-#	CARNA_INCLUDE_DIR   points to headers
-#	CARNA_LIBRARIES     points to lib files
-#	CARNA_FOUND         indicates success
+#	CARNAQT_INCLUDE_DIR  points to headers
+#	CARNAQT_LIBRARIES    points to lib files
+#	CARNAQT_FOUND        indicates success
 #-------------------------------------------
-# Leonid Kostrykin, 15.12.2014
+# Leonid Kostrykin, 12.03.2015
 ############################################
 
 cmake_minimum_required(VERSION 2.8)

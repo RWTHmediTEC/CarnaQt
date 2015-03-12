@@ -4,7 +4,7 @@
 # The script does nothing unless the
 # environmental variable MEDITEC_LIBS is set
 #-------------------------------------------
-# Leonid Kostrykin, 15.12.2014
+# Leonid Kostrykin, 12.03.2015
 ############################################
 
 if( DEFINED ENV{MEDITEC_LIBS} )
@@ -14,7 +14,7 @@ if( DEFINED ENV{MEDITEC_LIBS} )
 	set(MEDITEC_LIBS ${MEDITEC_LIBS} PARENT_SCOPE)
 	
 	# adjust CMAKE_MODULE_PATH so that proper dependency versions are found
-	list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/CarnaDICOM/0.1")
+	list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/Carna/3.0")
 
 	# export CMAKE_MODULE_PATH to parent scope
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
@@ -27,9 +27,9 @@ if( DEFINED ENV{MEDITEC_LIBS} )
 	else()
 		# set default installation paths (relative to CMAKE_INSTALL_PREFIX)
 		# now so they won't be set to different default values later
-		set(INSTALL_LIBRARY_DIR "${PROJECT_NAME}/${FULL_VERSION}/bin" PARENT_SCOPE)
+		set(INSTALL_LIBRARY_DIR "${PROJECT_NAME}/${FULL_VERSION}/bin"     PARENT_SCOPE)
 		set(INSTALL_HEADERS_DIR "${PROJECT_NAME}/${FULL_VERSION}/include" PARENT_SCOPE)
-		set(INSTALL_CMAKE_DIR "${PROJECT_NAME}/${FULL_VERSION}" PARENT_SCOPE)
+		set(INSTALL_CMAKE_DIR   "${PROJECT_NAME}/${FULL_VERSION}"         PARENT_SCOPE)
 	endif()
 	
 	# find GLEW headers
@@ -46,14 +46,6 @@ if( DEFINED ENV{MEDITEC_LIBS} )
 				PATHS ENV MEDITEC_LIBS
 				PATH_SUFFIXES "Eigen/3.0.5/include"
 				DOC "Eigen3 headers")
-	
-	# set hints so that Boost will be found
-	set(Boost_NO_BOOST_CMAKE ON)
-	set(Boost_USE_STATIC_LIBS ON PARENT_SCOPE)
-	list(APPEND CMAKE_INCLUDE_PATH "${MEDITEC_LIBS}/Boost/1.55.0/include")
-	list(APPEND CMAKE_LIBRARY_PATH "${MEDITEC_LIBS}/Boost/1.55.0/bin")
-	set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} PARENT_SCOPE)
-	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} PARENT_SCOPE)
 
 endif( DEFINED ENV{MEDITEC_LIBS} )
 
