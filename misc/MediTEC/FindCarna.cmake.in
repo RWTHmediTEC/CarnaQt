@@ -1,0 +1,44 @@
+############################################
+# Locates the latest patch-level compatible
+# Carna version installed in %MEDITEC_LIBS%.
+#-------------------------------------------
+# The following variables are set:
+#	CARNA_INCLUDE_DIR   points to headers
+#	CARNA_LIBRARIES     points to lib files
+#	CARNA_FOUND         indicates success
+#-------------------------------------------
+# Leonid Kostrykin, 15.12.2014
+############################################
+
+cmake_minimum_required(VERSION 2.8)
+
+MACRO(subdirlist result curdir namepattern)
+	FILE(GLOB children RELATIVE ${curdir} ${curdir}/${namepattern})
+	SET(dirlist "")
+	foreach(child ${children})
+		IF(IS_DIRECTORY ${curdir}/${child})
+			LIST(APPEND dirlist ${child})
+		ENDIF()
+	endforeach()
+	SET(${result} ${dirlist})
+ENDMACRO()
+
+# read all installed compatible versions
+subdirlist(VERSIONS ${CMAKE_CURRENT_LIST_DIR}/.. "@MAJOR_VERSION@.@MINOR_VERSION@.*")
+
+# fetch latest installed compatible version
+set(LATEST_VERSION "")
+foreach(CURRENT_VERSION ${VERSIONS})
+	get_filename_component(CURRENT_VERSION ${CURRENT_VERSION} NAME)
+	string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\3" CURRENT_VERSION ${CURRENT_VERSION})
+	if(NOT LATEST_VERSION OR ${CURRENT_VERSION} GREATER "${LATEST_VERSION}")
+		set(LATEST_VERSION ${CURRENT_VERSION})
+	endif()
+endforeach()
+
+# verify that patch level of latest installed version is compatible
+if(NOT LATEST_VERSION STREQUAL "" AND NOT @PATCH_VERSION@ LESS "${LATEST_VERSION}")
+	include("${CMAKE_CURRENT_LIST_DIR}/../@MAJOR_VERSION@.@MINOR_VERSION@.${LATEST_VERSION}/Find@PROJECT_NAME@.cmake")
+else()
+	find_package_handle_standard_args(@PROJECT_NAME_CAPS@ REQUIRED_VARS @PROJECT_NAME_CAPS@_INCLUDE_DIR @PROJECT_NAME_CAPS@_LIBRARIES)
+endif()

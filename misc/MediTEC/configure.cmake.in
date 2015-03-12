@@ -1,0 +1,17 @@
+# Configuration for package "Carna"
+
+set( CARNA_MAJOR_VERSION	@MAJOR_VERSION@ )
+set( CARNA_MINOR_VERSION	@MINOR_VERSION@ )
+set( CARNA_RELEASE_VERSION	@PATCH_VERSION@ )
+
+set( CARNA_INCLUDE	$ENV{MEDITEC_LIBS}/@PROJECT_NAME@/@FULL_VERSION@/include )
+set( CARNA_LIBDIR	$ENV{MEDITEC_LIBS}/@PROJECT_NAME@/@FULL_VERSION@/bin )
+set( CARNA_LIBLIST
+		optimized	@TARGET_NAME@
+		debug		@TARGET_NAME@@CMAKE_DEBUG_POSTFIX@
+	)
+
+include_directories( ${CARNA_INCLUDE} )
+link_directories( ${CARNA_LIBDIR} )
+
+include( $ENV{MEDITEC_LIBS}/TRTK/0.13.1/configure.cmake )

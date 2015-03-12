@@ -1,0 +1,31 @@
+namespace Carna
+{
+
+/** \mainpage
+  *
+  * %Carna provides classes for simple and fast visualization of CT data. It is named
+  * after the greek god of organs (yup, they really did have even one for organs). It
+  * is based on OpenGL 3.3 and Eigen.
+  *
+  * Jump to:
+  *     \ref QuickStart | \ref VersionLog | \ref testing "Test Suite Documentation"
+  *
+  * \image html FrameRendererIntegrationTest/typical.png "rendering result from example code below"
+  *
+  * \section QuickStart Quick Start
+  *
+  *  -# Implement the abstract \ref base::GLContext class. If you're using Qt, you
+  *     can simply instantiate the \ref base::QGLContextAdapter template.
+  *  -# Instantiate and configure a \ref base::FrameRenderer, e.g. like this:
+  *     \snippet IntegrationTests/FrameRendererIntegrationTest.cpp typical_renderer_setup
+  *     The values of the `GEOMETRY_TYPE_` variables can be chosen arbitrary, but
+  *     must be distinct.
+  *  -# Assuming you have somehow loaded `data` and know the voxel `spacings`, build
+  *     the \ref SceneGraph "scene graph", e.g. like this:
+  *     \snippet IntegrationTests/FrameRendererIntegrationTest.cpp typical_scene_setup
+  *  -# Issue the \ref base::FrameRenderer::render method:
+  *     \snippet IntegrationTests/FrameRendererIntegrationTest.cpp typical_renderer_invocation
+  *     This code produces the rendering above.
+  */
+
+}
