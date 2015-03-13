@@ -406,6 +406,26 @@ const base::ProjectionControl& Display::projectionControl() const
 }
 
 
+bool Display::hasRenderer() const
+{
+    return pimpl->renderer.get() != nullptr;
+}
+
+
+base::FrameRenderer& Display::renderer()
+{
+    CARNA_ASSERT( hasRenderer() );
+    return *pimpl->renderer;
+}
+
+
+const base::FrameRenderer& Display::renderer() const
+{
+    CARNA_ASSERT( hasRenderer() );
+    return *pimpl->renderer;
+}
+
+
 
 }  // namespace Carna :: qt
 

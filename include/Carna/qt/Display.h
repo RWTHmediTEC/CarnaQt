@@ -107,6 +107,12 @@ public:
     
     const base::ProjectionControl& projectionControl() const;
     
+    bool hasRenderer() const;
+    
+    base::FrameRenderer& renderer();
+    
+    const base::FrameRenderer& renderer() const;
+    
 protected:
 
     /** \brief
