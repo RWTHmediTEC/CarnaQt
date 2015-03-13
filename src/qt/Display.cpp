@@ -21,6 +21,7 @@
 #include <QGLContext>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <set>
 
 namespace Carna
 {
@@ -37,6 +38,9 @@ namespace qt
 struct Display::Details
 {
     Details();
+
+    static std::set< const Display* > sharingDisplays;
+    static const Display* pickSharingDisplay();
     
     typedef base::QGLContextAdapter< QGLContext > GLContext;
 
@@ -64,6 +68,9 @@ struct Display::Details
 };
 
 
+std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
+
+
 Display::Details::Details()
     : glInitializationFinished( false )
     , vpMode( fitAuto )
@@ -73,6 +80,19 @@ Display::Details::Details()
     , axialMovementSpeed( DEFAULT_AXIAL_MOVEMENT_SPEED )
     , mccs( nullptr )
 {
+}
+
+
+const Display* Display::Details::pickSharingDisplay()
+{
+    if( sharingDisplays.empty() )
+    {
+        return nullptr;
+    }
+    else
+    {
+        return *sharingDisplays.begin();
+    }
 }
 
 
@@ -144,14 +164,16 @@ const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = 1e+0f;
 
 
 Display::Display( QWidget* parent )
-    : QGLWidget( parent )
+    : QGLWidget( parent, Details::pickSharingDisplay() )
     , pimpl( new Details() )
 {
+    Details::sharingDisplays.insert( this );
 }
 
 
 Display::~Display()
 {
+    Details::sharingDisplays.erase( this );
     if( pimpl->glc.get() != nullptr )
     {
         pimpl->glc->makeActive();
