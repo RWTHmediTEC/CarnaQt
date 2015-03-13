@@ -38,9 +38,7 @@ namespace qt
 // ----------------------------------------------------------------------------------
 
 /** \brief
-  * Abstract class that encapsulates a `base::FrameRenderer` and a `base::GLContext`.
-  *
-  * Override \ref setupRenderer in order to implement.
+  * Encapsulates a `base::FrameRenderer` and a `base::GLContext`.
   *
   * \note
   * You cannot put a frame renderer from one display to another. The reason for this
@@ -73,7 +71,7 @@ public:
         fitAuto
     };
 
-    explicit Display( QWidget* parent = nullptr );
+    explicit Display( const std::function< void( base::FrameRenderer& ) >& setupRenderer, QWidget* parent = nullptr );
     
     virtual ~Display();
     
@@ -114,11 +112,6 @@ public:
     const base::FrameRenderer& renderer() const;
     
 protected:
-
-    /** \brief
-      * Configures the \a frameRenderer.
-      */
-    virtual void setupRenderer( base::FrameRenderer& frameRenderer ) = 0;
     
     virtual void initializeGL() override;
     

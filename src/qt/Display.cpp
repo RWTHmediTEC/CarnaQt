@@ -37,7 +37,8 @@ namespace qt
 
 struct Display::Details
 {
-    Details();
+    Details( const std::function< void( base::FrameRenderer& ) >& );
+    const std::function< void( base::FrameRenderer& ) > setupRenderer;
 
     static std::set< const Display* > sharingDisplays;
     static const Display* pickSharingDisplay();
@@ -71,8 +72,9 @@ struct Display::Details
 std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
 
 
-Display::Details::Details()
-    : glInitializationFinished( false )
+Display::Details::Details( const std::function< void( base::FrameRenderer& ) >& setupRenderer )
+    : setupRenderer( setupRenderer )
+    , glInitializationFinished( false )
     , vpMode( fitAuto )
     , cam( nullptr )
     , root( nullptr )
@@ -163,9 +165,9 @@ const float Display::DEFAULT_ROTATION_SPEED       = 1e-2f;
 const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = 1e+0f;
 
 
-Display::Display( QWidget* parent )
+Display::Display( const std::function< void( base::FrameRenderer& ) >& setupRenderer, QWidget* parent )
     : QGLWidget( parent, Details::pickSharingDisplay() )
-    , pimpl( new Details() )
+    , pimpl( new Details( setupRenderer ) )
 {
     Details::sharingDisplays.insert( this );
 }
@@ -242,7 +244,7 @@ void Display::resizeGL( int w, int h )
     if( pimpl->renderer == nullptr )
     {
         pimpl->renderer.reset( new base::FrameRenderer( *pimpl->glc, width, height, pimpl->fitSquare() ) );
-        setupRenderer( *pimpl->renderer );
+        pimpl->setupRenderer( *pimpl->renderer );
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
         pimpl->glInitializationFinished = true;
