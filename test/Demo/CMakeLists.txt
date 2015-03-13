@@ -17,7 +17,7 @@ set( LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin )
 ############################################
 # Project name
 ############################################
-project( CarnaQtInteractiveTest )
+project( CarnaQtDemo )
 set( TARGET_NAME	${PROJECT_NAME}-${FULL_VERSION} )
 ############################################
 
@@ -65,12 +65,14 @@ include_directories(${CMAKE_PROJECT_DIR}../Tools)
 set( HEADERS
 		../Tools/HUGZSceneFactory.h
 		../Tools/HUIO.h
+		../Tools/TestScene.h
 	)
 set( QOBJECT_HEADERS
 		""
 	)
 set( SRC
 		src/main.cpp
+		../Tools/TestScene.cpp
 	)
 set( FORMS
 		""

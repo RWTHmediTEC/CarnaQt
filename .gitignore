@@ -1,4 +1,5 @@
 /build
+/doc/*
 /include/Carna/qt/Version.h
 /src/doc/Doxyfile
 *~

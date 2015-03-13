@@ -29,6 +29,9 @@ int main( int argc, char** argv )
         }
     );
     
+    testing::TestScene scene;
+    display.setCamera( scene.cam() );
+    
     display.show();
     return QApplication::exec();
 }

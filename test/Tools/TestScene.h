@@ -41,9 +41,7 @@ public:
 
     const static unsigned int ROLE_HU_VOLUME = 0;
 
-    base::GLContext& glContext;
-
-    TestScene( base::GLContext& glContext );
+    TestScene();
 
     ~TestScene();
 

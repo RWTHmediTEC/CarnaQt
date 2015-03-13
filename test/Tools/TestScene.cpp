@@ -16,6 +16,7 @@
 #include <Carna/base/Camera.h>
 #include <Carna/base/Geometry.h>
 #include <Carna/base/BufferedHUVolumeTexture.h>
+#include <string>
 
 namespace Carna
 {
@@ -29,29 +30,24 @@ namespace testing
 // TestScene
 // ----------------------------------------------------------------------------------
 
-TestScene::TestScene( base::GLContext& glContext )
+TestScene::TestScene()
     : myVolumeGeometry( new base::Geometry( GEOMETRY_TYPE_VOLUMETRIC ) )
     , myCam( new base::Camera() )
-    , glContext( glContext )
     , root( new base::Node() )
 {
     /* Load test volume data.
      */
     base::math::Vector3f spacing;
-    huVolume.reset( HUGZSceneFactory::importVolume( SOURCE_PATH + "/res/pelves_reduced.hugz", spacing ) );
+    huVolume.reset( HUGZSceneFactory::importVolume( std::string( SOURCE_PATH ) + "/../res/pelves_reduced.hugz", spacing ) );
     const base::math::Vector3f scale
         ( ( huVolume->size.x() - 1 ) * spacing.x()
         , ( huVolume->size.y() - 1 ) * spacing.y()
         , ( huVolume->size.z() - 1 ) * spacing.z() );
 
-    /* Upload to GPU.
-     */
-    glContext.makeActive();
-    base::BufferedHUVolumeTexture< base::UInt16HUVolume >& volumeTexture
-        = base::BufferedHUVolumeTexture< base::UInt16HUVolume >::create( *huVolume );
-
     /* Configure geometry node for volume data.
      */
+    base::BufferedHUVolumeTexture< base::UInt16HUVolume >& volumeTexture
+        = base::BufferedHUVolumeTexture< base::UInt16HUVolume >::create( *huVolume );
     myVolumeGeometry->putFeature( ROLE_HU_VOLUME, volumeTexture );
     myVolumeGeometry->localTransform = base::math::scaling4f( scale );
     root->attachChild( myVolumeGeometry );
