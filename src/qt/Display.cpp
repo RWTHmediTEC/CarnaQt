@@ -147,7 +147,7 @@ bool Display::Details::fitSquare() const
         return false;
         
     case Display::fitAuto:
-        return projControl.get() != nullptr && projControl->get() != nullptr;
+        return projControl.get() == nullptr || projControl->get() == nullptr;
         
     default:
         CARNA_FAIL( "Unknown ViewportMode value." );
