@@ -53,8 +53,8 @@ struct Display::Details
     
     base::Camera* cam;
     base::Node* root;
-    std::unique_ptr< base::Aggregation< base::CameraControl > > camControl;
-    std::unique_ptr< base::Aggregation< base::ProjectionControl > > projControl;
+    std::unique_ptr< base::Association< base::CameraControl > > camControl;
+    std::unique_ptr< base::Association< base::ProjectionControl > > projControl;
 
     bool mouseInteraction;
     QPoint mousepos;
@@ -161,7 +161,7 @@ bool Display::Details::fitSquare() const
 // Display
 // ----------------------------------------------------------------------------------
 
-const float Display::DEFAULT_ROTATION_SPEED       = 1e-2f;
+const float Display::DEFAULT_ROTATION_SPEED       = 1e-3f;
 const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = 1e+0f;
 
 
@@ -373,7 +373,7 @@ void Display::wheelEvent( QWheelEvent* ev )
 }
     
     
-void Display::setCameraControl( base::Aggregation< base::CameraControl >* camControl )
+void Display::setCameraControl( base::Association< base::CameraControl >* camControl )
 {
     pimpl->camControl.reset( camControl );
     if( hasCamera() )
@@ -403,7 +403,7 @@ const base::CameraControl& Display::cameraControl() const
 }
     
     
-void Display::setProjectionControl( base::Aggregation< base::ProjectionControl >* projControl )
+void Display::setProjectionControl( base::Association< base::ProjectionControl >* projControl )
 {
     pimpl->projControl.reset( projControl );
     pimpl->updateProjection( *this );

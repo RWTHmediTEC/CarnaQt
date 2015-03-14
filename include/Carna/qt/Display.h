@@ -14,7 +14,7 @@
 
 #include <Carna/qt/CarnaQt.h>
 #include <Carna/base/noncopyable.h>
-#include <Carna/base/Aggregation.h>
+#include <Carna/base/Association.h>
 #include <QGLWidget>
 #include <memory>
 
@@ -89,7 +89,7 @@ public:
     
     const base::Camera& camera() const;
     
-    void setCameraControl( base::Aggregation< base::CameraControl >* camControl );
+    void setCameraControl( base::Association< base::CameraControl >* camControl );
     
     bool hasCameraControl() const;
     
@@ -97,7 +97,7 @@ public:
     
     const base::CameraControl& cameraControl() const;
     
-    void setProjectionControl( base::Aggregation< base::ProjectionControl >* projControl );
+    void setProjectionControl( base::Association< base::ProjectionControl >* projControl );
     
     bool hasProjectionControl() const;
     
