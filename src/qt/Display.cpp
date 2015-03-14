@@ -161,8 +161,8 @@ bool Display::Details::fitSquare() const
 // Display
 // ----------------------------------------------------------------------------------
 
-const float Display::DEFAULT_ROTATION_SPEED       = 1e-3f;
-const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = 1e+0f;
+const float Display::DEFAULT_ROTATION_SPEED       = -3e-3f;
+const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = -1e-1f;
 
 
 Display::Display( const std::function< void( base::FrameRenderer& ) >& setupRenderer, QWidget* parent )
@@ -335,7 +335,7 @@ void Display::mouseMoveEvent( QMouseEvent* ev )
             if( dx != 0 || dy != 0 )
             {
                 cameraControl().rotateHorizontally( dx * pimpl->radiansPerPixel );
-                cameraControl().rotateVertically  ( dx * pimpl->radiansPerPixel );
+                cameraControl().rotateVertically  ( dy * pimpl->radiansPerPixel );
                 updateGL();
                 ev->accept();
             }
@@ -368,6 +368,7 @@ void Display::wheelEvent( QWheelEvent* ev )
     if( hasCamera() && hasCameraControl() )
     {
         cameraControl().moveAxially( ev->delta() * pimpl->axialMovementSpeed );
+        updateGL();
         ev->accept();
     }
 }
