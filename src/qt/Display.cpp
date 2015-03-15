@@ -176,10 +176,6 @@ Display::Display( const std::function< void( base::FrameRenderer& ) >& setupRend
 Display::~Display()
 {
     Details::sharingDisplays.erase( this );
-    if( pimpl->glc.get() != nullptr )
-    {
-        pimpl->glc->makeActive();
-    }
 }
 
 
