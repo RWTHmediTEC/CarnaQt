@@ -107,6 +107,7 @@ include_directories(${CMAKE_PROJECT_DIR}include)
 set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/ExpandableGroupBox.h
         include/Carna/qt/DRRControl.h
+        include/Carna/qt/MultiSpanSlider.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -116,6 +117,10 @@ set( PUBLIC_HEADERS
         include/Carna/qt/FrameRendererFactory.h
         include/Carna/qt/Version.h
         include/Carna/qt/RenderStageControl.h
+        include/Carna/qt/MultiSpanSliderModelViewMapping.h
+        include/Carna/qt/MultiSpanSliderTracker.h
+        include/Carna/qt/IntSpanPainter.h
+        include/Carna/qt/NullIntSpanPainter.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
@@ -131,6 +136,8 @@ set( SRC
         src/qt/RenderStageControl.cpp
         src/qt/DRRControl.cpp
         src/qt/ExpandableGroupBox.cpp
+        src/qt/MultiSpanSlider.cpp
+        src/qt/MultiSpanSliderTracker.cpp
     )
 set( FORMS
         ""
