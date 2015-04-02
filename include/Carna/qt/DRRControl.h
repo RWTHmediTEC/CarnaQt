@@ -19,6 +19,7 @@
 #include <Carna/qt/CarnaQt.h>
 #include <Carna/qt/RenderStageControl.h>
 #include <QWidget>
+#include <memory>
 
 class QDoubleSpinBox;
 class QSpinBox;
@@ -46,6 +47,9 @@ class CARNAQT_LIB DRRControl : public QWidget, public RenderStageControl
 {
 
     Q_OBJECT
+    
+    struct Details;
+    const std::unique_ptr< Details > pimpl;
 
 public:
 
@@ -53,6 +57,11 @@ public:
       * Instantiates.
       */
     explicit DRRControl( presets::DRRStage& drr, QWidget* parent = nullptr );
+    
+    /** \brief
+      * Deletes.
+      */
+    virtual ~DRRControl();
     
     presets::DRRStage& drr;
 
@@ -69,20 +78,6 @@ public slots:
     void setUpperMultiplier( double upperMultiplier );
     
     void setRenderingInverse( int renderingInverse );
-
-private:
-
-    QDoubleSpinBox* const sbWaterAttenuation;
-
-    QDoubleSpinBox* const sbBrightness;
-
-    QSpinBox* const sbLowerThreshold;
-
-    QSpinBox* const sbUpperThreshold;
-
-    QDoubleSpinBox* const sbUpperMultiplier;
-    
-    QCheckBox* const cbRenderingInverse;
 
 }; // DRRControl
 

@@ -12,6 +12,9 @@
 #include <Carna/qt/DRRControl.h>
 #include <Carna/qt/ExpandableGroupBox.h>
 #include <Carna/base/math.h>
+#include <Carna/base/Color.h>
+#include <Carna/base/FrameRenderer.h>
+#include <Carna/base/RenderStageListener.h>
 #include <Carna/presets/DRRStage.h>
 #include <QDoubleSpinBox>
 #include <QSpinBox>
@@ -28,104 +31,196 @@ namespace qt
 
 
 // ----------------------------------------------------------------------------------
+// DRRControl :: Details
+// ----------------------------------------------------------------------------------
+
+struct DRRControl::Details : public base::RenderStageListener
+{
+    Details( DRRControl& self );
+    DRRControl& self;
+    base::FrameRenderer* renderer;
+    bool isRenderStageListener;
+    
+    void updateRendererBackgroundColor() const;
+    void removeRenderStageListener();
+    
+    QDoubleSpinBox* const sbWaterAttenuation;
+    QDoubleSpinBox* const sbBaseIntensity;
+    QSpinBox      * const sbLowerThreshold;
+    QSpinBox      * const sbUpperThreshold;
+    QDoubleSpinBox* const sbUpperMultiplier;
+    QCheckBox     * const cbRenderingInverse;
+    
+    virtual void onRenderStageInitialized( base::RenderStage& rs ) override;
+    virtual void onRenderStageDelete( base::RenderStage& rs ) override;
+};
+
+
+DRRControl::Details::Details( DRRControl& self )
+    : self( self )
+    , renderer( nullptr )
+    , isRenderStageListener( false )
+    , sbWaterAttenuation( new QDoubleSpinBox() )
+    , sbBaseIntensity      ( new QDoubleSpinBox() )
+    , sbLowerThreshold  ( new QSpinBox() )
+    , sbUpperThreshold  ( new QSpinBox() )
+    , sbUpperMultiplier ( new QDoubleSpinBox() )
+    , cbRenderingInverse( new QCheckBox() )
+{
+}
+
+
+void DRRControl::Details::updateRendererBackgroundColor() const
+{
+    if( renderer != nullptr )
+    {
+        renderer->setBackgroundColor( self.drr.isRenderingInverse() ? base::Color::WHITE_NO_ALPHA : base::Color::BLACK_NO_ALPHA );
+    }
+}
+
+
+void DRRControl::Details::removeRenderStageListener()
+{
+    if( isRenderStageListener )
+    {
+        self.drr.removeRenderStageListener( *this );
+        isRenderStageListener = false;
+    }
+}
+
+
+void DRRControl::Details::onRenderStageInitialized( base::RenderStage& rs )
+{
+    CARNA_ASSERT( isRenderStageListener );
+    renderer = &rs.renderer();
+    updateRendererBackgroundColor();
+    removeRenderStageListener();
+}
+
+
+void DRRControl::Details::onRenderStageDelete( base::RenderStage& rs )
+{
+    CARNA_ASSERT( isRenderStageListener );
+    isRenderStageListener = false;
+}
+
+
+
+// ----------------------------------------------------------------------------------
 // DRRControl
 // ----------------------------------------------------------------------------------
 
 DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
     : QWidget( parent )
     , RenderStageControl( drr )
+    , pimpl( new Details( *this ) )
     , drr( drr )
-    , sbWaterAttenuation( new QDoubleSpinBox() )
-    , sbBrightness      ( new QDoubleSpinBox() )
-    , sbLowerThreshold  ( new QSpinBox() )
-    , sbUpperThreshold  ( new QSpinBox() )
-    , sbUpperMultiplier ( new QDoubleSpinBox() )
-    , cbRenderingInverse( new QCheckBox() )
 {
     QVBoxLayout* const layout = new QVBoxLayout();
 
- // DRR parameters
-
+    /* Configure 'DRR parameters'.
+     */
     ExpandableGroupBox* const gbDRR = new ExpandableGroupBox( "DRR Parameters", true );
     QFormLayout* const drrParams = new QFormLayout();
     gbDRR->child()->setLayout( drrParams );
     gbDRR->child()->layout()->setContentsMargins( 0, 0, 0, 0 );
     layout->addWidget( gbDRR );
 
- // water attenuation
+    /* Configure 'water attenuation'.
+     */
+    drrParams->addRow( "Water Attenuation", pimpl->sbWaterAttenuation );
 
-    drrParams->addRow( "Water Attenuation", sbWaterAttenuation );
+    pimpl->sbWaterAttenuation->setRange( 1e-5, std::numeric_limits< float >::max() );
+    pimpl->sbWaterAttenuation->setDecimals( 5 );
+    pimpl->sbWaterAttenuation->setValue( drr.waterAttenuation() );
+    pimpl->sbWaterAttenuation->setSingleStep( 0.001 );
 
-    sbWaterAttenuation->setRange( 1e-5, std::numeric_limits< float >::max() );
-    sbWaterAttenuation->setDecimals( 5 );
-    sbWaterAttenuation->setValue( drr.waterAttenuation() );
-    sbWaterAttenuation->setSingleStep( 0.001 );
+    connect( pimpl->sbWaterAttenuation, SIGNAL( valueChanged( double ) ), this, SLOT( setWaterAttenuation( double ) ) );
 
-    connect( sbWaterAttenuation, SIGNAL( valueChanged( double ) ), this, SLOT( setWaterAttenuation( double ) ) );
+    /* Configure 'base intensity'.
+     */
+    drrParams->addRow( "Intensity", pimpl->sbBaseIntensity );
 
- // base intensity
+    pimpl->sbBaseIntensity->setRange( 0, std::numeric_limits< float >::max() );
+    pimpl->sbBaseIntensity->setValue( drr.baseIntensity() );
+    pimpl->sbBaseIntensity->setDecimals( 2 );
+    pimpl->sbBaseIntensity->setSingleStep( 0.01 );
 
-    drrParams->addRow( "Intensity", sbBrightness );
+    connect( pimpl->sbBaseIntensity, SIGNAL( valueChanged( double ) ), this, SLOT( setBaseIntensity( double ) ) );
 
-    sbBrightness->setRange( 0, std::numeric_limits< float >::max() );
-    sbBrightness->setValue( drr.baseIntensity() );
-    sbBrightness->setDecimals( 2 );
-    sbBrightness->setSingleStep( 0.01 );
+    /* Configure 'inverse rendering'.
+     */
+    drrParams->addRow( pimpl->cbRenderingInverse );
 
-    connect( sbBrightness, SIGNAL( valueChanged( double ) ), this, SLOT( setBaseIntensity( double ) ) );
+    pimpl->cbRenderingInverse->setText( "Inverse Brightness" );
+    pimpl->cbRenderingInverse->setChecked( drr.isRenderingInverse() ? Qt::Checked : Qt::Unchecked );
 
- // inverse rendering
+    connect( pimpl->cbRenderingInverse, SIGNAL( stateChanged( int ) ), this, SLOT( setRenderingInverse( int ) ) );
 
-    drrParams->addRow( cbRenderingInverse );
-
-    cbRenderingInverse->setText( "Inverse Brightness" );
-    cbRenderingInverse->setChecked( drr.isRenderingInverse() ? Qt::Checked : Qt::Unchecked );
-
-    connect( cbRenderingInverse, SIGNAL( stateChanged( int ) ), this, SLOT( setRenderingInverse( int ) ) );
-
- // threshold filtering / bone enhancement
-
+    /* Configure 'threshold filtering / bone enhancement'.
+     */
     ExpandableGroupBox* const gbFiltering = new ExpandableGroupBox( "Threshold Filtering / Bone Enhancement", true );
     QFormLayout* const filtering = new QFormLayout();
     gbFiltering->child()->setLayout( filtering );
     gbFiltering->child()->layout()->setContentsMargins( 0, 0, 0, 0 );
     layout->addWidget( gbFiltering );
 
- // lower threshold
+    /* Configure 'lower threshold'.
+     */
+    filtering->addRow( "Lower Threshold", pimpl->sbLowerThreshold );
 
-    filtering->addRow( "Lower Threshold", sbLowerThreshold );
+    pimpl->sbLowerThreshold->setRange( -1024, 3071 );
+    pimpl->sbLowerThreshold->setValue( drr.lowerThreshold() );
+    pimpl->sbLowerThreshold->setSingleStep( 10 );
 
-    sbLowerThreshold->setRange( -1024, 3071 );
-    sbLowerThreshold->setValue( drr.lowerThreshold() );
-    sbLowerThreshold->setSingleStep( 10 );
+    connect( pimpl->sbLowerThreshold, SIGNAL( valueChanged( int ) ), this, SLOT( setLowerThreshold( int ) ) );
 
-    connect( sbLowerThreshold, SIGNAL( valueChanged( int ) ), this, SLOT( setLowerThreshold( int ) ) );
+    /* Configure 'upper threshold'.
+     */
+    filtering->addRow( "Upper Threshold", pimpl->sbUpperThreshold );
 
- // upper threshold
+    pimpl->sbUpperThreshold->setRange( -1024, 3071 );
+    pimpl->sbUpperThreshold->setValue( drr.upperThreshold() );
+    pimpl->sbUpperThreshold->setSingleStep( 10 );
 
-    filtering->addRow( "Upper Threshold", sbUpperThreshold );
+    connect( pimpl->sbUpperThreshold, SIGNAL( valueChanged( int ) ), this, SLOT( setUpperThreshold( int ) ) );
 
-    sbUpperThreshold->setRange( -1024, 3071 );
-    sbUpperThreshold->setValue( drr.upperThreshold() );
-    sbUpperThreshold->setSingleStep( 10 );
+    /* Configure 'upper multiplier'.
+     */
+    filtering->addRow( "Upper Multiplier", pimpl->sbUpperMultiplier );
 
-    connect( sbUpperThreshold, SIGNAL( valueChanged( int ) ), this, SLOT( setUpperThreshold( int ) ) );
+    pimpl->sbUpperMultiplier->setRange( 0., std::numeric_limits< float >::max() );
+    pimpl->sbUpperMultiplier->setValue( drr.upperMultiplier() );
+    pimpl->sbUpperMultiplier->setDecimals( 2 );
+    pimpl->sbUpperMultiplier->setSingleStep( 0.1 );
 
- // upper multiplier
+    connect( pimpl->sbUpperMultiplier, SIGNAL( valueChanged( double ) ), this, SLOT( setUpperMultiplier( double ) ) );
 
-    filtering->addRow( "Upper Multiplier", sbUpperMultiplier );
-
-    sbUpperMultiplier->setRange( 0., std::numeric_limits< float >::max() );
-    sbUpperMultiplier->setValue( drr.upperMultiplier() );
-    sbUpperMultiplier->setDecimals( 2 );
-    sbUpperMultiplier->setSingleStep( 0.1 );
-
-    connect( sbUpperMultiplier, SIGNAL( valueChanged( double ) ), this, SLOT( setUpperMultiplier( double ) ) );
-
- // finish
-
+    /* Finish setup.
+     */
     layout->addStretch( 1 );
     this->setLayout( layout );
+    if( !drr.isInitialized() )
+    {
+        /* Get notified when stage initializes.
+         */
+        drr.addRenderStageListener( *pimpl );
+        pimpl->isRenderStageListener = true;
+    }
+    else
+    {
+        /* Stage is initialized, we can access its renderer immediately.
+         */
+        pimpl->renderer = &drr.renderer();
+        pimpl->updateRendererBackgroundColor();
+        pimpl->isRenderStageListener = false;
+    }
+}
+
+
+DRRControl::~DRRControl()
+{
+    pimpl->removeRenderStageListener();
 }
 
 
@@ -190,6 +285,7 @@ void DRRControl::setRenderingInverse( int renderingInverse )
     if( renderingInverseB != drr.isRenderingInverse() )
     {
         drr.setRenderingInverse( renderingInverseB );
+        pimpl->updateRendererBackgroundColor();
         RenderStageControl::invalidate();
     }
 }
