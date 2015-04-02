@@ -10,6 +10,7 @@
  */
 
 #include <Carna/qt/Display.h>
+#include <Carna/qt/FrameRendererFactory.h>
 #include <Carna/base/FrameRenderer.h>
 #include <Carna/base/SpatialMovement.h>
 #include <Carna/base/GLContext.h>
@@ -19,6 +20,7 @@
 #include <Carna/base/CameraControl.h>
 #include <Carna/presets/MeshColorCodingStage.h>
 #include <QGLContext>
+#include <QGLFormat>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <set>
@@ -37,13 +39,13 @@ namespace qt
 
 struct Display::Details
 {
-    Details( const std::function< void( base::FrameRenderer& ) >& );
-    const std::function< void( base::FrameRenderer& ) > setupRenderer;
+    Details( FrameRendererFactory& rendererFactory );
+    FrameRendererFactory& rendererFactory;
 
     static std::set< const Display* > sharingDisplays;
     static const Display* pickSharingDisplay();
     
-    typedef base::QGLContextAdapter< QGLContext > GLContext;
+    typedef base::QGLContextAdapter< QGLContext, QGLFormat > GLContext;
 
     std::unique_ptr< GLContext > glc;
     std::unique_ptr< base::FrameRenderer > renderer;
@@ -72,8 +74,8 @@ struct Display::Details
 std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
 
 
-Display::Details::Details( const std::function< void( base::FrameRenderer& ) >& setupRenderer )
-    : setupRenderer( setupRenderer )
+Display::Details::Details( FrameRendererFactory& rendererFactory )
+    : rendererFactory( rendererFactory )
     , glInitializationFinished( false )
     , vpMode( fitAuto )
     , cam( nullptr )
@@ -165,9 +167,9 @@ const float Display::DEFAULT_ROTATION_SPEED       = -3e-3f;
 const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = -1e-1f;
 
 
-Display::Display( const std::function< void( base::FrameRenderer& ) >& setupRenderer, QWidget* parent )
-    : QGLWidget( parent, Details::pickSharingDisplay() )
-    , pimpl( new Details( setupRenderer ) )
+Display::Display( FrameRendererFactory& rendererFactory, QWidget* parent )
+    : QGLWidget( Details::GLContext::desiredFormat(), parent, Details::pickSharingDisplay() )
+    , pimpl( new Details( rendererFactory ) )
 {
     Details::sharingDisplays.insert( this );
 }
@@ -239,8 +241,7 @@ void Display::resizeGL( int w, int h )
     const unsigned int height = static_cast< unsigned int >( h );
     if( pimpl->renderer == nullptr )
     {
-        pimpl->renderer.reset( new base::FrameRenderer( *pimpl->glc, width, height, pimpl->fitSquare() ) );
-        pimpl->setupRenderer( *pimpl->renderer );
+        pimpl->renderer.reset( pimpl->rendererFactory.createRenderer( *pimpl->glc, width, height, pimpl->fitSquare() ) );
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
         pimpl->glInitializationFinished = true;

@@ -46,6 +46,9 @@ namespace qt
   * context, whose lifetime is coupled to the timetime of the hosting \c QGLWidget.
   * So instead of moving the renderer, just put the display to another location in
   * your GUI.
+  *
+  * \author Leonid Kostrykin
+  * \date   21.2.15 - 2.4.15
   */
 class CARNAQT_LIB Display : public QGLWidget
 {
@@ -71,7 +74,7 @@ public:
         fitAuto
     };
 
-    explicit Display( const std::function< void( base::FrameRenderer& ) >& setupRenderer, QWidget* parent = nullptr );
+    explicit Display( FrameRendererFactory& rendererFactory, QWidget* parent = nullptr );
     
     virtual ~Display();
     
