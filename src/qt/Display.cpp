@@ -39,8 +39,8 @@ namespace qt
 
 struct Display::Details
 {
-    Details( FrameRendererFactory& rendererFactory );
-    FrameRendererFactory& rendererFactory;
+    Details( FrameRendererFactory* rendererFactory );
+    std::unique_ptr< FrameRendererFactory > rendererFactory;
 
     static std::set< const Display* > sharingDisplays;
     static const Display* pickSharingDisplay();
@@ -74,7 +74,7 @@ struct Display::Details
 std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
 
 
-Display::Details::Details( FrameRendererFactory& rendererFactory )
+Display::Details::Details( FrameRendererFactory* rendererFactory )
     : rendererFactory( rendererFactory )
     , glInitializationFinished( false )
     , vpMode( fitAuto )
@@ -84,6 +84,7 @@ Display::Details::Details( FrameRendererFactory& rendererFactory )
     , axialMovementSpeed( DEFAULT_AXIAL_MOVEMENT_SPEED )
     , mccs( nullptr )
 {
+    CARNA_ASSERT( rendererFactory != nullptr );
 }
 
 
@@ -167,7 +168,7 @@ const float Display::DEFAULT_ROTATION_SPEED       = -3e-3f;
 const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = -1e-1f;
 
 
-Display::Display( FrameRendererFactory& rendererFactory, QWidget* parent )
+Display::Display( FrameRendererFactory* rendererFactory, QWidget* parent )
     : QGLWidget( Details::GLContext::desiredFormat(), parent, Details::pickSharingDisplay() )
     , pimpl( new Details( rendererFactory ) )
 {
@@ -241,7 +242,8 @@ void Display::resizeGL( int w, int h )
     const unsigned int height = static_cast< unsigned int >( h );
     if( pimpl->renderer == nullptr )
     {
-        pimpl->renderer.reset( pimpl->rendererFactory.createRenderer( *pimpl->glc, width, height, pimpl->fitSquare() ) );
+        pimpl->renderer.reset( pimpl->rendererFactory->createRenderer( *pimpl->glc, width, height, pimpl->fitSquare() ) );
+        pimpl->rendererFactory.reset();
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
         pimpl->glInitializationFinished = true;

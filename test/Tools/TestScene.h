@@ -12,7 +12,7 @@
 #pragma once
 
 #include <Carna/Carna.h>
-#include <Carna/base/UInt16HUVolume.h>
+#include <memory>
 
 namespace Carna
 {
@@ -29,7 +29,7 @@ namespace testing
 class TestScene
 {
 
-    std::unique_ptr< base::UInt16HUVolume > huVolume;
+    std::unique_ptr< base::HUVolumeUInt16 > huVolume;
 
     base::Geometry* const myVolumeGeometry;
 

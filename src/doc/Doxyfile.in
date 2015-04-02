@@ -45,7 +45,7 @@ WARN_IF_UNDOCUMENTED   = YES
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 
-INPUT                  = src/doc include test/UnitTests test/ModuleTests test/IntegrationTests test/Tools
+INPUT                  = src/doc include
 FILE_PATTERNS          = *.h *.hpp *.dox
 RECURSIVE              = YES
 EXCLUDE                = 

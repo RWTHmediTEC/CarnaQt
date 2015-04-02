@@ -1,7 +1,7 @@
 namespace Carna
 {
 
-/** \page VersionLog API 3.x Version Log
+/** \page VersionLog API 1.x Version Log
   *
   * This page gives you an overview over the recent API changes.
   *
@@ -19,9 +19,9 @@ namespace Carna
   *
   * \section ChangeLog Change Log
   *
-  * \subsection v_3_0_0 API Version 3.0.0
+  * \subsection v_1_0_0 API Version 1.0.0
   *
-  * First version of 3.x.x series.
+  * First version of 1.x.x series.
   */
   
 }  // namespace Carna

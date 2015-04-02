@@ -11,6 +11,7 @@ set( TESTS_HEADERS
 	)
 	
 set( TESTS_SOURCES
+		Tools/HUGZSceneFactory.cpp
 		Tools/TestScene.cpp
 	)
 	

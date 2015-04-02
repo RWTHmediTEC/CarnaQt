@@ -73,6 +73,7 @@ set( QOBJECT_HEADERS
 set( SRC
 		src/main.cpp
 		../Tools/TestScene.cpp
+		../Tools/HUGZSceneFactory.cpp
 	)
 set( FORMS
 		""

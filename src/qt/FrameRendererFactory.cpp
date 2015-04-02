@@ -25,53 +25,16 @@ namespace qt
 // FrameRendererFactory
 // ----------------------------------------------------------------------------------
 
-FrameRendererFactory::~FrameRendererFactory()
-{
-    reset();
-}
-
-
-void FrameRendererFactory::reset()
-{
-    std::for_each( myStages.begin(), myStages.end(), std::default_delete< base::RenderStage >() );
-    myStages.clear();
-}
-
-
 base::FrameRenderer* FrameRendererFactory::createRenderer( base::GLContext& glc, unsigned int width, unsigned int height, bool fitSquare )
 {
     base::FrameRenderer* const renderer = new base::FrameRenderer( glc, width, height, fitSquare );
-    for( auto stageItr = myStages.begin(); stageItr != myStages.end(); ++stageItr )
+    for( std::size_t stageIdx = 0; stageIdx < stages(); ++stageIdx )
     {
-        renderer->appendStage( *itr );
+        base::RenderStage& stage = stageAt( stageIdx );
+        renderer->appendStage( &stage );
     }
-    myStages.clear();
+    releaseStages();
     return renderer;
-}
-
-
-std::size_t FrameRendererFactory::stages() const
-{
-    return myStages.size();
-}
-
-
-void FrameRendererFactory::appendStage( RenderStage* stage )
-{
-    myStages.push_back( stage );
-}
-
-
-void FrameRendererFactory::clearStages()
-{
-    reset();
-}
-
-
-RenderStage& FrameRendererFactory::stageAt( std::size_t position ) const
-{
-    CARNA_ASSERT( position < stages() );
-    return *myStages[ position ];
 }
 
 

@@ -74,7 +74,7 @@ public:
         fitAuto
     };
 
-    explicit Display( FrameRendererFactory& rendererFactory, QWidget* parent = nullptr );
+    explicit Display( FrameRendererFactory* rendererFactory, QWidget* parent = nullptr );
     
     virtual ~Display();
     

@@ -109,8 +109,10 @@ set( PUBLIC_QOBJECT_HEADERS
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
+        include/Carna/qt/Application.h
         include/Carna/qt/CarnaQt.h
         include/Carna/qt/Display.h
+        include/Carna/qt/FrameRendererFactory.h
         include/Carna/qt/Version.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
@@ -121,7 +123,9 @@ set( PRIVATE_HEADERS
         ${PRIVATE_QOBJECT_HEADERS}
     )
 set( SRC
+        src/qt/Application.cpp
         src/qt/Display.cpp
+        src/qt/FrameRendererFactory.cpp
     )
 set( FORMS
         ""
