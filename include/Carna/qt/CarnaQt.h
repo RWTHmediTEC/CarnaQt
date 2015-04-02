@@ -49,11 +49,24 @@ namespace Carna
     namespace qt
     {
         class Application;
-        class FrameRendererFactory;
+        class ColorMapEditor;
+        class ColorMapSpanPainter;
+        class ColorMapTracker;
+        class ColorMapTrackerEditor;
+        class ColorPicker;
+        class ColorPickerPainter;
         class Display;
         class DRRControl;
-        class RenderStageControl;
+        class DVRControl;
         class ExpandableGroupBox;
+        class FrameRendererFactory;
+        class IntSpanPainter;
+        class MultiSpanSlider;
+        class MultiSpanSliderModelViewMapping;
+        class MultiSpanSliderTracker;
+        class NullIntSpanPainter;
+        class RenderStageControl;
+        class WideColorPicker;
     }
 
 }  // namespace Carna

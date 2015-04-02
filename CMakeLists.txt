@@ -108,6 +108,11 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/ExpandableGroupBox.h
         include/Carna/qt/DRRControl.h
         include/Carna/qt/MultiSpanSlider.h
+        include/Carna/qt/ColorMapTrackerEditor.h
+        include/Carna/qt/WideColorPicker.h
+        include/Carna/qt/ColorPicker.h
+        include/Carna/qt/ColorMapEditor.h
+        include/Carna/qt/DVRControl.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -121,6 +126,10 @@ set( PUBLIC_HEADERS
         include/Carna/qt/MultiSpanSliderTracker.h
         include/Carna/qt/IntSpanPainter.h
         include/Carna/qt/NullIntSpanPainter.h
+        include/Carna/qt/ColorMapSpanPainter.h
+        include/Carna/qt/ColorMapSpanPainter.h
+        include/Carna/qt/ColorMapTracker.h
+        include/Carna/qt/ColorPickerPainter.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
@@ -138,6 +147,14 @@ set( SRC
         src/qt/ExpandableGroupBox.cpp
         src/qt/MultiSpanSlider.cpp
         src/qt/MultiSpanSliderTracker.cpp
+        src/qt/ColorMapSpanPainter.cpp
+        src/qt/ColorMapEditor.cpp
+        src/qt/ColorMapTracker.cpp
+        src/qt/ColorMapTrackerEditor.cpp
+        src/qt/ColorPickerPainter.cpp
+        src/qt/WideColorPicker.cpp
+        src/qt/ColorPicker.cpp
+        src/qt/DVRControl.cpp
     )
 set( FORMS
         ""

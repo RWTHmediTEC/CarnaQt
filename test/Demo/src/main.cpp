@@ -2,10 +2,10 @@
 #include <Carna/qt/Application.h>
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
-#include <Carna/qt/DRRControl.h>
-#include <Carna/helpers/FrameRendererHelper.h>
-#include <Carna/presets/DRRStage.h>
+#include <Carna/qt/DVRControl.h>
+#include <Carna/presets/DVRStage.h>
 #include <Carna/presets/CameraShowcaseControl.h>
+#include <Carna/helpers/FrameRendererHelper.h>
 #include <Carna/base/Composition.h>
 //! [quick_start_includes]
 #include <TestScene.h>
@@ -34,19 +34,19 @@ int main( int argc, char** argv )
      */
     qt::FrameRendererFactory* const frFactory = new qt::FrameRendererFactory();
     helpers::FrameRendererHelper< > frHelper( *frFactory );
-    frHelper << new presets::DRRStage( GEOMETRY_TYPE_VOLUMETRIC );
+    frHelper << new presets::DVRStage( GEOMETRY_TYPE_VOLUMETRIC );
     frHelper.commit();
     
-    /* Lets create a predefined window for adjusting the DRR parameters.
+    /* Lets create a predefined window for adjusting the DVR parameters.
      */
-    qt::DRRControl drrControl( *frFactory->findStage< presets::DRRStage >() );
+    qt::DVRControl dvrControl( *frFactory->findStage< presets::DVRStage >() );
     
     /* A display is like the habitat of an 'base::FrameRenderer' object.
      * The display's constructor takes possession of our 'frFactory'.
      * The tag identifies the display within log messages.
      */
     qt::Display display( frFactory );
-    display.setLogTag( "DRR" );
+    display.setLogTag( "DVR" );
     
     /* The 'TestScene' object simply holds the root node of the scene and provides
      * access to an arbitrary 'base::Camera' object through its 'cam' method.
@@ -58,7 +58,7 @@ int main( int argc, char** argv )
     /* Here we actually run the application.
      */
     display.show();
-    drrControl.show();
+    dvrControl.show();
     return QApplication::exec();
 }
 //! [quick_start_main]
