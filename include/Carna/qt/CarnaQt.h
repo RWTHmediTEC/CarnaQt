@@ -48,8 +48,12 @@ namespace Carna
       */
     namespace qt
     {
+        class Application;
         class FrameRendererFactory;
         class Display;
+        class DRRControl;
+        class RenderStageControl;
+        class ExpandableGroupBox;
     }
 
 }  // namespace Carna
