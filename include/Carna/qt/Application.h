@@ -46,9 +46,21 @@ class CARNAQT_LIB Application : public QApplication
 
 public:
 
+    /** \brief
+      * Instantiates.
+      *
+      * The arguments passed through to the constructor of `QApplication`.
+      */
     Application( int& argc, char** argv );
+    
+    /** \brief
+      * Shuts down the log.
+      */
     virtual ~Application();
     
+    /** \brief
+      * Reports uncatched exceptions to the user through `QMessageBox`.
+      */
     virtual bool notify( QObject* receiver, QEvent* ev ) override;
 
 }; // Application
