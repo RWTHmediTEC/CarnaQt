@@ -41,6 +41,9 @@ struct Display::Details
 {
     Details( FrameRendererFactory* rendererFactory );
     std::unique_ptr< FrameRendererFactory > rendererFactory;
+    
+    std::string logTag;
+    std::string formatLogMessage( const std::string& msg ) const;
 
     static std::set< const Display* > sharingDisplays;
     static const Display* pickSharingDisplay();
@@ -159,6 +162,19 @@ bool Display::Details::fitSquare() const
 }
 
 
+std::string Display::Details::formatLogMessage( const std::string& msg ) const
+{
+    if( logTag.empty() )
+    {
+        return msg;
+    }
+    else
+    {
+        return "Display '" + logTag + "': " + msg;
+    }
+}
+
+
 
 // ----------------------------------------------------------------------------------
 // Display
@@ -247,6 +263,19 @@ void Display::resizeGL( int w, int h )
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
         pimpl->glInitializationFinished = true;
+        
+        if( pimpl->mccs != nullptr )
+        {
+            base::Log::instance().record
+                ( base::Log::debug
+                , pimpl->formatLogMessage( "Drag-&-Drop behaviour for mesh-typed geometry ENABLED." ) );
+        }
+        else
+        {
+            base::Log::instance().record
+                ( base::Log::debug
+                , pimpl->formatLogMessage( "Drag-&-Drop behaviour for mesh-typed geometry DISABLED." ) );
+        }
     }
     else
     {
@@ -262,7 +291,7 @@ void Display::paintGL()
     
     if( pimpl->cam == nullptr )
     {
-        base::Log::instance().record( base::Log::debug, "Display has no camera but should render." );
+        base::Log::instance().record( base::Log::debug, pimpl->formatLogMessage( "Display has no camera but should render." ) );
     }
     else
     {
@@ -447,6 +476,18 @@ const base::FrameRenderer& Display::renderer() const
 {
     CARNA_ASSERT( hasRenderer() );
     return *pimpl->renderer;
+}
+
+
+void Display::setLogTag( const std::string& tag )
+{
+    pimpl->logTag = tag;
+}
+
+
+const std::string& Display::logTag() const
+{
+    return pimpl->logTag;
 }
 
 

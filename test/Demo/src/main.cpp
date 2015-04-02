@@ -38,8 +38,10 @@ int main( int argc, char** argv )
     
     /* A display is like the habitat of an 'base::FrameRenderer' object.
      * The display's constructor takes possession of our 'frFactory'.
+     * The tag identifies the display within log messages.
      */
     qt::Display display( frFactory );
+    display.setLogTag( "DRR" );
     
     /* The 'TestScene' object simply holds the root node of the scene and provides
      * access to an arbitrary 'base::Camera' object through its 'cam' method.
