@@ -15,6 +15,7 @@
 #include <Carna/presets/DRRStage.h>
 #include <QDoubleSpinBox>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QVBoxLayout>
 #include <QFormLayout>
 
@@ -39,6 +40,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
     , sbLowerThreshold  ( new QSpinBox() )
     , sbUpperThreshold  ( new QSpinBox() )
     , sbUpperMultiplier ( new QDoubleSpinBox() )
+    , cbRenderingInverse( new QCheckBox() )
 {
     QVBoxLayout* const layout = new QVBoxLayout();
 
@@ -54,9 +56,10 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 
     drrParams->addRow( "Water Attenuation", sbWaterAttenuation );
 
-    sbWaterAttenuation->setRange( 0, std::numeric_limits< float >::max() );
+    sbWaterAttenuation->setRange( 1e-5, std::numeric_limits< float >::max() );
+    sbWaterAttenuation->setDecimals( 5 );
     sbWaterAttenuation->setValue( drr.waterAttenuation() );
-    sbWaterAttenuation->setSingleStep( 0.1 );
+    sbWaterAttenuation->setSingleStep( 0.001 );
 
     connect( sbWaterAttenuation, SIGNAL( valueChanged( double ) ), this, SLOT( setWaterAttenuation( double ) ) );
 
@@ -67,9 +70,18 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
     sbBrightness->setRange( 0, std::numeric_limits< float >::max() );
     sbBrightness->setValue( drr.baseIntensity() );
     sbBrightness->setDecimals( 2 );
-    sbBrightness->setSingleStep( 0.1 );
+    sbBrightness->setSingleStep( 0.01 );
 
-    connect( sbBrightness, SIGNAL( valueChanged( double ) ), this, SLOT( setBrightness( double ) ) );
+    connect( sbBrightness, SIGNAL( valueChanged( double ) ), this, SLOT( setBaseIntensity( double ) ) );
+
+ // inverse rendering
+
+    drrParams->addRow( cbRenderingInverse );
+
+    cbRenderingInverse->setText( "Inverse Brightness" );
+    cbRenderingInverse->setChecked( drr.isRenderingInverse() ? Qt::Checked : Qt::Unchecked );
+
+    connect( cbRenderingInverse, SIGNAL( stateChanged( int ) ), this, SLOT( setRenderingInverse( int ) ) );
 
  // threshold filtering / bone enhancement
 
@@ -120,7 +132,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 void DRRControl::setWaterAttenuation( double muWater )
 {
     const float muWaterF = static_cast< float >( muWater );
-    if( !base::math::isEqual( muWaterF, drr.waterAttenuation() ) )
+    if( std::abs( muWaterF - drr.waterAttenuation() ) > 1e-6f )
     {
         drr.setWaterAttenuation( muWaterF );
         RenderStageControl::invalidate();
@@ -167,6 +179,17 @@ void DRRControl::setUpperMultiplier( double upperMultiplier )
     if( !base::math::isEqual( upperMultiplierF, drr.upperMultiplier() ) )
     {
         drr.setUpperMultiplier( upperMultiplierF );
+        RenderStageControl::invalidate();
+    }
+}
+
+
+void DRRControl::setRenderingInverse( int renderingInverse )
+{
+    bool renderingInverseB = renderingInverse == Qt::Checked;
+    if( renderingInverseB != drr.isRenderingInverse() )
+    {
+        drr.setRenderingInverse( renderingInverseB );
         RenderStageControl::invalidate();
     }
 }

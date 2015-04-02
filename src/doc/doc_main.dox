@@ -5,9 +5,9 @@ namespace Carna
   *
   * %Carna provides classes for simple and fast visualization of CT data. It is named
   * after the greek god of organs (yup, they really did have even one for organs). It
-  * is based on OpenGL 3.3 and Eigen.
+  * is based on OpenGL 3.3 and Eigen 3.
   *
-  * This package provides auxiliary classes for using %Carna with Qt 4.8 and above.
+  * This package provides auxiliary classes for using %Carna ≥3.0.0 with Qt ≥4.8.
   *
   * Jump to:
   *     \ref QuickStart | \ref VersionLog

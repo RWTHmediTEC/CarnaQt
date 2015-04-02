@@ -2,6 +2,7 @@
 #include <Carna/qt/Application.h>
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
+#include <Carna/qt/DRRControl.h>
 #include <Carna/helpers/FrameRendererHelper.h>
 #include <Carna/presets/DRRStage.h>
 #include <Carna/presets/CameraShowcaseControl.h>
@@ -36,6 +37,10 @@ int main( int argc, char** argv )
     frHelper << new presets::DRRStage( GEOMETRY_TYPE_VOLUMETRIC );
     frHelper.commit();
     
+    /* Lets create a predefined window for adjusting the DRR parameters.
+     */
+    qt::DRRControl drrControl( *frFactory->findStage< presets::DRRStage >() );
+    
     /* A display is like the habitat of an 'base::FrameRenderer' object.
      * The display's constructor takes possession of our 'frFactory'.
      * The tag identifies the display within log messages.
@@ -53,6 +58,7 @@ int main( int argc, char** argv )
     /* Here we actually run the application.
      */
     display.show();
+    drrControl.show();
     return QApplication::exec();
 }
 //! [quick_start_main]

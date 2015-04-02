@@ -49,6 +49,11 @@ protected:
 
     explicit RenderStageControl( base::RenderStage& rs );
     
+    /** \brief
+      * Deletes.
+      */
+    ~RenderStageControl();
+    
     base::RenderStage& renderStage;
     
     void invalidate();

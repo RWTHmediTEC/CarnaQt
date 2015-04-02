@@ -60,6 +60,11 @@ RenderStageControl::RenderStageControl( base::RenderStage& rs )
 }
 
 
+RenderStageControl::~RenderStageControl()
+{
+}
+
+
 void RenderStageControl::invalidate()
 {
     if( !pimpl->updateScheduled )

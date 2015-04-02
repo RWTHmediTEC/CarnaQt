@@ -22,6 +22,7 @@
 
 class QDoubleSpinBox;
 class QSpinBox;
+class QCheckBox;
 
 namespace Carna
 {
@@ -66,6 +67,8 @@ public slots:
     void setUpperThreshold( int upperThreshold );
 
     void setUpperMultiplier( double upperMultiplier );
+    
+    void setRenderingInverse( int renderingInverse );
 
 private:
 
@@ -78,6 +81,8 @@ private:
     QSpinBox* const sbUpperThreshold;
 
     QDoubleSpinBox* const sbUpperMultiplier;
+    
+    QCheckBox* const cbRenderingInverse;
 
 }; // DRRControl
 
