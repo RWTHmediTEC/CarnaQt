@@ -224,6 +224,13 @@ public:
       */
     const std::string& logTag() const;
     
+    /** \brief
+      * Finds and returns the `%Display` instance that \a renderer belongs to in
+      * \f$\mathcal O\left(\log n\right)\f$. Returns
+      * `base::Aggregation<%Display>::%NULL_PTR` if no such `%Display` is found.
+      */
+    static base::Aggregation< Display > byRenderer( const base::FrameRenderer& renderer );
+    
 protected:
     
     /** \brief

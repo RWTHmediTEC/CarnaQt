@@ -41,6 +41,7 @@ struct Display::Details
 {
     Details( FrameRendererFactory* rendererFactory );
     std::unique_ptr< FrameRendererFactory > rendererFactory;
+    static std::map< const base::FrameRenderer*, Display* > displaysByRenderer;
     
     std::string logTag;
     std::string formatLogMessage( const std::string& msg ) const;
@@ -74,6 +75,7 @@ struct Display::Details
 };
 
 
+std::map< const base::FrameRenderer*, Display* > Display::Details::displaysByRenderer = std::map< const base::FrameRenderer*, Display* >();
 std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
 
 
@@ -195,6 +197,10 @@ Display::Display( FrameRendererFactory* rendererFactory, QWidget* parent )
 Display::~Display()
 {
     Details::sharingDisplays.erase( this );
+    if( pimpl->renderer.get() != nullptr )
+    {
+        Details::displaysByRenderer.erase( pimpl->renderer.get() );
+    }
 }
 
 
@@ -263,6 +269,7 @@ void Display::resizeGL( int w, int h )
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
         pimpl->glInitializationFinished = true;
+        Details::displaysByRenderer[ pimpl->renderer.get() ] = this;
         
         if( pimpl->mccs != nullptr )
         {
@@ -488,6 +495,20 @@ void Display::setLogTag( const std::string& tag )
 const std::string& Display::logTag() const
 {
     return pimpl->logTag;
+}
+
+
+base::Aggregation< Display > Display::byRenderer( const base::FrameRenderer& renderer )
+{
+    const auto displayItr = Details::displaysByRenderer.find( &renderer );
+    if( displayItr == Details::displaysByRenderer.end() )
+    {
+        return base::Aggregation< Display >::NULL_PTR;
+    }
+    else
+    {
+        return base::Aggregation< Display >( *displayItr->second );
+    }
 }
 
 
