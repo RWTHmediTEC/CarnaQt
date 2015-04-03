@@ -49,6 +49,8 @@ public:
     std::vector< MIPControlLayer* > controls;
     void appendControl( presets::MIPLayer& layer );
     
+    void appendLayerWithoutInvalidating( presets::MIPLayer* layer );
+    
 private slots:
 
     void invalidate();

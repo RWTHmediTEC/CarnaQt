@@ -57,15 +57,7 @@ MIPLayerEditor::MIPLayerEditor( presets::MIPLayer& layer )
      */
     cbFunction->addItem( "Replace" );
     cbFunction->addItem(     "Add" );
-    
-    if( layer.function() == presets::MIPLayer::LAYER_FUNCTION_ADD )
-    {
-        cbFunction->setCurrentIndex( 1 );
-    }
-    else
-    {
-        cbFunction->setCurrentIndex( 0 );
-    }
+    cbFunction->setCurrentIndex( functionIndex( layer.function() ) );
 
     connect( cbFunction, SIGNAL( activated( int ) ), this, SLOT( setFunction( int ) ) );
     appearance->addWidget( cbFunction );
@@ -78,6 +70,7 @@ MIPLayerEditor::MIPLayerEditor( presets::MIPLayer& layer )
     sbHuvMin->setMinimum( -1024 );
     sbHuvMin->setMaximum(  3071 );
     sbHuvMin->setValue( layer.huRange.first );
+    sbHuvMin->setSingleStep( 100 );
     connect( sbHuvMin, SIGNAL( valueChanged( int ) ), this, SLOT( setHuvMin( int ) ) );
     
     range->addWidget( laHuvMin );
@@ -85,6 +78,7 @@ MIPLayerEditor::MIPLayerEditor( presets::MIPLayer& layer )
 
     sbHuvMax->setMinimum( -1024 );
     sbHuvMax->setMaximum(  3071 );
+    sbHuvMax->setSingleStep( 100 );
     sbHuvMax->setValue( layer.huRange.last );
     connect( sbHuvMax, SIGNAL( valueChanged( int ) ), this, SLOT( setHuvMax( int ) ) );
     
@@ -104,7 +98,7 @@ void MIPLayerEditor::setHuvMin( int huvMin )
 {
     huvMin = base::math::clamp( huvMin, sbHuvMin->minimum(), sbHuvMin->maximum() );
     huvMin = std::min( huvMin, sbHuvMax->value() );
-    if( huvMin != sbHuvMin->value() )
+    if( huvMin != layer.huRange.first )
     {
         sbHuvMin->setValue( huvMin );
         layer.huRange.first = huvMin;
@@ -117,7 +111,7 @@ void MIPLayerEditor::setHuvMax( int huvMax )
 {
     huvMax = base::math::clamp( huvMax, sbHuvMax->minimum(), sbHuvMax->maximum() );
     huvMax = std::max( huvMax, sbHuvMin->value() );
-    if( huvMax != sbHuvMax->value() )
+    if( huvMax != layer.huRange.last )
     {
         sbHuvMax->setValue( huvMax );
         layer.huRange.last = huvMax;
@@ -168,6 +162,78 @@ QSize MIPLayerEditor::sizeHint() const
         + std::max( colorPicker->sizeHint().height(), cbFunction->sizeHint().height() );
     
     return QSize( width, height );
+}
+
+
+std::string MIPLayerEditor::functionName( unsigned int functionIndex )
+{
+    switch( functionIndex )
+    {
+    
+    case FUNCTION_REPLACE:
+        return "Replace";
+        
+    case FUNCTION_ADD:
+        return "Add";
+    
+    default:
+        CARNA_FAIL( "Unknown MIPLayer function index." );
+    
+    }
+}
+
+
+unsigned int MIPLayerEditor::functionIndex( const std::string& functionName )
+{
+    if( functionName == "Replace" )
+    {
+        return FUNCTION_REPLACE;
+    }
+    else
+    if( functionName == "Add" )
+    {
+        return FUNCTION_ADD;
+    }
+    else
+    {
+        CARNA_FAIL( "Unknown MIPLayer function name." );
+    }
+}
+
+
+unsigned int MIPLayerEditor::functionIndex( const base::BlendFunction& function )
+{
+    if( function == presets::MIPLayer::LAYER_FUNCTION_REPLACE )
+    {
+        return FUNCTION_REPLACE;
+    }
+    else
+    if( function == presets::MIPLayer::LAYER_FUNCTION_ADD )
+    {
+        return FUNCTION_ADD;
+    }
+    else
+    {
+        CARNA_FAIL( "Unknown MIPLayer function." );
+    }
+}
+
+
+const base::BlendFunction& MIPLayerEditor::function( unsigned int functionIndex )
+{
+    switch( functionIndex )
+    {
+    
+    case FUNCTION_REPLACE:
+        return presets::MIPLayer::LAYER_FUNCTION_REPLACE;
+        
+    case FUNCTION_ADD:
+        return presets::MIPLayer::LAYER_FUNCTION_ADD;
+    
+    default:
+        CARNA_FAIL( "Unknown MIPLayer function index." );
+    
+    }
 }
 
 

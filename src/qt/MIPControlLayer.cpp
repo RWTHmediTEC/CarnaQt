@@ -84,19 +84,19 @@ void MIPControlLayer::ascend()
 
 void MIPControlLayer::descend()
 {
-    bool hasSuccessor = false;
+    bool hasPredecessor = false;
     std::size_t layerIdx;
-    for( layerIdx = 0; layerIdx < stage.layersCount(); ++layerIdx )
+    for( layerIdx = 1; layerIdx < stage.layersCount(); ++layerIdx )
     {
         if( &editor.layer == &stage.layer( layerIdx ) )
         {
-            hasSuccessor = true;
-            ++layerIdx;
+            hasPredecessor = true;
+            --layerIdx;
             break;
         }
     }
     
-    if( hasSuccessor )
+    if( hasPredecessor )
     {
         const presets::MIPLayer& successor = stage.layer( layerIdx );
         stage.ascendLayer( successor );

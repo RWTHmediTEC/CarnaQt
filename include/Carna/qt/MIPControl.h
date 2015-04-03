@@ -75,11 +75,17 @@ public:
     
     presets::MIPStage& mip;
     
+    void appendLayer( presets::MIPLayer* layer );
+    
 public slots:
 
     void appendLayer();
     
     void clearLayers();
+    
+    void saveColorConfig();
+    
+    void loadColorConfig();
 
 }; // MIPControl
 

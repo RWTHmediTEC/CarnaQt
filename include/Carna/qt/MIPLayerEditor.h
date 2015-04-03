@@ -65,6 +65,14 @@ public:
       */
     presets::MIPLayer& layer;
     
+    static std::string functionName( unsigned int functionIndex );
+    
+    static unsigned int functionIndex( const std::string& functionName );
+    
+    static unsigned int functionIndex( const base::BlendFunction& function );
+    
+    static const base::BlendFunction& function( unsigned int functionIndex );
+    
 public slots:
 
     void setFunction( int functionIndex );

@@ -17,6 +17,7 @@ namespace Carna
   *
   *   - \ref DRRControlExample "DRRControl"
   *   - \ref DVRControlExample "DVRControl"
+  *   - \ref MIPControlExample "MIPControl"
   */
 
 }
