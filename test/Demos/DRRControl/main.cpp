@@ -1,13 +1,13 @@
-//! [dvr_includes]
+//! [drr_includes]
 #include <Carna/qt/Application.h>
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
-#include <Carna/qt/DVRControl.h>
-#include <Carna/presets/DVRStage.h>
+#include <Carna/qt/DRRControl.h>
+#include <Carna/presets/DRRStage.h>
 #include <Carna/presets/CameraShowcaseControl.h>
 #include <Carna/helpers/FrameRendererHelper.h>
 #include <Carna/base/Composition.h>
-//! [dvr_includes]
+//! [drr_includes]
 #include <TestScene.h>
 
 
@@ -16,12 +16,12 @@
 // main
 // ----------------------------------------------------------------------------------
 
-//! [dvr_constants]
+//! [drr_constants]
 const static unsigned int GEOMETRY_TYPE_VOLUMETRIC = 0;
-//! [dvr_constants]
+//! [drr_constants]
 
 
-//! [dvr_main]
+//! [drr_main]
 int main( int argc, char** argv )
 {
     using namespace Carna;
@@ -34,12 +34,12 @@ int main( int argc, char** argv )
      */
     qt::FrameRendererFactory* const frFactory = new qt::FrameRendererFactory();
     helpers::FrameRendererHelper< > frHelper( *frFactory );
-    frHelper << new presets::DVRStage( GEOMETRY_TYPE_VOLUMETRIC );
+    frHelper << new presets::DRRStage( GEOMETRY_TYPE_VOLUMETRIC );
     frHelper.commit();
     
-    /* Lets create a predefined window for adjusting the DVR parameters.
+    /* Lets create a predefined window for adjusting the DRR parameters.
      */
-    qt::DVRControl dvrControl( *frFactory->findStage< presets::DVRStage >() );
+    qt::DRRControl drrControl( *frFactory->findStage< presets::DRRStage >() );
     
     /* A display is like the habitat of an 'base::FrameRenderer' object.
      * The display's constructor takes possession of our 'frFactory'.
@@ -50,15 +50,15 @@ int main( int argc, char** argv )
     /* The 'TestScene' object simply holds the root node of the scene and provides
      * access to an arbitrary 'base::Camera' object through its 'cam' method.
      */
-    testing::TestScene scene( testing::TestScene::NORMAL_MAP_REQUIRED );
+    testing::TestScene scene( testing::TestScene::NORMAL_MAP_NOT_REQUIRED );
     display.setCamera( scene.cam() );
     display.setCameraControl( new base::Composition< base::CameraControl >( new presets::CameraShowcaseControl() ) );
     
     /* Here we actually run the application.
      */
     display.show();
-    dvrControl.show();
+    drrControl.show();
     return QApplication::exec();
 }
-//! [dvr_main]
+//! [drr_main]
 

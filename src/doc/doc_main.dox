@@ -9,19 +9,14 @@ namespace Carna
   *
   * This package provides auxiliary classes for using %Carna ≥3.0.0 with Qt ≥4.8.
   *
-  * Jump to:
-  *     \ref QuickStart | \ref VersionLog
+  * \see \ref VersionLog
   *
   * \section QuickStart Quick Start
   *
-  *  -# Start with including headers from base %Carna and this packge:
-  *     \snippet Demo/src/main.cpp quick_start_includes
-  *  -# Lets stick with a single geometry type for simplicity:
-  *     \snippet Demo/src/main.cpp quick_start_constants
-  *     For explanation on the concept of geometry types, refer to the base %Carna
-  *     documentation.
-  *  -# Now we implement a short program:
-  *     \snippet Demo/src/main.cpp quick_start_main
+  * The following examples are also available as demos that you can run:
+  *
+  *   - \ref DRRControlExample "DRRControl"
+  *   - \ref DVRControlExample "DVRControl"
   */
 
 }

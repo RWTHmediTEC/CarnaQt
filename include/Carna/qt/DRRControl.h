@@ -17,8 +17,7 @@
   */
 
 #include <Carna/qt/CarnaQt.h>
-#include <Carna/qt/RenderStageControl.h>
-#include <QWidget>
+#include <Carna/qt/VolumeRenderingControl.h>
 #include <memory>
 
 class QDoubleSpinBox;
@@ -40,10 +39,21 @@ namespace qt
 /** \brief
   * Defines `presets::%DRRStage` controlling widget.
   *
+  * \section DRRControlExample Example
+  *
+  *  -# Start with including headers from base %Carna and this packge:
+  *     \snippet Demos/DRRControl/main.cpp drr_includes
+  *  -# Lets stick with a single geometry type for simplicity:
+  *     \snippet Demos/DRRControl/main.cpp drr_constants
+  *     For explanation on the concept of geometry types, refer to the base %Carna
+  *     documentation.
+  *  -# Now we implement a short program:
+  *     \snippet Demos/DRRControl/main.cpp drr_main
+  *
   * \author Leonid Kostrykin
   * \date   16.4.12 - 2.4.15
   */
-class CARNAQT_LIB DRRControl : public QWidget, public RenderStageControl
+class CARNAQT_LIB DRRControl : public VolumeRenderingControl
 {
 
     Q_OBJECT

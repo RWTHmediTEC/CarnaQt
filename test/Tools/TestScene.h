@@ -29,25 +29,25 @@ namespace testing
 class TestScene
 {
 
-    std::unique_ptr< base::HUVolumeUInt16 > huVolume;
-
-    base::Geometry* const myVolumeGeometry;
-
-    base::Camera* const myCam;
+    struct Details;
+    const std::unique_ptr< Details > pimpl;
 
 public:
 
     const static unsigned int GEOMETRY_TYPE_VOLUMETRIC = 0;
 
     const static unsigned int ROLE_HU_VOLUME = 0;
+    
+    const static bool NORMAL_MAP_REQUIRED     = true;
+    const static bool NORMAL_MAP_NOT_REQUIRED = false;
 
-    TestScene();
+    explicit TestScene( bool provideNormals );
 
     ~TestScene();
 
-    const std::unique_ptr< base::Node > root;
-
-    base::Geometry& volumeGeometry() const;
+    base::Node& volumeNode() const;
+    
+    base::Node& root() const;
 
     base::Camera& cam() const;
 

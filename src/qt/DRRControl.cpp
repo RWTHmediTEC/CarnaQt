@@ -111,24 +111,27 @@ void DRRControl::Details::onRenderStageDelete( base::RenderStage& rs )
 // ----------------------------------------------------------------------------------
 
 DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
-    : QWidget( parent )
-    , RenderStageControl( drr )
+    : VolumeRenderingControl( drr, parent )
     , pimpl( new Details( *this ) )
     , drr( drr )
 {
     QVBoxLayout* const layout = new QVBoxLayout();
 
-    /* Configure 'DRR parameters'.
+    /* Configure 'general parameters'.
      */
-    ExpandableGroupBox* const gbDRR = new ExpandableGroupBox( "DRR Parameters", true );
+    ExpandableGroupBox* const gbDRR = new ExpandableGroupBox( "General", true );
     QFormLayout* const drrParams = new QFormLayout();
     gbDRR->child()->setLayout( drrParams );
     gbDRR->child()->layout()->setContentsMargins( 0, 0, 0, 0 );
     layout->addWidget( gbDRR );
 
+    /* Configure 'sample rate'.
+     */
+    drrParams->addRow( "Sample Rate:", sbSampleRate );
+
     /* Configure 'water attenuation'.
      */
-    drrParams->addRow( "Water Attenuation", pimpl->sbWaterAttenuation );
+    drrParams->addRow( "Water Attenuation:", pimpl->sbWaterAttenuation );
 
     pimpl->sbWaterAttenuation->setRange( 1e-5, std::numeric_limits< float >::max() );
     pimpl->sbWaterAttenuation->setDecimals( 5 );
@@ -139,7 +142,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 
     /* Configure 'base intensity'.
      */
-    drrParams->addRow( "Intensity", pimpl->sbBaseIntensity );
+    drrParams->addRow( "Intensity:", pimpl->sbBaseIntensity );
 
     pimpl->sbBaseIntensity->setRange( 0, std::numeric_limits< float >::max() );
     pimpl->sbBaseIntensity->setValue( drr.baseIntensity() );
@@ -167,7 +170,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 
     /* Configure 'lower threshold'.
      */
-    filtering->addRow( "Lower Threshold", pimpl->sbLowerThreshold );
+    filtering->addRow( "Lower Threshold:", pimpl->sbLowerThreshold );
 
     pimpl->sbLowerThreshold->setRange( -1024, 3071 );
     pimpl->sbLowerThreshold->setValue( drr.lowerThreshold() );
@@ -177,7 +180,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 
     /* Configure 'upper threshold'.
      */
-    filtering->addRow( "Upper Threshold", pimpl->sbUpperThreshold );
+    filtering->addRow( "Upper Threshold:", pimpl->sbUpperThreshold );
 
     pimpl->sbUpperThreshold->setRange( -1024, 3071 );
     pimpl->sbUpperThreshold->setValue( drr.upperThreshold() );
@@ -187,7 +190,7 @@ DRRControl::DRRControl( presets::DRRStage& drr, QWidget* parent )
 
     /* Configure 'upper multiplier'.
      */
-    filtering->addRow( "Upper Multiplier", pimpl->sbUpperMultiplier );
+    filtering->addRow( "Upper Multiplier:", pimpl->sbUpperMultiplier );
 
     pimpl->sbUpperMultiplier->setRange( 0., std::numeric_limits< float >::max() );
     pimpl->sbUpperMultiplier->setValue( drr.upperMultiplier() );

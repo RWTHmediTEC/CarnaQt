@@ -82,7 +82,6 @@ DVRControl::DVRControl( presets::DVRStage& dvr, QWidget* parent )
      */
     slDiffuseLight->setMinimum( 0 );
     slDiffuseLight->setMaximum( 100 );
-    slDiffuseLight->setValue( base::math::round_ui( dvr.diffuseLight() * slDiffuseLight->maximum() ) );
     slDiffuseLight->setTickInterval( 10 );
     
     connect( slDiffuseLight, SIGNAL( valueChanged( int ) ), this, SLOT( setDiffuseLight( int ) ) );
@@ -350,7 +349,11 @@ void DVRControl::setDiffuseLight( int diffuseLight )
 void DVRControl::updateLightingState()
 {
     slDiffuseLight->setEnabled( dvr.isLightingUsed() );
-    if( !dvr.isLightingUsed() )
+    if( dvr.isLightingUsed() )
+    {
+        slDiffuseLight->setValue( base::math::round_ui( dvr.diffuseLight() * slDiffuseLight->maximum() ) );
+    }
+    else
     {
         slDiffuseLight->setValue( 0 );
     }

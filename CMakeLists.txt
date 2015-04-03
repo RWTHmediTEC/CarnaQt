@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(CarnaQt)
 
-set(MAJOR_VERSION   0)
-set(MINOR_VERSION   1)
+set(MAJOR_VERSION   1)
+set(MINOR_VERSION   0)
 set(PATCH_VERSION   0)
 
 ############################################

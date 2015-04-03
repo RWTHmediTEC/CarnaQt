@@ -35,6 +35,23 @@ namespace qt
 // DVRControl
 // ----------------------------------------------------------------------------------
 
+/** \brief
+  * Defines `presets::%DVRStage` controlling widget.
+  *
+  * \section DVRControlExample Example
+  *
+  *  -# Start with including headers from base %Carna and this packge:
+  *     \snippet Demos/DVRControl/main.cpp dvr_includes
+  *  -# Lets stick with a single geometry type for simplicity:
+  *     \snippet Demos/DVRControl/main.cpp dvr_constants
+  *     For explanation on the concept of geometry types, refer to the base %Carna
+  *     documentation.
+  *  -# Now we implement a short program:
+  *     \snippet Demos/DVRControl/main.cpp dvr_main
+  *
+  * \author Leonid Kostrykin
+  * \date   2.4.15 - 3.4.15
+  */
 class CARNAQT_LIB DVRControl : public VolumeRenderingControl
 {
 
