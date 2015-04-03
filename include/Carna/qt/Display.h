@@ -111,6 +111,12 @@ public:
       */
     virtual ~Display();
     
+    /** \brief
+      * Posts an `updateGL` invocation to the message queue if such hasn't been
+      * posted yet.
+      */
+    void invalidate();
+    
     /** \brief Sets how the root viewport is to be embedded into the rendered frame.
       */
     void setViewportMode( ViewportMode );

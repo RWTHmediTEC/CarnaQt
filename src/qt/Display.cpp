@@ -11,6 +11,7 @@
 
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
+#include <Carna/base/NodeListener.h>
 #include <Carna/base/FrameRenderer.h>
 #include <Carna/base/SpatialMovement.h>
 #include <Carna/base/GLContext.h>
@@ -23,6 +24,7 @@
 #include <QGLFormat>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QTimer>
 #include <set>
 
 namespace Carna
@@ -37,9 +39,12 @@ namespace qt
 // Display :: Details
 // ----------------------------------------------------------------------------------
 
-struct Display::Details
+struct Display::Details : public base::NodeListener
 {
-    Details( FrameRendererFactory* rendererFactory );
+    Details( Display& self, FrameRendererFactory* rendererFactory );
+    Display& self;
+    bool invalidated;
+    
     std::unique_ptr< FrameRendererFactory > rendererFactory;
     static std::map< const base::FrameRenderer*, Display* > displaysByRenderer;
     
@@ -61,6 +66,8 @@ struct Display::Details
     base::Node* root;
     std::unique_ptr< base::Association< base::CameraControl > > camControl;
     std::unique_ptr< base::Association< base::ProjectionControl > > projControl;
+    void validateRoot();
+    void invalidateRoot();
 
     bool mouseInteraction;
     QPoint mousepos;
@@ -72,6 +79,10 @@ struct Display::Details
     
     void updateProjection( Display& );
     bool fitSquare() const;
+    
+    virtual void onNodeDelete( const base::Node& node ) override;
+    virtual void onTreeChange( base::Node& subtree ) override;
+    virtual void onTreeInvalidated( base::Node& subtree ) override;
 };
 
 
@@ -79,8 +90,10 @@ std::map< const base::FrameRenderer*, Display* > Display::Details::displaysByRen
 std::set< const Display* > Display::Details::sharingDisplays = std::set< const Display* >();
 
 
-Display::Details::Details( FrameRendererFactory* rendererFactory )
-    : rendererFactory( rendererFactory )
+Display::Details::Details( Display& self, FrameRendererFactory* rendererFactory )
+    : self( self )
+    , invalidated( false )
+    , rendererFactory( rendererFactory )
     , glInitializationFinished( false )
     , vpMode( fitAuto )
     , cam( nullptr )
@@ -177,6 +190,57 @@ std::string Display::Details::formatLogMessage( const std::string& msg ) const
 }
 
 
+void Display::Details::invalidateRoot()
+{
+    if( root != nullptr )
+    {
+        root->removeNodeListener( *this );
+        root = nullptr;
+    }
+}
+
+
+void Display::Details::validateRoot()
+{
+    if( root == nullptr )
+    {
+        root = &cam->findRoot();
+        root->addNodeListener( *this );
+    }
+    else
+    if( root->hasParent() )
+    {
+        invalidateRoot();
+        validateRoot();
+    }
+}
+
+
+void Display::Details::onNodeDelete( const base::Node& node )
+{
+    CARNA_ASSERT( &node == root );
+    
+    /* We do not use 'invalidateRoot' here because we are not allowed to remove the
+     * listener from that dying node.
+     */
+    root = nullptr;
+    self.invalidate();
+}
+
+
+void Display::Details::onTreeChange( base::Node& subtree )
+{
+    invalidateRoot();
+    self.invalidate();
+}
+
+
+void Display::Details::onTreeInvalidated( base::Node& subtree )
+{
+    self.invalidate();
+}
+
+
 
 // ----------------------------------------------------------------------------------
 // Display
@@ -188,7 +252,7 @@ const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = -1e-1f;
 
 Display::Display( FrameRendererFactory* rendererFactory, QWidget* parent )
     : QGLWidget( Details::GLContext::desiredFormat(), parent, Details::pickSharingDisplay() )
-    , pimpl( new Details( rendererFactory ) )
+    , pimpl( new Details( *this, rendererFactory ) )
 {
     Details::sharingDisplays.insert( this );
 }
@@ -196,6 +260,7 @@ Display::Display( FrameRendererFactory* rendererFactory, QWidget* parent )
 
 Display::~Display()
 {
+    pimpl->invalidateRoot();
     Details::sharingDisplays.erase( this );
     if( pimpl->renderer.get() != nullptr )
     {
@@ -212,6 +277,10 @@ void Display::setViewportMode( ViewportMode vpMode )
         if( pimpl->renderer.get() != nullptr )
         {
             resizeGL( width(), height() );
+            
+            /* Repaint.
+             */
+            invalidate();
         }
     }
 }
@@ -228,7 +297,11 @@ void Display::setCamera( base::Camera& cam )
     
     /* We will search the root node the first time we render the frame.
      */
-    pimpl->root = nullptr;
+    pimpl->invalidateRoot();
+
+    /* Repaint.
+     */
+    invalidate();
 }
 
 
@@ -302,10 +375,8 @@ void Display::paintGL()
     }
     else
     {
-        if( pimpl->root == nullptr )
-        {
-            pimpl->root = &pimpl->cam->findRoot();
-        }
+        pimpl->invalidated = false;
+        pimpl->validateRoot();
         pimpl->renderer->render( *pimpl->cam, *pimpl->root );
     }
 }
@@ -382,7 +453,6 @@ void Display::mouseMoveEvent( QMouseEvent* ev )
              */
             if( pimpl->spatialMovement->update( ev->x(), ev->y() ) )
             {
-                updateGL();
                 ev->accept();
             }
         }
@@ -508,6 +578,16 @@ base::Aggregation< Display > Display::byRenderer( const base::FrameRenderer& ren
     else
     {
         return base::Aggregation< Display >( *displayItr->second );
+    }
+}
+
+
+void Display::invalidate()
+{
+    if( !pimpl->invalidated && isVisible() )
+    {
+        QTimer::singleShot( 0, this, SLOT( updateGL() ) );
+        pimpl->invalidated = true;
     }
 }
 
