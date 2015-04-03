@@ -46,7 +46,7 @@ public:
     void removeRootListener();
     
     virtual void onNodeDelete( const base::Node& node ) override;
-    virtual void onTreeChange( base::Node& subtree ) override;
+    virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
     virtual void onTreeInvalidated( base::Node& subtree ) override;
     
     bool invalidated;

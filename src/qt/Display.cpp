@@ -81,7 +81,7 @@ struct Display::Details : public base::NodeListener
     bool fitSquare() const;
     
     virtual void onNodeDelete( const base::Node& node ) override;
-    virtual void onTreeChange( base::Node& subtree ) override;
+    virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
     virtual void onTreeInvalidated( base::Node& subtree ) override;
 };
 
@@ -228,7 +228,7 @@ void Display::Details::onNodeDelete( const base::Node& node )
 }
 
 
-void Display::Details::onTreeChange( base::Node& subtree )
+void Display::Details::onTreeChange( base::Node& node, bool inThisSubtree )
 {
     invalidateRoot();
     self.invalidate();

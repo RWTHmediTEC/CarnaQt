@@ -60,6 +60,12 @@ public:
     
     void setRoot( base::Node& root );
     
+    std::size_t geometries() const;
+    
+    base::Geometry& geometry( std::size_t index );
+    
+    const base::Geometry& geometry( std::size_t index ) const;
+    
     virtual int rowCount( const QModelIndex& parent ) const override;
     
     virtual QVariant data( const QModelIndex& index, int role ) const override;

@@ -55,9 +55,12 @@ void GeometryListModel::Details::onNodeDelete( const base::Node& node )
 }
 
 
-void GeometryListModel::Details::onTreeChange( base::Node& subtree )
+void GeometryListModel::Details::onTreeChange( base::Node& node, bool inThisSubtree )
 {
-    update();
+    if( inThisSubtree )
+    {
+        invalidate();
+    }
 }
 
 
@@ -130,9 +133,29 @@ void GeometryListModel::setRoot( base::Node& root )
 }
 
 
-int GeometryListModel::rowCount( const QModelIndex& parent ) const
+std::size_t GeometryListModel::geometries() const
 {
     return pimpl->geometries.size();
+}
+
+
+base::Geometry& GeometryListModel::geometry( std::size_t index )
+{
+    CARNA_ASSERT( index < geometries() );
+    return *pimpl->geometries[ index ];
+}
+
+
+const base::Geometry& GeometryListModel::geometry( std::size_t index ) const
+{
+    CARNA_ASSERT( index < geometries() );
+    return *pimpl->geometries[ index ];
+}
+
+
+int GeometryListModel::rowCount( const QModelIndex& parent ) const
+{
+    return geometries();
 }
 
 
