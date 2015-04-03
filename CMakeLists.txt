@@ -115,6 +115,7 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/DVRControl.h
         include/Carna/qt/VolumeRenderingControl.h
         include/Carna/qt/MIPLayerEditor.h
+        include/Carna/qt/MIPControlLayer.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -160,6 +161,7 @@ set( SRC
         src/qt/DVRControl.cpp
         src/qt/VolumeRenderingControl.cpp
         src/qt/MIPLayerEditor.cpp
+        src/qt/MIPControlLayer.cpp
     )
 set( FORMS
         ""

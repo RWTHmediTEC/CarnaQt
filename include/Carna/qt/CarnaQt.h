@@ -61,6 +61,7 @@ namespace Carna
         class ExpandableGroupBox;
         class FrameRendererFactory;
         class IntSpanPainter;
+        class MIPControlLayer;
         class MIPLayerEditor;
         class MultiSpanSlider;
         class MultiSpanSliderModelViewMapping;
