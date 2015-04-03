@@ -77,6 +77,7 @@ QSize MIPControlLayer::sizeHint() const
 void MIPControlLayer::ascend()
 {
     stage.ascendLayer( editor.layer );
+    emit ascended( *this );
     invalidate();
 }
 
@@ -99,6 +100,7 @@ void MIPControlLayer::descend()
     {
         const presets::MIPLayer& successor = stage.layer( layerIdx );
         stage.ascendLayer( successor );
+        emit descended( *this );
         invalidate();
     }
 }
@@ -108,6 +110,7 @@ void MIPControlLayer::remove()
 {
     delete stage.removeLayer( editor.layer );
     this->deleteLater();
+    emit removed( *this );
     invalidate();
 }
 

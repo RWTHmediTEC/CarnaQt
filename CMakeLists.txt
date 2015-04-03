@@ -116,6 +116,7 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/VolumeRenderingControl.h
         include/Carna/qt/MIPLayerEditor.h
         include/Carna/qt/MIPControlLayer.h
+        include/Carna/qt/MIPControl.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -138,6 +139,7 @@ set( PUBLIC_HEADERS
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
         src/include/Carna/qt/RenderStageControlDetails.h
+        src/include/Carna/qt/MIPControlDetails.h
 )
 set( PRIVATE_HEADERS
         ${PRIVATE_QOBJECT_HEADERS}
@@ -162,6 +164,7 @@ set( SRC
         src/qt/VolumeRenderingControl.cpp
         src/qt/MIPLayerEditor.cpp
         src/qt/MIPControlLayer.cpp
+        src/qt/MIPControl.cpp
     )
 set( FORMS
         ""

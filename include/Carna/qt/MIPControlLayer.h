@@ -80,6 +80,12 @@ signals:
 
     void changed();
     
+    void ascended( MIPControlLayer& );
+    
+    void descended( MIPControlLayer& );
+    
+    void removed( MIPControlLayer& );
+    
 private slots:
 
     void invalidate();
