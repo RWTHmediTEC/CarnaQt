@@ -57,6 +57,10 @@ protected:
     base::RenderStage& renderStage;
     
     void invalidate();
+    
+    virtual void onRenderingStarted();
+    
+    virtual void onRenderingFinished();
 
 }; // RenderStageControl
 

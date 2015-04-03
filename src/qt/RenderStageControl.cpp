@@ -41,7 +41,9 @@ void RenderStageControl::Details::updateDisplay()
         const auto display = Display::byRenderer( renderer );
         if( display )
         {
+            self.onRenderingStarted();
             display->updateGL();
+            self.onRenderingFinished();
         }
         updateScheduled = false;
     }
@@ -72,6 +74,16 @@ void RenderStageControl::invalidate()
         pimpl->updateScheduled = true;
         QTimer::singleShot( 0, pimpl.get(), SLOT( updateDisplay() ) );
     }
+}
+
+
+void RenderStageControl::onRenderingStarted()
+{
+}
+
+
+void RenderStageControl::onRenderingFinished()
+{
 }
 
 

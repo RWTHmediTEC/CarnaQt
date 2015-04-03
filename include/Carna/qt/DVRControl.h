@@ -21,7 +21,10 @@
 #include <Carna/base/noncopyable.h>
 #include <QWidget>
 
+class QSpinBox;
 class QDoubleSpinBox;
+class QSlider;
+class QShowEvent;
 
 namespace Carna
 {
@@ -57,15 +60,27 @@ public:
     
 public slots:
 
+    void setSampleRate( int samplesPerPixel );
+
     void setTranslucence( double translucence );
+    
+    void setDiffuseLight( double diffuseLight );
+    
+    void updateLightingState();
+    
+protected:
+
+    virtual void showEvent( QShowEvent* event ) override;
+    
+    virtual void onRenderingFinished();
 
 private:
 
+    QSpinBox* const sbSampleRate;
+
     QDoubleSpinBox* const sbTranslucence;
 
-    QDoubleSpinBox* const sbDiffuseLight;
-
-    QDoubleSpinBox* const sbAmbientLight;
+    QSlider* const slDiffuseLight;
 
     ColorMapEditor* const colorMapEditor;
 
@@ -82,6 +97,8 @@ private slots:
     void loadColorConfig();
 
     void updateColorMap();
+    
+    void setDiffuseLight( int );
 
 }; // DVRControl
 

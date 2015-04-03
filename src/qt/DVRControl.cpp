@@ -13,7 +13,10 @@
 #include <Carna/qt/ExpandableGroupBox.h>
 #include <Carna/presets/DVRStage.h>
 #include <Carna/base/CarnaException.h>
+#include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QSlider>
+#include <QTimer>
 #include <QFormLayout>
 #include <QPushButton>
 #include <QDomDocument>
@@ -49,9 +52,9 @@ DVRControl::DVRControl( presets::DVRStage& dvr, QWidget* parent )
     : QWidget( parent )
     , RenderStageControl( dvr )
     , dvr( dvr )
+    , sbSampleRate  ( new QSpinBox() )
     , sbTranslucence( new QDoubleSpinBox )
-    , sbDiffuseLight( new QDoubleSpinBox() )
-    , sbAmbientLight( new QDoubleSpinBox() )
+    , slDiffuseLight( new QSlider( Qt::Horizontal ) )
     , colorMapEditor( new ColorMapEditor() )
 {
     colorMapEditor->setFirst( -1024 );
@@ -61,40 +64,54 @@ DVRControl::DVRControl( presets::DVRStage& dvr, QWidget* parent )
 
     /* Compose 'General' section.
      */
+    sbSampleRate->setMinimum( 10 );
+    sbSampleRate->setMaximum( 10000 );
+    sbSampleRate->setSingleStep( 10 );
+    sbSampleRate->setValue( dvr.sampleRate() );
+    
+    connect( sbSampleRate, SIGNAL( valueChanged( int ) ), this, SLOT( setSampleRate( int ) ) );
+    
     sbTranslucence->setMinimum( 0 );
     sbTranslucence->setMaximum( std::numeric_limits< float >::max() );
     sbTranslucence->setSingleStep( 1 );
     sbTranslucence->setDecimals( 2 );
     sbTranslucence->setValue( dvr.translucence() );
+    
+    connect( sbTranslucence, SIGNAL( valueChanged( double ) ), this, SLOT( setTranslucence( double ) ) );
 
     ExpandableGroupBox* const gbGeneral = new ExpandableGroupBox( "General", true );
     QFormLayout* const general = new QFormLayout();
     gbGeneral->child()->setLayout( general );
     gbGeneral->child()->layout()->setContentsMargins( 0, 0, 0 ,0 );
 
+    general->addRow( "Sample Rate:" , sbSampleRate );
     general->addRow( "Translucence:", sbTranslucence );
-    
-    connect( sbTranslucence, SIGNAL( valueChanged( double ) ), this, SLOT( setTranslucence( double ) ) );
     
     /* Compose 'Lighting' section.
      */
-    sbDiffuseLight->setMinimum( 0 );
-    sbDiffuseLight->setMaximum( 1 );
-    sbDiffuseLight->setSingleStep( 0.1 );
-    sbDiffuseLight->setValue( 0 );
+    slDiffuseLight->setMinimum( 0 );
+    slDiffuseLight->setMaximum( 100 );
+    slDiffuseLight->setValue( base::math::round_ui( dvr.diffuseLight() * slDiffuseLight->maximum() ) );
+    slDiffuseLight->setTickInterval( 10 );
+    
+    connect( slDiffuseLight, SIGNAL( valueChanged( int ) ), this, SLOT( setDiffuseLight( int ) ) );
 
-    sbAmbientLight->setMinimum( 0 );
-    sbAmbientLight->setMaximum( 1 );
-    sbAmbientLight->setSingleStep( 0.1 );
-    sbAmbientLight->setValue( 0 );
-
-    ExpandableGroupBox* const gbLight = new ExpandableGroupBox( "Lighting", true );
-    QFormLayout* const light = new QFormLayout();
-    gbLight->child()->setLayout( light );
+    ExpandableGroupBox* const gbLight = new ExpandableGroupBox( "Lighting", false );
+    QVBoxLayout* const lightMaster = new QVBoxLayout();
+    gbLight->child()->setLayout( lightMaster );
     gbLight->child()->layout()->setContentsMargins( 0, 0, 0 ,0 );
+    
+    QLabel* const lightCaptionAmbient = new QLabel( "Ambient" );
+    QLabel* const lightCaptionDiffuse = new QLabel( "Diffuse" );
+    lightCaptionAmbient->setAlignment( Qt::AlignLeft  | Qt::AlignTop );
+    lightCaptionDiffuse->setAlignment( Qt::AlignRight | Qt::AlignTop );
+    
+    QHBoxLayout* const lightCaptions = new QHBoxLayout();
+    lightCaptions->addWidget( lightCaptionAmbient );
+    lightCaptions->addWidget( lightCaptionDiffuse );
 
-    light->addRow( "Ambient:", sbAmbientLight );
-    light->addRow( "Diffuse:", sbDiffuseLight );
+    lightMaster->addWidget( slDiffuseLight );
+    lightMaster->addLayout( lightCaptions );
 
     /* Compose color map saving/loading buttons.
      */
@@ -169,8 +186,7 @@ void DVRControl::saveColorConfig()
     QDomElement root = dom.createElement( "AbsorptionColorTable" );
     dom.appendChild( root );
 
-    //root.setAttribute( "ambientLight", dvr.ambientLight() );
-    //root.setAttribute( "diffuseLight", dvr.diffuseLight() );
+    root.setAttribute( "diffuseLight", dvr.diffuseLight() );
 
  // see: http://www.digitalfanatics.org/projects/qt_tutorial/chapter09.html
 
@@ -259,8 +275,9 @@ void DVRControl::loadColorConfig()
 
      // read lighting settings
 
-        sbAmbientLight->setValue( root.attribute( "ambientLight", QString::number( sbAmbientLight->value() ) ).toFloat() );
-        sbDiffuseLight->setValue( root.attribute( "diffuseLight", QString::number( sbDiffuseLight->value() ) ).toFloat() );
+        float diffuseLight = slDiffuseLight->value() / static_cast< float >( slDiffuseLight->maximum() );
+        diffuseLight = root.attribute( "diffuseLight", QString::number( diffuseLight ) ).toFloat();
+        slDiffuseLight->setValue( base::math::round_ui( diffuseLight * slDiffuseLight->maximum() ) );
 
      // read color map
 
@@ -316,6 +333,60 @@ void DVRControl::setTranslucence( double translucence )
         dvr.setTranslucence( translucenceF );
         RenderStageControl::invalidate();
     }
+}
+
+
+void DVRControl::setSampleRate( int samplesPerPixel )
+{
+    samplesPerPixel = base::math::clamp< int >( samplesPerPixel, sbSampleRate->minimum(), sbSampleRate->maximum() );
+    if( samplesPerPixel != dvr.sampleRate() )
+    {
+        dvr.setSampleRate( samplesPerPixel );
+        RenderStageControl::invalidate();
+    }
+}
+
+
+void DVRControl::setDiffuseLight( double diffuseLight )
+{
+    const float diffuseLightF = static_cast< float >( diffuseLight );
+    if( !base::math::isEqual( diffuseLightF, dvr.diffuseLight() ) )
+    {
+        dvr.setDiffuseLight( diffuseLightF );
+        RenderStageControl::invalidate();
+    }
+}
+
+
+void DVRControl::setDiffuseLight( int diffuseLight )
+{
+    if( slDiffuseLight->isEnabled() )
+    {
+        setDiffuseLight( diffuseLight / static_cast< double >( slDiffuseLight->maximum() ) );
+    }
+}
+
+
+void DVRControl::updateLightingState()
+{
+    slDiffuseLight->setEnabled( dvr.isLightingUsed() );
+    if( !dvr.isLightingUsed() )
+    {
+        slDiffuseLight->setValue( 0 );
+    }
+}
+
+
+void DVRControl::showEvent( QShowEvent* event )
+{
+    QWidget::showEvent( event );
+    QTimer::singleShot( 0, this, SLOT( updateLightingState() ) );
+}
+
+
+void DVRControl::onRenderingFinished()
+{
+    updateLightingState();
 }
 
 
