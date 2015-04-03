@@ -38,6 +38,8 @@ namespace qt
 /** \brief
   * Defines `presets::%DVRStage` controlling widget.
   *
+  * \image html DVRControl.png
+  *
   * \section DVRControlExample Example
   *
   *  -# Start with including headers from base %Carna and this packge:

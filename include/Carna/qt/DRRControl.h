@@ -39,6 +39,8 @@ namespace qt
 /** \brief
   * Defines `presets::%DRRStage` controlling widget.
   *
+  * \image html DRRControl.png
+  *
   * \section DRRControlExample Example
   *
   *  -# Start with including headers from base %Carna and this packge:
