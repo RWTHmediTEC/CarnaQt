@@ -113,6 +113,7 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/ColorPicker.h
         include/Carna/qt/ColorMapEditor.h
         include/Carna/qt/DVRControl.h
+        include/Carna/qt/VolumeRenderingControl.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -155,6 +156,7 @@ set( SRC
         src/qt/WideColorPicker.cpp
         src/qt/ColorPicker.cpp
         src/qt/DVRControl.cpp
+        src/qt/VolumeRenderingControl.cpp
     )
 set( FORMS
         ""

@@ -49,10 +49,8 @@ inline base::Color toColor( const QColor& qc )
 // ----------------------------------------------------------------------------------
 
 DVRControl::DVRControl( presets::DVRStage& dvr, QWidget* parent )
-    : QWidget( parent )
-    , RenderStageControl( dvr )
+    : VolumeRenderingControl( dvr, parent )
     , dvr( dvr )
-    , sbSampleRate  ( new QSpinBox() )
     , sbTranslucence( new QDoubleSpinBox )
     , slDiffuseLight( new QSlider( Qt::Horizontal ) )
     , colorMapEditor( new ColorMapEditor() )
@@ -64,13 +62,6 @@ DVRControl::DVRControl( presets::DVRStage& dvr, QWidget* parent )
 
     /* Compose 'General' section.
      */
-    sbSampleRate->setMinimum( 10 );
-    sbSampleRate->setMaximum( 10000 );
-    sbSampleRate->setSingleStep( 10 );
-    sbSampleRate->setValue( dvr.sampleRate() );
-    
-    connect( sbSampleRate, SIGNAL( valueChanged( int ) ), this, SLOT( setSampleRate( int ) ) );
-    
     sbTranslucence->setMinimum( 0 );
     sbTranslucence->setMaximum( std::numeric_limits< float >::max() );
     sbTranslucence->setSingleStep( 1 );
@@ -331,17 +322,6 @@ void DVRControl::setTranslucence( double translucence )
     if( !base::math::isEqual( translucenceF, dvr.translucence() ) )
     {
         dvr.setTranslucence( translucenceF );
-        RenderStageControl::invalidate();
-    }
-}
-
-
-void DVRControl::setSampleRate( int samplesPerPixel )
-{
-    samplesPerPixel = base::math::clamp< int >( samplesPerPixel, sbSampleRate->minimum(), sbSampleRate->maximum() );
-    if( samplesPerPixel != dvr.sampleRate() )
-    {
-        dvr.setSampleRate( samplesPerPixel );
         RenderStageControl::invalidate();
     }
 }

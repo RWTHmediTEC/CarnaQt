@@ -17,11 +17,8 @@
   */
 
 #include <Carna/qt/CarnaQt.h>
-#include <Carna/qt/RenderStageControl.h>
-#include <Carna/base/noncopyable.h>
-#include <QWidget>
+#include <Carna/qt/VolumeRenderingControl.h>
 
-class QSpinBox;
 class QDoubleSpinBox;
 class QSlider;
 class QShowEvent;
@@ -38,11 +35,10 @@ namespace qt
 // DVRControl
 // ----------------------------------------------------------------------------------
 
-class CARNAQT_LIB DVRControl : public QWidget, public RenderStageControl
+class CARNAQT_LIB DVRControl : public VolumeRenderingControl
 {
 
     Q_OBJECT
-    NON_COPYABLE
 
 public:
 
@@ -60,8 +56,6 @@ public:
     
 public slots:
 
-    void setSampleRate( int samplesPerPixel );
-
     void setTranslucence( double translucence );
     
     void setDiffuseLight( double diffuseLight );
@@ -75,8 +69,6 @@ protected:
     virtual void onRenderingFinished();
 
 private:
-
-    QSpinBox* const sbSampleRate;
 
     QDoubleSpinBox* const sbTranslucence;
 

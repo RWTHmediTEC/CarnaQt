@@ -66,6 +66,7 @@ namespace Carna
         class MultiSpanSliderTracker;
         class NullIntSpanPainter;
         class RenderStageControl;
+        class VolumeRenderingControl;
         class WideColorPicker;
     }
 
