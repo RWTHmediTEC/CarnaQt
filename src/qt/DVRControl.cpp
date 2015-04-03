@@ -11,6 +11,7 @@
 
 #include <Carna/qt/DVRControl.h>
 #include <Carna/qt/ExpandableGroupBox.h>
+#include <Carna/qt/QColorConversion.h>
 #include <Carna/presets/DVRStage.h>
 #include <Carna/base/CarnaException.h>
 #include <QSpinBox>
@@ -30,17 +31,6 @@ namespace Carna
 
 namespace qt
 {
-
-
-
-// ----------------------------------------------------------------------------------
-// toColor
-// ----------------------------------------------------------------------------------
-
-inline base::Color toColor( const QColor& qc )
-{
-    return base::Color( qc.red(), qc.green(), qc.blue(), qc.alpha() );
-}
 
 
 

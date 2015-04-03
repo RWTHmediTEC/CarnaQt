@@ -114,6 +114,7 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/ColorMapEditor.h
         include/Carna/qt/DVRControl.h
         include/Carna/qt/VolumeRenderingControl.h
+        include/Carna/qt/MIPLayerEditor.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -131,6 +132,7 @@ set( PUBLIC_HEADERS
         include/Carna/qt/ColorMapSpanPainter.h
         include/Carna/qt/ColorMapTracker.h
         include/Carna/qt/ColorPickerPainter.h
+        include/Carna/qt/QColorConversion.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
@@ -157,6 +159,7 @@ set( SRC
         src/qt/ColorPicker.cpp
         src/qt/DVRControl.cpp
         src/qt/VolumeRenderingControl.cpp
+        src/qt/MIPLayerEditor.cpp
     )
 set( FORMS
         ""

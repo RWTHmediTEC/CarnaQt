@@ -13,6 +13,7 @@
 #include <Carna/qt/ColorMapTracker.h>
 #include <Carna/qt/ColorMapSpanPainter.h>
 #include <Carna/qt/ColorMapTrackerEditor.h>
+#include <Carna/qt/QColorConversion.h>
 #include <QPainter>
 
 namespace Carna
@@ -20,17 +21,6 @@ namespace Carna
 
 namespace qt
 {
-
-
-
-// ----------------------------------------------------------------------------------
-// toQColor
-// ----------------------------------------------------------------------------------
-
-inline QColor toQColor( const base::Color& color )
-{
-    return QColor( color.r, color.g, color.b, color.a );
-}
 
 
 
