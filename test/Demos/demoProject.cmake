@@ -12,12 +12,6 @@ set( CMAKE_DEBUG_POSTFIX d )
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin )
 set( LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin )
 
-
-
-############################################
-# Project name
-############################################
-project( CarnaQtDemo )
 set( TARGET_NAME	${PROJECT_NAME}-${FULL_VERSION} )
 ############################################
 
@@ -61,19 +55,20 @@ link_directories( ${CMAKE_BINARY_DIR}/bin )
 ############################################
 
 include_directories(${CMAKE_PROJECT_DIR}src)
-include_directories(${CMAKE_PROJECT_DIR}../Tools)
+include_directories(${CMAKE_PROJECT_DIR}../../Tools)
 set( HEADERS
-		../Tools/HUGZSceneFactory.h
-		../Tools/HUIO.h
-		../Tools/TestScene.h
+        ${HEADERS}
+		../../Tools/HUGZSceneFactory.h
+		../../Tools/HUIO.h
+		../../Tools/TestScene.h
 	)
 set( QOBJECT_HEADERS
 		""
 	)
 set( SRC
-		src/main.cpp
-		../Tools/TestScene.cpp
-		../Tools/HUGZSceneFactory.cpp
+        ${SRC}
+		../../Tools/TestScene.cpp
+		../../Tools/HUGZSceneFactory.cpp
 	)
 set( FORMS
 		""
@@ -98,7 +93,7 @@ if(Boost_FOUND)
 			-DEXPECTED_MAJOR_VERSION=${MAJOR_VERSION}
 			-DEXPECTED_MINOR_VERSION=${MINOR_VERSION}
 			-DEXPECTED_RELEASE_VERSION=${PATCH_VERSION}
-			-DSOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/.."
+			-DSOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../.."
 		)
 	remove_definitions( -DCARNAQT_EXPORT )
 	
@@ -111,7 +106,7 @@ if(Boost_FOUND)
 			${RESOURCES_RCC}
 		)
 
-	include( "../../misc/compiler_specific.cmake" )
+	include( "../../../misc/compiler_specific.cmake" )
 
 	target_link_libraries( ${TARGET_NAME}
 			${OPENGL_LIBRARIES}

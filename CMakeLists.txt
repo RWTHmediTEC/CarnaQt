@@ -20,7 +20,7 @@ string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS)
 
 option(BUILD_DOC    "Build and install the API documentation" OFF)
 option(BUILD_TEST   "Build the unit tests" OFF)
-option(BUILD_DEMO	"Build interactive demo" OFF)
+option(BUILD_DEMO	"Build interactive demos" OFF)
 
 ############################################
 # Macro that sets variable to default value
@@ -290,11 +290,11 @@ install(    FILES ${CMAKE_CURRENT_BINARY_DIR}/misc/Find${PROJECT_NAME}.cmake
 add_meditec_install_routines()
 
 ############################################
-# Build interactive demo
+# Build interactive demos
 ############################################
 
 if( BUILD_DEMO )
-	add_subdirectory( test/Demo )
+	add_subdirectory( test/Demos )
 endif()
 
 ############################################
@@ -302,7 +302,7 @@ endif()
 ############################################
 
 if( BUILD_TEST )
-    add_subdirectory(test)
+    add_subdirectory( test )
 endif()
 
 ############################################
@@ -310,7 +310,7 @@ endif()
 ############################################
 
 if( BUILD_DOC )
-    add_subdirectory(src/doc)
+    add_subdirectory( src/doc )
 endif()
 
 ############################################

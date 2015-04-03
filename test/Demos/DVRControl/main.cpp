@@ -46,7 +46,6 @@ int main( int argc, char** argv )
      * The tag identifies the display within log messages.
      */
     qt::Display display( frFactory );
-    display.setLogTag( "DVR" );
     
     /* The 'TestScene' object simply holds the root node of the scene and provides
      * access to an arbitrary 'base::Camera' object through its 'cam' method.
