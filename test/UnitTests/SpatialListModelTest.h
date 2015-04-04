@@ -61,6 +61,8 @@ private slots:
     void test_typicalUpdated();
     
     void test_typicalCleared();
+    
+    void test_prematureRootDelete();
 
  // ----------------------------------------------------------------------------------
     

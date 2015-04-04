@@ -148,6 +148,22 @@ void SpatialListModelTest::test_typicalCleared()
 }
 
 
+void SpatialListModelTest::test_prematureRootDelete()
+{
+    test_typical();
+    root.reset();
+    
+    /* Verify the list model.
+     */
+    QApplication::processEvents();
+    QCOMPARE( listModel->spatials(), static_cast< std::size_t >( 0 ) );
+    
+    /* Verify the destructor still works.
+     */
+    listModel.reset();
+}
+
+
 void SpatialListModelTest::verifyListModel( const std::set< std::string >& expectedTags )
 {
     /* Verify number of objects found.
