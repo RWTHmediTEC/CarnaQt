@@ -30,6 +30,7 @@ namespace qt
 
 SpatialListModel::Details::Details( SpatialListModel& self )
     : self( self )
+    , spatialMapper( nullptr )
     , root( nullptr )
     , invalidated( false )
 {
@@ -82,6 +83,8 @@ void SpatialListModel::Details::invalidate()
 
 void SpatialListModel::Details::update()
 {
+    invalidated = false;
+    const std::size_t previousCount = spatials.size();
     spatials.clear();
     if( root != nullptr )
     {
@@ -94,13 +97,18 @@ void SpatialListModel::Details::update()
         root->visitChildren( true, [&map, &set]( base::Spatial& spatial )
             {
                 base::Spatial* const mapped = map( spatial );
-                set.insert( mapped );
+                if( mapped != nullptr )
+                {
+                    set.insert( mapped );
+                }
             }
         );
         
-        /* Convert to vector.
+        /* Finish the update.
          */
         spatials = std::vector< base::Spatial* >( set.begin(), set.end() );
+        const std::size_t affectedRows = std::max( previousCount, spatials.size() );
+        emit self.dataChanged( self.index( 0, 0 ), self.index( affectedRows - 1, 0 ) );
     }
 }
 
@@ -177,7 +185,11 @@ SpatialListModel::~SpatialListModel()
 
 void SpatialListModel::setSpatialMapper( const SpatialMapper& spatialMapper )
 {
-    pimpl->spatialMapper = &spatialMapper;
+    if( pimpl->spatialMapper != &spatialMapper )
+    {
+        pimpl->spatialMapper = &spatialMapper;
+        pimpl->invalidate();
+    }
 }
 
 

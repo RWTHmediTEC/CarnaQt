@@ -53,11 +53,11 @@ public:
     
     bool invalidated;
     std::vector< base::Spatial* > spatials;
-    void update();
+    void invalidate();
     
 public slots:
 
-    void invalidate();
+    void update();
     
 }; // SpatialListModel :: Details
 

@@ -29,7 +29,7 @@ set( TESTS_RESOURCES
 		""
 	)
 
-#include( UnitTests/configure.cmake )
+include( UnitTests/configure.cmake )
 #include( ModuleTests/configure.cmake )
 #include( IntegrationTests/configure.cmake )
 
