@@ -60,7 +60,6 @@ namespace Carna
         class DVRControl;
         class ExpandableGroupBox;
         class FrameRendererFactory;
-        class GeometryListModel;
         class IntSpanPainter;
         class MIPControl;
         class MIPControlLayer;
@@ -70,6 +69,7 @@ namespace Carna
         class MultiSpanSliderTracker;
         class NullIntSpanPainter;
         class RenderStageControl;
+        class SpatialListModel;
         class VolumeRenderingControl;
         class WideColorPicker;
     }

@@ -9,14 +9,14 @@
  *
  */
 
-#ifndef GEOMETRYLISTMODELDETAILS_H_0874895466
-#define GEOMETRYLISTMODELDETAILS_H_0874895466
+#ifndef SPATIALLISTMODELDETAILS_H_0874895466
+#define SPATIALLISTMODELDETAILS_H_0874895466
 
-/** \file   GeometryListModelDetails.h
-  * \brief  Defines implementation details of \ref Carna::qt::GeometryListModel.
+/** \file   SpatialListModelDetails.h
+  * \brief  Defines implementation details of \ref Carna::qt::SpatialListModel.
   */
 
-#include <Carna/qt/GeometryListModel.h>
+#include <Carna/qt/SpatialListModel.h>
 #include <Carna/base/NodeListener.h>
 #include <QObject>
 
@@ -29,18 +29,20 @@ namespace qt
 
 
 // ----------------------------------------------------------------------------------
-// GeometryListModel :: Details
+// SpatialListModel :: Details
 // ----------------------------------------------------------------------------------
 
-class GeometryListModel::Details : public QObject, public base::NodeListener
+class SpatialListModel::Details : public QObject, public base::NodeListener
 {
 
     Q_OBJECT
 
 public:
 
-    Details( GeometryListModel& self );
-    GeometryListModel& self;
+    Details( SpatialListModel& self );
+    SpatialListModel& self;
+    
+    const SpatialMapper* spatialMapper;
     
     base::Node* root;
     void removeRootListener();
@@ -50,14 +52,14 @@ public:
     virtual void onTreeInvalidated( base::Node& subtree ) override;
     
     bool invalidated;
-    std::vector< base::Geometry* > geometries;
+    std::vector< base::Spatial* > spatials;
     void update();
     
 public slots:
 
     void invalidate();
     
-}; // GeometryListModel :: Details
+}; // SpatialListModel :: Details
 
 
 
@@ -65,4 +67,4 @@ public slots:
 
 }  // namespace Carna
 
-#endif // GEOMETRYLISTMODELDETAILS_H_0874895466
+#endif // SPATIALLISTMODELDETAILS_H_0874895466

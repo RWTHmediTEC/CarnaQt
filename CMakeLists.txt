@@ -135,13 +135,13 @@ set( PUBLIC_HEADERS
         include/Carna/qt/ColorMapTracker.h
         include/Carna/qt/ColorPickerPainter.h
         include/Carna/qt/QColorConversion.h
-        include/Carna/qt/GeometryListModel.h
+        include/Carna/qt/SpatialListModel.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
         src/include/Carna/qt/RenderStageControlDetails.h
         src/include/Carna/qt/MIPControlDetails.h
-        src/include/Carna/qt/GeometryListModelDetails.h
+        src/include/Carna/qt/SpatialListModelDetails.h
 )
 set( PRIVATE_HEADERS
         ${PRIVATE_QOBJECT_HEADERS}
@@ -167,7 +167,7 @@ set( SRC
         src/qt/MIPLayerEditor.cpp
         src/qt/MIPControlLayer.cpp
         src/qt/MIPControl.cpp
-        src/qt/GeometryListModel.cpp
+        src/qt/SpatialListModel.cpp
     )
 set( FORMS
         ""
