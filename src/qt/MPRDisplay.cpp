@@ -35,30 +35,24 @@ namespace qt
 // MPRDisplay :: Details
 // ----------------------------------------------------------------------------------
 
-struct MPRDisplay::Details : public base::NodeListener, public QObject
+struct MPRDisplay::Details : public QObject
 {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     
     MPRDisplay& self;
     Details( MPRDisplay& self, const Parameters& params );
+    MPR* mpr;
 
     Display* const display;
     static Display* createDisplay( const Parameters& params );
-
-    base::Node* root;
-    base::Spatial* volume;
-    void findVolume();
     
     base::math::Matrix4f pivotRotation;
+    base::math::Matrix4f pivotBaseTransform;
     base::Node pivot;
     base::Geometry* const plane;
     base::Camera* const cam;
     const std::unique_ptr< presets::OrthogonalControl > projControl;
     void updatePivot();
-    
-    virtual void onNodeDelete( const base::Node& node ) override;
-    virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
-    virtual void onTreeInvalidated( base::Node& subtree ) override;
     
     virtual bool eventFilter( QObject* obj, QEvent* ev ) override;
 };
@@ -66,9 +60,8 @@ struct MPRDisplay::Details : public base::NodeListener, public QObject
 
 MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     : self( self )
+    , mpr( nullptr )
     , display( createDisplay( params ) )
-    , root( nullptr )
-    , volume( nullptr )
     , plane( new base::Geometry( params.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
@@ -78,7 +71,6 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
      */
     pivot.attachChild( plane );
     pivot.attachChild( cam );
-    updatePivot();
     
     /* Configure the camera.
      */
@@ -130,104 +122,9 @@ Display* MPRDisplay::Details::createDisplay( const Parameters& params )
 }
 
 
-void MPRDisplay::Details::findVolume()
-{
-    /* Our goal is to find all volume nodes within the scene. We must report an error
-     * if there is more than one, because this is not supported for the moment. The
-     * ad-hoc solution is to use distinct 'MPRDisplay' instances for each volume.
-     * First we look for all 'Geometry' leafs that have proper 'geometryType'.
-     */
-    const unsigned int volumetric = self.geometryTypeVolume;
-    std::vector< base::Spatial* > seeds;
-    root->visitChildren( true, [volumetric, &seeds]( base::Spatial& spatial )
-        {
-            base::Geometry* const geometry = dynamic_cast< base::Geometry* >( &spatial );
-            if( geometry != nullptr && geometry->geometryType == volumetric )
-            {
-                seeds.push_back( geometry );
-            }
-        }
-    );
-    
-    /* We are done here if no 'seeds' have been found.
-     */
-    if( seeds.empty() )
-    {
-        volume = nullptr;
-        return;
-    }
-    
-    /* Merge the 'seeds' to their parent nodes successively.
-     */
-    while( seeds.size() > 1 )
-    {
-        /* Merge the 'seeds' to their parents. Verify that all remained seeds are not
-         * movable. If this is not true, than we have encountered a scene with more
-         * than one volume.
-         */
-        std::set< base::Spatial* > parents;
-        for( auto seedItr = seeds.begin(); seedItr != seeds.end(); ++seedItr )
-        {
-            base::Spatial& spatial = **seedItr;
-            CARNA_ASSERT_EX
-                ( !spatial.isMovable() || !spatial.hasParent()
-                , "MPRDemo does not support scenes with more than one volume data nodes!" );
-                
-            parents.insert( &spatial.parent() );
-        }
-        
-        /* Use the 'parents' found as the new 'seeds'.
-         */
-        seeds = std::vector< base::Spatial* >( parents.begin(), parents.end() );
-    }
-    
-    /* We have found the one volume node we have been looking for.
-     */
-    volume = seeds[ 0 ];
-    updatePivot();
-}
-
-
-void MPRDisplay::Details::onNodeDelete( const base::Node& node )
-{
-    CARNA_ASSERT( &node == root );
-    root = nullptr;
-    pivot.detachFromParent();
-    self.invalidate();
-}
-
-
-void MPRDisplay::Details::onTreeChange( base::Node& node, bool inThisSubtree )
-{
-    if( inThisSubtree )
-    {
-        findVolume();
-    }
-}
-
-
-void MPRDisplay::Details::onTreeInvalidated( base::Node& subtree )
-{
-    updatePivot();
-}
-
-
 void MPRDisplay::Details::updatePivot()
 {
-    if( volume != nullptr )
-    {
-        CARNA_ASSERT( volume->hasParent() );
-        
-        /* Update the 'pivot' transform s.t. it matches the parent of the volume,
-         * i.e. rotation and translation become the same, but the volume is still
-         * scaled w.r.t. to the pivot.
-         */
-        pivot.localTransform = pivotRotation;
-        for( base::Spatial* current = &volume->parent(); current != root; current = &current->parent() )
-        {
-            pivot.localTransform = current->localTransform * pivot.localTransform;
-        }
-    }
+    pivot.localTransform = pivotBaseTransform * pivotRotation;
 }
 
 
@@ -236,9 +133,9 @@ void MPRDisplay::Details::updatePivot()
 // MPRDisplay :: Parameters
 // ----------------------------------------------------------------------------------
 
-MPRDisplay::Parameters::Parameters()
-    : geometryTypeVolume( DEFAULT_GEOMETRY_TYPE_VOLUME )
-    , geometryTypePlanes( DEFAULT_GEOMETRY_TYPE_PLANES )
+MPRDisplay::Parameters::Parameters( unsigned int geometryTypeVolume, unsigned int geometryTypePlanes )
+    : geometryTypeVolume( geometryTypeVolume )
+    , geometryTypePlanes( geometryTypePlanes )
     , unzoomedVisibleSideLength( DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH )
     , visibleDistance( DEFAULT_VISIBLE_DISTANCE )
 {
@@ -257,8 +154,7 @@ const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
 MPRDisplay::MPRDisplay( const Parameters& params, QWidget* parent )
     : QWidget( parent )
     , pimpl( new Details( *this, params ) )
-    , geometryTypeVolume( params.geometryTypeVolume )
-    , geometryTypePlanes( params.geometryTypePlanes )
+    , parameters( params )
 {
     setLayout( new QVBoxLayout() );
     this->layout()->addWidget( pimpl->display );
@@ -275,7 +171,7 @@ MPRDisplay::MPRDisplay( const Parameters& params, QWidget* parent )
 
 MPRDisplay::~MPRDisplay()
 {
-    pimpl->pivot.detachFromParent();
+    removeFromMPR();
     pimpl->display->removeEventFilter( pimpl.get() );
 }
 
@@ -283,24 +179,6 @@ MPRDisplay::~MPRDisplay()
 QSize MPRDisplay::minimumSizeHint() const
 {
     return QSize( 400, 400 );
-}
-
-
-void MPRDisplay::setRoot( base::Node& root )
-{
-    if( pimpl->root != &root )
-    {
-        if( pimpl->root != nullptr )
-        {
-            pimpl->root->removeNodeListener( *pimpl );
-            pimpl->pivot.detachFromParent();
-        }
-        pimpl->root = &root;
-        pimpl->root->addNodeListener( *pimpl );
-        pimpl->root->attachChild( &pimpl->pivot );
-        pimpl->findVolume();
-        invalidate();
-    }
 }
 
 
@@ -318,8 +196,51 @@ void MPRDisplay::invalidate()
 }
 
 
+void MPRDisplay::attachPivot( base::Node& to )
+{
+    to.attachChild( &pimpl->pivot );
+    invalidate();
+}
+
+
+void MPRDisplay::detachPivot()
+{
+    pimpl->pivot.detachFromParent();
+    invalidate();
+}
+
+
+void MPRDisplay::updatePivot( const base::math::Matrix4f& baseTransform )
+{
+    pimpl->pivotBaseTransform = baseTransform;
+    pimpl->updatePivot();
+    invalidate();
+}
+
+
+void MPRDisplay::setMPR( MPR& mpr )
+{
+    CARNA_ASSERT( parameters.geometryTypeVolume == mpr.geometryTypeVolume );
+    if( pimpl->mpr != &mpr )
+    {
+        removeFromMPR();
+        pimpl->mpr = &mpr;
+        mpr.addDisplay( *this );
+    }
+}
+
+
+void MPRDisplay::removeFromMPR()
+{
+    if( pimpl->mpr != nullptr )
+    {
+        pimpl->mpr->removeDisplay( *this );
+        pimpl->mpr = nullptr;
+    }
+}
+
+
 
 }  // namespace Carna :: qt
 
 }  // namespace Carna
-

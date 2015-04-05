@@ -13,6 +13,7 @@
 #define MPRDISPLAY_H_0874895466
 
 #include <Carna/qt/CarnaQt.h>
+#include <Carna/qt/MPR.h>
 #include <Carna/base/math.h>
 #include <QWidget>
 #include <memory>
@@ -52,16 +53,13 @@ class CARNAQT_LIB MPRDisplay : public QWidget
     std::unique_ptr< Details > pimpl;
 
 public:
-
-    const static unsigned int DEFAULT_GEOMETRY_TYPE_VOLUME = 0;
-    const static unsigned int DEFAULT_GEOMETRY_TYPE_PLANES = 1;
     
     const static float DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH;
     const static float DEFAULT_VISIBLE_DISTANCE;
     
     struct Parameters
     {
-        Parameters();
+        Parameters( unsigned int geometryTypeVolume, unsigned int geometryTypePlanes );
         
         unsigned int geometryTypeVolume;
         unsigned int geometryTypePlanes;
@@ -71,23 +69,30 @@ public:
         std::vector< base::RenderStage* > extraRenderStages;
     };
 
-    explicit MPRDisplay( const Parameters& params = Parameters(), QWidget* parent = nullptr );
+    explicit MPRDisplay( const Parameters& params, QWidget* parent = nullptr );
         
     virtual ~MPRDisplay();
 
-    const unsigned int geometryTypeVolume;
-    const unsigned int geometryTypePlanes;
+    const Parameters parameters;
     
     /** \brief
       * Tells the recommended minimum size of this widget.
       */
     virtual QSize minimumSizeHint() const override;
     
-    void setRoot( base::Node& root );
-    
     void setRotation( const base::math::Matrix3f& rotation );
     
     void invalidate();
+    
+    void attachPivot( base::Node& to );
+    
+    void detachPivot();
+    
+    void updatePivot( const base::math::Matrix4f& baseTransform );
+    
+    void setMPR( MPR& mpr );
+    
+    void removeFromMPR();
 
 }; // MPRDisplay
 

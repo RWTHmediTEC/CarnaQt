@@ -64,6 +64,7 @@ namespace Carna
         class MIPControl;
         class MIPControlLayer;
         class MIPLayerEditor;
+        class MPR;
         class MPRDisplay;
         class MultiSpanSlider;
         class MultiSpanSliderModelViewMapping;
