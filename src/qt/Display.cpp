@@ -376,6 +376,7 @@ void Display::paintGL()
     }
     else
     {
+        pimpl->glc->makeCurrent();
         if( pimpl->isProjectionUpdateRequested )
         {
             pimpl->updateProjection( *this );
