@@ -55,12 +55,23 @@ public:
 
     const static unsigned int DEFAULT_GEOMETRY_TYPE_VOLUME = 0;
     const static unsigned int DEFAULT_GEOMETRY_TYPE_PLANES = 1;
+    
+    const static float DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH;
+    const static float DEFAULT_VISIBLE_DISTANCE;
+    
+    struct Parameters
+    {
+        Parameters();
+        
+        unsigned int geometryTypeVolume;
+        unsigned int geometryTypePlanes;
+        float unzoomedVisibleSideLength;
+        float visibleDistance;
+        
+        std::vector< base::RenderStage* > extraRenderStages;
+    };
 
-    explicit MPRDisplay
-        ( unsigned int geometryTypeVolume = DEFAULT_GEOMETRY_TYPE_VOLUME
-        , unsigned int geometryTypePlanes = DEFAULT_GEOMETRY_TYPE_PLANES
-        , const std::vector< base::RenderStage* >& extraRenderStages = std::vector< base::RenderStage* >()
-        , QWidget* parent = nullptr );
+    explicit MPRDisplay( const Parameters& params = Parameters(), QWidget* parent = nullptr );
         
     virtual ~MPRDisplay();
 

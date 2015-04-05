@@ -13,7 +13,9 @@
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
 #include <Carna/presets/CuttingPlanesStage.h>
+#include <Carna/presets/OrthogonalControl.h>
 #include <Carna/helpers/FrameRendererHelper.h>
+#include <Carna/base/Aggregation.h>
 #include <Carna/base/Node.h>
 #include <Carna/base/NodeListener.h>
 #include <Carna/base/Geometry.h>
@@ -29,25 +31,56 @@ namespace qt
 
 
 // ----------------------------------------------------------------------------------
+// NullCameraControl
+// ----------------------------------------------------------------------------------
+
+class NullCameraControl : public base::CameraControl
+{
+
+public:
+
+    virtual void setCamera( base::Spatial& camera ) override;
+    virtual void rotateHorizontally( float radians ) override;
+    virtual void rotateVertically( float radians ) override;
+    virtual void moveAxially( float distance ) override;
+
+}; // NullCameraControl
+
+
+void NullCameraControl::setCamera( base::Spatial& camera )
+{
+}
+
+
+void NullCameraControl::rotateHorizontally( float radians )
+{
+}
+
+
+void NullCameraControl::rotateVertically( float radians )
+{
+}
+
+
+void NullCameraControl::moveAxially( float distance )
+{
+}
+
+
+
+// ----------------------------------------------------------------------------------
 // MPRDisplay :: Details
 // ----------------------------------------------------------------------------------
 
-struct MPRDisplay::Details : public base::NodeListener
+struct MPRDisplay::Details : public base::NodeListener, public QObject
 {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     
     MPRDisplay& self;
-    Details
-        ( MPRDisplay& self
-        , unsigned int geometryTypeVolume
-        , unsigned int geometryTypePlanes
-        , const std::vector< base::RenderStage* >& extraRenderStages );
+    Details( MPRDisplay& self, const Parameters& params );
 
     Display* const display;
-    static Display* createDisplay
-        ( unsigned int geometryTypeVolume
-        , unsigned int geometryTypePlanes
-        , const std::vector< base::RenderStage* >& extraRenderStages );
+    static Display* createDisplay( const Parameters& params );
 
     base::Node* root;
     base::Spatial* volume;
@@ -57,55 +90,74 @@ struct MPRDisplay::Details : public base::NodeListener
     base::Node pivot;
     base::Geometry* const plane;
     base::Camera* const cam;
+    const std::unique_ptr< presets::OrthogonalControl > projControl;
     void updatePivot();
     
     virtual void onNodeDelete( const base::Node& node ) override;
     virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
     virtual void onTreeInvalidated( base::Node& subtree ) override;
+    
+    virtual bool eventFilter( QObject* obj, QEvent* ev ) override;
 };
 
 
-MPRDisplay::Details::Details
-        ( MPRDisplay& self
-        , unsigned int geometryTypeVolume
-        , unsigned int geometryTypePlanes
-        , const std::vector< base::RenderStage* >& extraRenderStages )
+MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     : self( self )
-    , display( createDisplay( geometryTypeVolume, geometryTypePlanes, extraRenderStages ) )
+    , display( createDisplay( params ) )
     , root( nullptr )
     , volume( nullptr )
-    , plane( new base::Geometry( geometryTypePlanes ) )
+    , plane( new base::Geometry( params.geometryTypePlanes ) )
     , cam( new base::Camera() )
+    , projControl( new presets::OrthogonalControl( new NullCameraControl() ) )
     , pivotRotation( base::math::identity4f() )
 {
     /* Configure the 'pivot' node.
      */
     pivot.attachChild( plane );
     pivot.attachChild( cam );
-    cam->setProjection( base::math::frustum4f( base::math::deg2rad( 45 ), 1, 1, 1000 ) );
-    cam->localTransform = base::math::translation4f( 0, 0, 500 );
     updatePivot();
+    
+    /* Configure the camera.
+     */
+    projControl->setZoomStrength( 1e-2f );
+    cam->localTransform = base::math::translation4f( 0, 0, params.visibleDistance / 2 );
+    projControl->setMinimumVisibleDistance( 0 );
+    projControl->setMaximumVisibleDistance( params.visibleDistance );
     
     /* Configure the display.
      */
     display->setCamera( *cam );
+    display->setCameraControl( new base::Aggregation< base::CameraControl >( *projControl ) );
+    display->setProjectionControl( new base::Aggregation< base::ProjectionControl >( *projControl ) );
+    display->installEventFilter( this );
 }
 
 
-Display* MPRDisplay::Details::createDisplay
-    ( unsigned int geometryTypeVolume
-    , unsigned int geometryTypePlanes
-    , const std::vector< base::RenderStage* >& extraRenderStages )
+bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
+{
+    if( ev->type() == QEvent::Wheel )
+    {
+        display->updateProjection();
+    }
+    
+    /* Process the event in default way.
+     */
+    return QObject::eventFilter( obj, ev );
+}
+
+
+Display* MPRDisplay::Details::createDisplay( const Parameters& params )
 {
     FrameRendererFactory* const frFactory = new FrameRendererFactory();
     helpers::FrameRendererHelper< > frHelper( *frFactory );
-    frHelper << new presets::CuttingPlanesStage( geometryTypeVolume, geometryTypePlanes );
-    for( auto rsItr = extraRenderStages.begin(); rsItr != extraRenderStages.end(); ++rsItr )
+    frHelper << new presets::CuttingPlanesStage( params.geometryTypeVolume, params.geometryTypePlanes );
+    for( auto rsItr = params.extraRenderStages.begin(); rsItr != params.extraRenderStages.end(); ++rsItr )
     {
         frHelper << *rsItr;
     }
     frHelper.commit();
-    return new Display( frFactory );
+    Display* const display = new Display( frFactory );
+    return display;
 }
 
 
@@ -212,18 +264,32 @@ void MPRDisplay::Details::updatePivot()
 
 
 // ----------------------------------------------------------------------------------
+// MPRDisplay :: Parameters
+// ----------------------------------------------------------------------------------
+
+MPRDisplay::Parameters::Parameters()
+    : geometryTypeVolume( DEFAULT_GEOMETRY_TYPE_VOLUME )
+    , geometryTypePlanes( DEFAULT_GEOMETRY_TYPE_PLANES )
+    , unzoomedVisibleSideLength( DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH )
+    , visibleDistance( DEFAULT_VISIBLE_DISTANCE )
+{
+}
+
+
+
+// ----------------------------------------------------------------------------------
 // MPRDisplay
 // ----------------------------------------------------------------------------------
 
-MPRDisplay::MPRDisplay
-        ( unsigned int geometryTypeVolume
-        , unsigned int geometryTypePlanes
-        , const std::vector< base::RenderStage* >& extraRenderStages
-        , QWidget* parent )
+const float MPRDisplay::DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH = 500;
+const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
+
+
+MPRDisplay::MPRDisplay( const Parameters& params, QWidget* parent )
     : QWidget( parent )
-    , pimpl( new Details( *this, geometryTypeVolume, geometryTypePlanes, extraRenderStages ) )
-    , geometryTypeVolume( geometryTypeVolume )
-    , geometryTypePlanes( geometryTypePlanes )
+    , pimpl( new Details( *this, params ) )
+    , geometryTypeVolume( params.geometryTypeVolume )
+    , geometryTypePlanes( params.geometryTypePlanes )
 {
     setLayout( new QVBoxLayout() );
     this->layout()->addWidget( pimpl->display );
@@ -241,6 +307,7 @@ MPRDisplay::MPRDisplay
 MPRDisplay::~MPRDisplay()
 {
     pimpl->pivot.detachFromParent();
+    pimpl->display->removeEventFilter( pimpl.get() );
 }
 
 

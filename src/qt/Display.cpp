@@ -58,7 +58,6 @@ struct Display::Details : public base::NodeListener
 
     std::unique_ptr< GLContext > glc;
     std::unique_ptr< base::FrameRenderer > renderer;
-    bool glInitializationFinished;
     
     ViewportMode vpMode;
     
@@ -66,6 +65,7 @@ struct Display::Details : public base::NodeListener
     base::Node* root;
     std::unique_ptr< base::Association< base::CameraControl > > camControl;
     std::unique_ptr< base::Association< base::ProjectionControl > > projControl;
+    bool isProjectionUpdateRequested;
     void validateRoot();
     void invalidateRoot();
 
@@ -94,10 +94,13 @@ Display::Details::Details( Display& self, FrameRendererFactory* rendererFactory 
     : self( self )
     , invalidated( false )
     , rendererFactory( rendererFactory )
-    , glInitializationFinished( false )
     , vpMode( fitAuto )
     , cam( nullptr )
     , root( nullptr )
+    , camControl( nullptr )
+    , projControl( nullptr )
+    , isProjectionUpdateRequested( false )
+    , mouseInteraction( false )
     , radiansPerPixel( DEFAULT_ROTATION_SPEED )
     , axialMovementSpeed( DEFAULT_AXIAL_MOVEMENT_SPEED )
     , mccs( nullptr )
@@ -142,15 +145,11 @@ void Display::Details::updateProjection( Display& display )
         
         /* Fetch new projection matrix.
          */
-        base::math::Matrix4f projection;
-        display.projectionControl().updateProjection( projection );
-        display.camera().setProjection( projection );
-        
-        /* Redraw if required.
-         */
-        if( glInitializationFinished )
+        if( display.projectionControl().isUpdateAvailable() )
         {
-            display.updateGL();
+            base::math::Matrix4f projection;
+            display.projectionControl().updateProjection( projection );
+            display.camera().setProjection( projection );
         }
     }
 }
@@ -341,7 +340,6 @@ void Display::resizeGL( int w, int h )
         pimpl->rendererFactory.reset();
         pimpl->mccs = pimpl->renderer->findStage< presets::MeshColorCodingStage >().get();
         pimpl->updateProjection( *this );
-        pimpl->glInitializationFinished = true;
         Details::displaysByRenderer[ pimpl->renderer.get() ] = this;
         
         if( pimpl->mccs != nullptr )
@@ -375,6 +373,11 @@ void Display::paintGL()
     }
     else
     {
+        if( pimpl->isProjectionUpdateRequested )
+        {
+            pimpl->updateProjection( *this );
+            pimpl->isProjectionUpdateRequested = false;
+        }
         pimpl->invalidated = false;
         pimpl->validateRoot();
         pimpl->renderer->render( *pimpl->cam, *pimpl->root );
@@ -513,6 +516,7 @@ void Display::setProjectionControl( base::Association< base::ProjectionControl >
 {
     pimpl->projControl.reset( projControl );
     pimpl->updateProjection( *this );
+    invalidate();
 }
 
 
@@ -589,6 +593,13 @@ void Display::invalidate()
         QTimer::singleShot( 0, this, SLOT( updateGL() ) );
         pimpl->invalidated = true;
     }
+}
+
+
+void Display::updateProjection()
+{
+    pimpl->isProjectionUpdateRequested = true;
+    invalidate();
 }
 
 

@@ -202,6 +202,14 @@ public:
     const base::ProjectionControl& projectionControl() const;
     
     /** \brief
+      * Queries the \ref projectionControl for an update the next time a frame is
+      * rendered. Does nothing if no `base::ProjectionControl` is supplied.
+      *
+      * Also \ref invalidate "invalidates" this `%Display`.
+      */
+    void updateProjection();
+    
+    /** \brief
       * Tells whether the frame renderer already has been loaded.
       *
       * The frame renderer will be loaded when this `%Display` widget instance
