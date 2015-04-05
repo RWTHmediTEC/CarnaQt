@@ -23,6 +23,11 @@ int main( int argc, char** argv )
      */
     qt::MPRDisplay display;
     
+    /* The 'TestScene' object simply holds the root node of the scene.
+     */
+    testing::TestScene scene( testing::TestScene::NORMAL_MAP_NOT_REQUIRED );
+    display.setRoot( scene.root() );
+    
     /* Here we actually run the application.
      */
     display.show();
