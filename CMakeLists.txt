@@ -136,6 +136,7 @@ set( PUBLIC_HEADERS
         include/Carna/qt/ColorPickerPainter.h
         include/Carna/qt/QColorConversion.h
         include/Carna/qt/SpatialListModel.h
+        include/Carna/qt/MPRDisplay.h
     )
 include_directories(${CMAKE_PROJECT_DIR}src/include)
 set( PRIVATE_QOBJECT_HEADERS
@@ -168,6 +169,7 @@ set( SRC
         src/qt/MIPControlLayer.cpp
         src/qt/MIPControl.cpp
         src/qt/SpatialListModel.cpp
+        src/qt/MPRDisplay.cpp
     )
 set( FORMS
         ""
