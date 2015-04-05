@@ -73,6 +73,7 @@ struct Display::Details : public base::NodeListener
     QPoint mousepos;
     float radiansPerPixel;
     float axialMovementSpeed;
+    float lateralMovementSpeed;
     
     presets::MeshColorCodingStage* mccs;
     std::unique_ptr< base::SpatialMovement > spatialMovement;
@@ -103,6 +104,7 @@ Display::Details::Details( Display& self, FrameRendererFactory* rendererFactory 
     , mouseInteraction( false )
     , radiansPerPixel( DEFAULT_ROTATION_SPEED )
     , axialMovementSpeed( DEFAULT_AXIAL_MOVEMENT_SPEED )
+    , lateralMovementSpeed( DEFAULT_LATERAL_MOVEMENT_SPEED )
     , mccs( nullptr )
 {
     CARNA_ASSERT( rendererFactory != nullptr );
@@ -245,8 +247,9 @@ void Display::Details::onTreeInvalidated( base::Node& subtree )
 // Display
 // ----------------------------------------------------------------------------------
 
-const float Display::DEFAULT_ROTATION_SPEED       = -3e-3f;
-const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED = -1e-1f;
+const float Display::DEFAULT_ROTATION_SPEED         = -3e-3f;
+const float Display::DEFAULT_AXIAL_MOVEMENT_SPEED   = -1e-1f;
+const float Display::DEFAULT_LATERAL_MOVEMENT_SPEED = -5e-1f;
 
 
 Display::Display( FrameRendererFactory* rendererFactory, QWidget* parent )
@@ -397,34 +400,43 @@ void Display::setAxialMovementSpeed( float axialMovementSpeed )
 }
 
 
+void Display::setLateralMovementSpeed( float lateralMovementSpeed )
+{
+    pimpl->lateralMovementSpeed = lateralMovementSpeed;
+}
+
+
 void Display::mousePressEvent( QMouseEvent* ev )
 {
-    /* First, try to pick object at clicked location.
-     */
-    const base::Geometry* picked = nullptr;
-    if( pimpl->mccs != nullptr )
+    if( ev->buttons() & Qt::LeftButton )
     {
-        picked = pimpl->mccs->pick( ev->x(), ev->y() ).get();
-    }
-    
-    /* Initiate camera rotation if nothing was picked.
-     */
-    if( picked == nullptr )
-    {
-        pimpl->mousepos = ev->pos();
-        pimpl->mouseInteraction = true;
-        ev->accept();
-    }
-    else
-    if( pimpl->renderer != nullptr && hasCamera() && hasCameraControl() )
-    {
-        /* Picking was successful! Initiate spatial movement.
+        /* First, try to pick object at clicked location.
          */
-        base::Geometry& pickedGeometry = const_cast< base::Geometry& >( *picked );
-        pimpl->spatialMovement.reset
-            ( new base::SpatialMovement( pickedGeometry, ev->x(), ev->y(), pimpl->renderer->viewport(), *pimpl->cam ) );
-        pimpl->mouseInteraction = true;
-        ev->accept();
+        const base::Geometry* picked = nullptr;
+        if( pimpl->mccs != nullptr )
+        {
+            picked = pimpl->mccs->pick( ev->x(), ev->y() ).get();
+        }
+        
+        /* Initiate camera interaction if nothing was picked.
+         */
+        if( picked == nullptr )
+        {
+            pimpl->mousepos = ev->pos();
+            pimpl->mouseInteraction = true;
+            ev->accept();
+        }
+        else
+        if( pimpl->renderer != nullptr && hasCamera() && hasCameraControl() )
+        {
+            /* Picking was successful! Initiate spatial movement.
+             */
+            base::Geometry& pickedGeometry = const_cast< base::Geometry& >( *picked );
+            pimpl->spatialMovement.reset
+                ( new base::SpatialMovement( pickedGeometry, ev->x(), ev->y(), pimpl->renderer->viewport(), *pimpl->cam ) );
+            pimpl->mouseInteraction = true;
+            ev->accept();
+        }
     }
 }
 
@@ -435,7 +447,7 @@ void Display::mouseMoveEvent( QMouseEvent* ev )
     {
         if( pimpl->spatialMovement.get() == nullptr && hasCamera() && hasCameraControl() )
         {
-            /* Camera rotation is going on.
+            /* Camera interaction is going on.
              */
             const int dx = ( ev->x() - pimpl->mousepos.x() );
             const int dy = ( ev->y() - pimpl->mousepos.y() );
@@ -443,8 +455,15 @@ void Display::mouseMoveEvent( QMouseEvent* ev )
 
             if( dx != 0 || dy != 0 )
             {
-                cameraControl().rotateHorizontally( dx * pimpl->radiansPerPixel );
-                cameraControl().rotateVertically  ( dy * pimpl->radiansPerPixel );
+                if( ev->modifiers() & Qt::ShiftModifier )
+                {
+                    cameraControl().moveLaterally( dx * pimpl->lateralMovementSpeed, -dy * pimpl->lateralMovementSpeed );
+                }
+                else
+                {
+                    cameraControl().rotateHorizontally( dx * pimpl->radiansPerPixel );
+                    cameraControl().rotateVertically  ( dy * pimpl->radiansPerPixel );
+                }
                 updateGL();
                 ev->accept();
             }

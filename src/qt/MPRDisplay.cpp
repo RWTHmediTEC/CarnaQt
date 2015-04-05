@@ -14,6 +14,7 @@
 #include <Carna/qt/FrameRendererFactory.h>
 #include <Carna/presets/CuttingPlanesStage.h>
 #include <Carna/presets/OrthogonalControl.h>
+#include <Carna/presets/CameraNavigationControl.h>
 #include <Carna/helpers/FrameRendererHelper.h>
 #include <Carna/base/Aggregation.h>
 #include <Carna/base/Node.h>
@@ -27,44 +28,6 @@ namespace Carna
 
 namespace qt
 {
-
-
-
-// ----------------------------------------------------------------------------------
-// NullCameraControl
-// ----------------------------------------------------------------------------------
-
-class NullCameraControl : public base::CameraControl
-{
-
-public:
-
-    virtual void setCamera( base::Spatial& camera ) override;
-    virtual void rotateHorizontally( float radians ) override;
-    virtual void rotateVertically( float radians ) override;
-    virtual void moveAxially( float distance ) override;
-
-}; // NullCameraControl
-
-
-void NullCameraControl::setCamera( base::Spatial& camera )
-{
-}
-
-
-void NullCameraControl::rotateHorizontally( float radians )
-{
-}
-
-
-void NullCameraControl::rotateVertically( float radians )
-{
-}
-
-
-void NullCameraControl::moveAxially( float distance )
-{
-}
 
 
 
@@ -108,7 +71,7 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     , volume( nullptr )
     , plane( new base::Geometry( params.geometryTypePlanes ) )
     , cam( new base::Camera() )
-    , projControl( new presets::OrthogonalControl( new NullCameraControl() ) )
+    , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
     , pivotRotation( base::math::identity4f() )
 {
     /* Configure the 'pivot' node.
@@ -123,6 +86,7 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     cam->localTransform = base::math::translation4f( 0, 0, params.visibleDistance / 2 );
     projControl->setMinimumVisibleDistance( 0 );
     projControl->setMaximumVisibleDistance( params.visibleDistance );
+    projControl->setRotationEnabled( false );
     
     /* Configure the display.
      */
@@ -130,14 +94,19 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     display->setCameraControl( new base::Aggregation< base::CameraControl >( *projControl ) );
     display->setProjectionControl( new base::Aggregation< base::ProjectionControl >( *projControl ) );
     display->installEventFilter( this );
+    display->setLateralMovementSpeed( -1 );
 }
 
 
 bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
 {
-    if( ev->type() == QEvent::Wheel )
+    switch( ev->type() )
     {
-        display->updateProjection();
+        case QEvent::Wheel:
+        {
+            display->updateProjection();
+            break;
+        }
     }
     
     /* Process the event in default way.

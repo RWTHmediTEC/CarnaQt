@@ -85,6 +85,12 @@ public:
     const static float DEFAULT_AXIAL_MOVEMENT_SPEED;
     
     /** \brief
+      * Holds the default the scene units per pixel ratio used for lateral camera
+      * movement.
+      */
+    const static float DEFAULT_LATERAL_MOVEMENT_SPEED;
+    
+    /** \brief
       * Defines how the root viewport is embedded into the rendered frame.
       *
       * Note that for `fitSquare` the viewport's side lengths' ratio is \f$1\f$
@@ -131,6 +137,11 @@ public:
       * movement.
       */
     void setAxialMovementSpeed( float axialMovementSpeed );
+    
+    /** \brief
+      * Sets the scene units per pixel ratio used for lateral camera movement.
+      */
+    void setLateralMovementSpeed( float lateralMovementSpeed );
     
     /** \brief
       * Denotes that \a cam is to be used for future rendering.
