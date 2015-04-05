@@ -14,10 +14,9 @@ namespace Carna
   * \section QuickStart Quick Start
   *
   * The following examples are also available as demos that you can run:
-  *
-  *   - \ref DRRControlExample "DRRControl"
-  *   - \ref DVRControlExample "DVRControl"
-  *   - \ref MIPControlExample "MIPControl"
+  *   \ref DRRControlExample "DRRControl"
+  * | \ref DVRControlExample "DVRControl"
+  * | \ref MIPControlExample "MIPControl"
   */
 
 }
