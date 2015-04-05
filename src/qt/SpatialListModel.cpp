@@ -54,6 +54,10 @@ void SpatialListModel::Details::onNodeDelete( const base::Node& node )
      * the listener from that dying node.
      */
     root = nullptr;
+    
+    /* Invalidate explicitly here because 'onTreeChange' will not get notified.
+     */
+    invalidate();
 }
 
 
