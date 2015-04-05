@@ -23,7 +23,11 @@
 #include <Carna/base/NodeListener.h>
 #include <Carna/base/Geometry.h>
 #include <Carna/base/Camera.h>
+#include <Carna/base/Viewport.h>
 #include <QVBoxLayout>
+#include <QMouseEvent>
+
+#include <Carna/base/text.h>
 
 namespace Carna
 {
@@ -45,9 +49,10 @@ struct MPRDisplay::Details : public QObject
     Details( MPRDisplay& self, const Parameters& params );
     MPR* mpr;
     MPRDataFeature planeData;
+    MPRStage* mprRenderStage;
 
     Display* const display;
-    static Display* createDisplay( const Parameters& params );
+    static Display* createDisplay( const Parameters& params, MPRStage* mprRenderStage );
     
     base::math::Matrix4f pivotRotation;
     base::math::Matrix4f pivotBaseTransform;
@@ -58,13 +63,15 @@ struct MPRDisplay::Details : public QObject
     void updatePivot();
     
     virtual bool eventFilter( QObject* obj, QEvent* ev ) override;
+    void mouseMoveEvent( QMouseEvent* ev );
 };
 
 
 MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     : self( self )
     , mpr( nullptr )
-    , display( createDisplay( params ) )
+    , mprRenderStage( new MPRStage( params.geometryTypePlanes ) )
+    , display( createDisplay( params, mprRenderStage ) )
     , plane( new base::Geometry( params.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
@@ -90,6 +97,7 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     
     /* Configure the display.
      */
+    display->setMouseTracking( true );
     display->setCamera( *cam );
     display->setCameraControl( new base::Aggregation< base::CameraControl >( *projControl ) );
     display->setProjectionControl( new base::Aggregation< base::ProjectionControl >( *projControl ) );
@@ -107,6 +115,11 @@ bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
             display->updateProjection();
             break;
         }
+        case QEvent::MouseMove:
+        {
+            mouseMoveEvent( static_cast< QMouseEvent* >( ev ) );
+            break;
+        }
     }
     
     /* Process the event in default way.
@@ -115,7 +128,42 @@ bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
 }
 
 
-Display* MPRDisplay::Details::createDisplay( const Parameters& params )
+void MPRDisplay::Details::mouseMoveEvent( QMouseEvent* ev )
+{
+    if( display->hasRenderer() )
+    {
+        const base::Viewport& vp = display->renderer().viewport();
+        const unsigned int planeMargin = 10; // pixels
+        
+        /* Map the frame coordinates to clipping coordinates.
+         */
+        const float clippingX =  ( ( static_cast< float >( ev->x() - vp.marginLeft() ) / vp.width () ) * 2 - 1 );
+        const float clippingY = -( ( static_cast< float >( ev->y() - vp.marginTop () ) / vp.height() ) * 2 - 1 );
+        
+        /* Perform hit test with projected planes.
+         */
+        const MPRStage::ProjectedPlane& horizontal = mprRenderStage->horizontal();
+        const MPRStage::ProjectedPlane& vertical   = mprRenderStage->  vertical();
+        const float planeMarginH = static_cast< float >( planeMargin ) / vp.width();
+        const float planeMarginV = static_cast< float >( planeMargin ) / vp.height();
+        if( horizontal.plane != nullptr && std::abs( horizontal.clippingCoordinate - clippingY ) <= planeMarginV )
+        {
+            display->setCursor( Qt::SizeVerCursor );
+        }
+        else
+        if( vertical.plane != nullptr && std::abs( vertical.clippingCoordinate - clippingX ) <= planeMarginH )
+        {
+            display->setCursor( Qt::SizeHorCursor );
+        }
+        else
+        {
+            display->setCursor( Qt::ArrowCursor );
+        }
+    }
+}
+
+
+Display* MPRDisplay::Details::createDisplay( const Parameters& params, MPRStage* mprRenderStage )
 {
     FrameRendererFactory* const frFactory = new FrameRendererFactory();
     helpers::FrameRendererHelper< > frHelper( *frFactory );
@@ -125,7 +173,7 @@ Display* MPRDisplay::Details::createDisplay( const Parameters& params )
         frHelper << *rsItr;
     }
     frHelper.commit();
-    frFactory->appendStage( new MPRStage( params.geometryTypePlanes ) );
+    frFactory->appendStage( mprRenderStage );
     Display* const display = new Display( frFactory );
     return display;
 }

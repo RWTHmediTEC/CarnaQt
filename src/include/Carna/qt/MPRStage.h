@@ -52,6 +52,17 @@ public:
         ( const base::math::Matrix4f& viewTransform
         , base::RenderTask& rt
         , const base::Viewport& vp ) override;
+
+    struct ProjectedPlane
+    {
+        ProjectedPlane();
+        const base::Geometry* plane;
+        float clippingCoordinate;
+    };
+    
+    const ProjectedPlane& horizontal() const;
+    
+    const ProjectedPlane& vertical() const;
     
 protected:
 

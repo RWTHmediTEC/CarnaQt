@@ -22,6 +22,7 @@ const static unsigned int GEOMETRY_TYPE_PLANES     = 1;
 int main( int argc, char** argv )
 {
     using namespace Carna;
+    testing::TestScene scene( testing::TestScene::NORMAL_MAP_NOT_REQUIRED );
     
     /* Reports exceptions graphically and setups the logger s.t. it works with Qt.
      */
@@ -55,7 +56,6 @@ int main( int argc, char** argv )
     
     /* The 'TestScene' object simply holds the root node of the scene.
      */
-    testing::TestScene scene( testing::TestScene::NORMAL_MAP_NOT_REQUIRED );
     mpr.setRoot( scene.root() );
     
     /* Here we actually run the application.

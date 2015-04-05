@@ -45,6 +45,9 @@ struct MPRStage::Details
     static bool shaderSourcedLoaded;
     
     static std::string readResource( const std::string& name );
+    
+    ProjectedPlane horizontal;
+    ProjectedPlane vertical;
 };
 
 
@@ -71,6 +74,17 @@ std::string MPRStage::Details::readResource( const std::string& name )
     const QString text = in.readAll();
     srcFile.close();
     return text.toStdString();
+}
+
+
+
+// ----------------------------------------------------------------------------------
+// MPRStage :: ProjectedPlane
+// ----------------------------------------------------------------------------------
+
+MPRStage::ProjectedPlane::ProjectedPlane()
+    : plane( nullptr )
+{
 }
 
 
@@ -154,6 +168,18 @@ MPRStage::~MPRStage()
 }
 
 
+const MPRStage::ProjectedPlane& MPRStage::horizontal() const
+{
+    return pimpl->horizontal;
+}
+
+
+const MPRStage::ProjectedPlane& MPRStage::vertical() const
+{
+    return pimpl->vertical;
+}
+
+
 void MPRStage::renderPass
     ( const base::math::Matrix4f& vt
     , base::RenderTask& rt
@@ -175,6 +201,11 @@ void MPRStage::renderPass
     rt.renderer.glContext().setShader( pimpl->vr->shader );
     base::ShaderUniform< base::Color >( "color", base::Color::RED ).upload();
     
+    /* Reset the plane data.
+     */
+    pimpl->horizontal.plane = nullptr;
+    pimpl->  vertical.plane = nullptr;
+    
     /* Do the rendering.
      */
     pimpl->renderTask = &rt;
@@ -188,6 +219,8 @@ void MPRStage::render( const base::Renderable& renderable )
     const base::math::Matrix4f modelViewProjection = pimpl->renderTask->projection * renderable.modelViewTransform();
     const base::math::Vector4f a = modelViewProjection * base::math::Vector4f( -100, -100, 0, 1 );
     const base::math::Vector4f b = modelViewProjection * base::math::Vector4f( +100, +100, 0, 1 );
+    
+    MPRDataFeature& feature = static_cast< MPRDataFeature& >( renderable.geometry().feature( ROLE_PLANE_DATA ) );
     if( !base::math::isEqual( a.z(), b.z() ) )
     {
         const base::Color* color = &MPRDisplay::DEFAULT_PLANE_COLOR;
@@ -205,6 +238,8 @@ void MPRStage::render( const base::Renderable& renderable )
              */
             base::ShaderUniform< unsigned int >( "isHorizontal", 0 ).upload();
             pimpl->vr->lineMesh->render();
+            pimpl->vertical.plane = &renderable.geometry();
+            pimpl->vertical.clippingCoordinate = a.x();
         }
         else
         if( base::math::isEqual( a.y(), b.y() ) )
@@ -213,6 +248,8 @@ void MPRStage::render( const base::Renderable& renderable )
              */
             base::ShaderUniform< unsigned int >( "isHorizontal", 1 ).upload();
             pimpl->vr->lineMesh->render();
+            pimpl->horizontal.plane = &renderable.geometry();
+            pimpl->horizontal.clippingCoordinate = a.y();
         }
     }
 }

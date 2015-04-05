@@ -45,19 +45,6 @@ public:
     
     virtual bool controlsSameVideoResource( const GeometryFeature& other ) const override;
     
-    // ------------------------------------------------------------------------------
-    // MPRDataFeature :: ManagedInterface
-    // ------------------------------------------------------------------------------
-    
-    class ManagedInterface : public base::GeometryFeature::ManagedInterface
-    {
-    
-    public:
-    
-        ManagedInterface( MPRDataFeature& );
-    
-    };
-    
     virtual ManagedInterface* acquireVideoResource() override;
 
 }; // MPRDataFeature

@@ -11,22 +11,14 @@
 
 #include <Carna/qt/MPRDataFeature.h>
 
+#include <Carna/base/text.h>
+#include <Carna/base/Log.h>
+
 namespace Carna
 {
 
 namespace qt
 {
-
-
-
-// ----------------------------------------------------------------------------------
-// MPRDataFeature :: ManagedInterface
-// ----------------------------------------------------------------------------------
-
-MPRDataFeature::ManagedInterface::ManagedInterface( MPRDataFeature& mprdf )
-    : base::GeometryFeature::ManagedInterface( mprdf )
-{
-}
 
 
 
@@ -41,13 +33,13 @@ MPRDataFeature::MPRDataFeature()
 
 bool MPRDataFeature::controlsSameVideoResource( const GeometryFeature& other ) const
 {
-    return true;
+    return false;
 }
 
 
 MPRDataFeature::ManagedInterface* MPRDataFeature::acquireVideoResource()
 {
-    return new ManagedInterface( *this );
+    return nullptr;
 }
 
 

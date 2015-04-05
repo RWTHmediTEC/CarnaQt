@@ -206,6 +206,10 @@ MPR::~MPR()
     {
         removeDisplay( **displayItr );
     }
+    if( pimpl->root != nullptr )
+    {
+        pimpl->root->removeNodeListener( *pimpl );
+    }
 }
 
 
