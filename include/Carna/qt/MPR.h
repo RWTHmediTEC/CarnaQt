@@ -55,7 +55,7 @@ public:
     
     void setRoot( base::Node& root );
     
-    void addDisplay( MPRDisplay& mprDisplay, const base::Color& color );
+    void addDisplay( MPRDisplay& mprDisplay );
     
     void removeDisplay( MPRDisplay& mprDisplay );
     

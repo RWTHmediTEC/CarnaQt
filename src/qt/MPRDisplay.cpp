@@ -10,6 +10,8 @@
  */
 
 #include <Carna/qt/MPRDisplay.h>
+#include <Carna/qt/MPRStage.h>
+#include <Carna/qt/MPRDataFeature.h>
 #include <Carna/qt/Display.h>
 #include <Carna/qt/FrameRendererFactory.h>
 #include <Carna/presets/CuttingPlanesStage.h>
@@ -42,6 +44,7 @@ struct MPRDisplay::Details : public QObject
     MPRDisplay& self;
     Details( MPRDisplay& self, const Parameters& params );
     MPR* mpr;
+    MPRDataFeature planeData;
 
     Display* const display;
     static Display* createDisplay( const Parameters& params );
@@ -71,6 +74,11 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
      */
     pivot.attachChild( plane );
     pivot.attachChild( cam );
+    
+    /* Configure the plane.
+     */
+    planeData.color = DEFAULT_PLANE_COLOR;
+    plane->putFeature( MPRStage::ROLE_PLANE_DATA, planeData );
     
     /* Configure the camera.
      */
@@ -117,6 +125,7 @@ Display* MPRDisplay::Details::createDisplay( const Parameters& params )
         frHelper << *rsItr;
     }
     frHelper.commit();
+    frFactory->appendStage( new MPRStage( params.geometryTypePlanes ) );
     Display* const display = new Display( frFactory );
     return display;
 }
@@ -149,6 +158,7 @@ MPRDisplay::Parameters::Parameters( unsigned int geometryTypeVolume, unsigned in
 
 const float MPRDisplay::DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH = 500;
 const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
+const base::Color MPRDisplay::DEFAULT_PLANE_COLOR( 255, 255, 255, 255 );
 
 
 MPRDisplay::MPRDisplay( const Parameters& params, QWidget* parent )
@@ -218,14 +228,14 @@ void MPRDisplay::updatePivot( const base::math::Matrix4f& baseTransform )
 }
 
 
-void MPRDisplay::setMPR( MPR& mpr, const base::Color& color )
+void MPRDisplay::setMPR( MPR& mpr )
 {
     CARNA_ASSERT( parameters.geometryTypeVolume == mpr.geometryTypeVolume );
     if( pimpl->mpr != &mpr )
     {
         removeFromMPR();
         pimpl->mpr = &mpr;
-        mpr.addDisplay( *this, color );
+        mpr.addDisplay( *this );
     }
 }
 
@@ -237,6 +247,18 @@ void MPRDisplay::removeFromMPR()
         pimpl->mpr->removeDisplay( *this );
         pimpl->mpr = nullptr;
     }
+}
+
+
+void MPRDisplay::setPlaneColor( const base::Color& color )
+{
+    pimpl->planeData.color = color;
+}
+
+
+const base::Color& MPRDisplay::planeColor() const
+{
+    return pimpl->planeData.color;
 }
 
 

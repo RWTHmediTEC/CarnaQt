@@ -56,6 +56,7 @@ public:
     
     const static float DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH;
     const static float DEFAULT_VISIBLE_DISTANCE;
+    const static base::Color DEFAULT_PLANE_COLOR;
     
     struct Parameters
     {
@@ -90,9 +91,13 @@ public:
     
     void updatePivot( const base::math::Matrix4f& baseTransform );
     
-    void setMPR( MPR& mpr, const base::Color& color );
+    void setMPR( MPR& mpr );
     
     void removeFromMPR();
+    
+    void setPlaneColor( const base::Color& color );
+    
+    const base::Color& planeColor() const;
 
 }; // MPRDisplay
 

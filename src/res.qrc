@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/shaders">
+    <file alias="mpr.vert">res/mpr.vert</file>
+    <file alias="mpr.frag">res/mpr.frag</file>
+  </qresource>
+</RCC>

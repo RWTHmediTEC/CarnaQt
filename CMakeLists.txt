@@ -147,6 +147,8 @@ set( PRIVATE_QOBJECT_HEADERS
 )
 set( PRIVATE_HEADERS
         ${PRIVATE_QOBJECT_HEADERS}
+        src/include/Carna/qt/MPRStage.h
+        src/include/Carna/qt/MPRDataFeature.h
     )
 set( SRC
         src/qt/Application.cpp
@@ -171,13 +173,15 @@ set( SRC
         src/qt/MIPControl.cpp
         src/qt/SpatialListModel.cpp
         src/qt/MPRDisplay.cpp
+        src/qt/MPRStage.cpp
+        src/qt/MPRDataFeature.cpp
         src/qt/MPR.cpp
     )
 set( FORMS
         ""
     )
 set( RESOURCES
-		""
+		src/res.qrc
 	)
 set( DOC_SRC
         src/doc/Doxyfile.in

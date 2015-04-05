@@ -36,18 +36,22 @@ int main( int argc, char** argv )
     left.setRotation( base::math::rotation3f( 0, 1, 0, base::math::deg2rad( +90 ) ) );
     top .setRotation( base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) ) );
     
-    /* Lets name the displays for convenience.
+    /* Lets name the displays and configure distinct colors for convenience.
      */
     front.setWindowTitle( "Front" );
     left .setWindowTitle( "Left" );
     top  .setWindowTitle( "Top" );
     
+    front.setPlaneColor( base::Color::BLUE  );
+    left .setPlaneColor( base::Color::RED   );
+    top  .setPlaneColor( base::Color::GREEN );
+    
     /* Interconnect the displays.
      */
     qt::MPR mpr( GEOMETRY_TYPE_VOLUMETRIC );
-    front.setMPR( mpr, base::Color::BLUE  );
-    left .setMPR( mpr, base::Color::RED   );
-    top  .setMPR( mpr, base::Color::GREEN );
+    front.setMPR( mpr );
+    left .setMPR( mpr );
+    top  .setMPR( mpr );
     
     /* The 'TestScene' object simply holds the root node of the scene.
      */
