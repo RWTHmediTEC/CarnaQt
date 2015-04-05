@@ -2,6 +2,7 @@
 #include <Carna/qt/Application.h>
 #include <Carna/qt/MPR.h>
 #include <Carna/qt/MPRDisplay.h>
+#include <Carna/base/Color.h>
 //! [mpr_includes]
 #include <TestScene.h>
 
@@ -44,9 +45,9 @@ int main( int argc, char** argv )
     /* Interconnect the displays.
      */
     qt::MPR mpr( GEOMETRY_TYPE_VOLUMETRIC );
-    front.setMPR( mpr );
-    left .setMPR( mpr );
-    top  .setMPR( mpr );
+    front.setMPR( mpr, base::Color::BLUE  );
+    left .setMPR( mpr, base::Color::RED   );
+    top  .setMPR( mpr, base::Color::GREEN );
     
     /* The 'TestScene' object simply holds the root node of the scene.
      */

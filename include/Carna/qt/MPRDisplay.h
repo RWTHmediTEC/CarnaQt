@@ -90,7 +90,7 @@ public:
     
     void updatePivot( const base::math::Matrix4f& baseTransform );
     
-    void setMPR( MPR& mpr );
+    void setMPR( MPR& mpr, const base::Color& color );
     
     void removeFromMPR();
 

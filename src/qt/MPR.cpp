@@ -12,6 +12,8 @@
 #include <Carna/qt/MPR.h>
 #include <Carna/base/Node.h>
 #include <Carna/base/NodeListener.h>
+#include <Carna/base/Color.h>
+#include <map>
 
 namespace Carna
 {
@@ -41,7 +43,7 @@ struct MPR::Details : public base::NodeListener
     void updatePivots();
     base::math::Matrix4f basePivotTransform;
     
-    std::set< MPRDisplay* > displays;
+    std::map< MPRDisplay*, base::Color > displays;
     
     virtual void onNodeDelete( const base::Node& node ) override;
     virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
@@ -120,7 +122,7 @@ void MPR::Details::attachPivots()
     CARNA_ASSERT( root != nullptr );
     for( auto displayItr = displays.begin(); displayItr != displays.end(); ++displayItr )
     {
-        MPRDisplay& display = **displayItr;
+        MPRDisplay& display = *displayItr->first;
         display.attachPivot( *root );
     }
 }
@@ -130,7 +132,7 @@ void MPR::Details::detachPivots()
 {
     for( auto displayItr = displays.begin(); displayItr != displays.end(); ++displayItr )
     {
-        MPRDisplay& display = **displayItr;
+        MPRDisplay& display = *displayItr->first;
         display.detachPivot();
     }
 }
@@ -156,7 +158,7 @@ void MPR::Details::updatePivots()
          */
         for( auto displayItr = displays.begin(); displayItr != displays.end(); ++displayItr )
         {
-            MPRDisplay& display = **displayItr;
+            MPRDisplay& display = *displayItr->first;
             display.updatePivot( basePivotTransform );
         }
     }
@@ -200,7 +202,11 @@ MPR::MPR( unsigned int geometryTypeVolume )
 
 MPR::~MPR()
 {
-    const std::vector< MPRDisplay* > displays( pimpl->displays.begin(), pimpl->displays.end() );
+    std::vector< MPRDisplay* > displays;
+    for( auto displayItr = pimpl->displays.begin(); displayItr != pimpl->displays.end(); ++displayItr )
+    {
+        displays.push_back( displayItr->first );
+    }
     for( auto displayItr = displays.begin(); displayItr != displays.end(); ++displayItr )
     {
         removeDisplay( **displayItr );
@@ -208,13 +214,13 @@ MPR::~MPR()
 }
 
 
-void MPR::addDisplay( MPRDisplay& mprDisplay )
+void MPR::addDisplay( MPRDisplay& mprDisplay, const base::Color& color )
 {
     const std::size_t originalDisplaysCount = pimpl->displays.size();
-    pimpl->displays.insert( &mprDisplay );
+    pimpl->displays[ &mprDisplay ] = color;
     if( originalDisplaysCount != pimpl->displays.size() )
     {
-        mprDisplay.setMPR( *this );
+        mprDisplay.setMPR( *this, color );
         if( pimpl->root != nullptr )
         {
             mprDisplay.attachPivot( *pimpl->root );
@@ -253,6 +259,26 @@ void MPR::setRoot( base::Node& root )
         pimpl->attachPivots();
         pimpl->findVolume();
     }
+}
+
+
+bool MPR::hasVolume() const
+{
+    return pimpl->volume != nullptr;
+}
+
+
+base::Spatial& MPR::volume()
+{
+    CARNA_ASSERT( hasVolume() );
+    return *pimpl->volume;
+}
+
+
+const base::Spatial& MPR::volume() const
+{
+    CARNA_ASSERT( hasVolume() );
+    return *pimpl->volume;
 }
 
 

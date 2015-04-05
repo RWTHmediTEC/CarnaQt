@@ -55,9 +55,15 @@ public:
     
     void setRoot( base::Node& root );
     
-    void addDisplay( MPRDisplay& mprDisplay );
+    void addDisplay( MPRDisplay& mprDisplay, const base::Color& color );
     
     void removeDisplay( MPRDisplay& mprDisplay );
+    
+    bool hasVolume() const;
+    
+    base::Spatial& volume();
+    
+    const base::Spatial& volume() const;
 
 }; // MPR
 

@@ -218,14 +218,14 @@ void MPRDisplay::updatePivot( const base::math::Matrix4f& baseTransform )
 }
 
 
-void MPRDisplay::setMPR( MPR& mpr )
+void MPRDisplay::setMPR( MPR& mpr, const base::Color& color )
 {
     CARNA_ASSERT( parameters.geometryTypeVolume == mpr.geometryTypeVolume );
     if( pimpl->mpr != &mpr )
     {
         removeFromMPR();
         pimpl->mpr = &mpr;
-        mpr.addDisplay( *this );
+        mpr.addDisplay( *this, color );
     }
 }
 
