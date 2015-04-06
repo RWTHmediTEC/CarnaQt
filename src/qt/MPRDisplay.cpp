@@ -63,7 +63,7 @@ struct MPRDisplay::Details : public QObject
     
     virtual bool eventFilter( QObject* obj, QEvent* ev ) override;
     void mouseMoveEvent( QMouseEvent* ev );
-    void mousePressEvent( QMouseEvent* ev );
+    bool mousePressEvent( QMouseEvent* ev );
     void mouseReleaseEvent( QMouseEvent* ev );
     
     struct PlaneDragInfo;
@@ -156,8 +156,14 @@ bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
         }
         case QEvent::MouseButtonPress:
         {
-            mousePressEvent( static_cast< QMouseEvent* >( ev ) );
-            break;
+            if( mousePressEvent( static_cast< QMouseEvent* >( ev ) ) )
+            {
+                return true;
+            }
+            else
+            {
+                break;
+            }
         }
         case QEvent::MouseButtonRelease:
         {
@@ -227,12 +233,17 @@ void MPRDisplay::Details::mouseMoveEvent( QMouseEvent* ev )
 }
 
 
-void MPRDisplay::Details::mousePressEvent( QMouseEvent* ev )
+bool MPRDisplay::Details::mousePressEvent( QMouseEvent* ev )
 {
     if( ev->button() == Qt::LeftButton && currentPlane.get() != nullptr )
     {
         planeMovement.reset( new PlaneMovement() );
         planeMovement->previousFrameCoordinate = currentPlane->horizontal ? ev->y() : ev->x();
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
