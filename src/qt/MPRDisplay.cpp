@@ -64,6 +64,41 @@ struct MPRDisplay::Details : public QObject
     
     virtual bool eventFilter( QObject* obj, QEvent* ev ) override;
     void mouseMoveEvent( QMouseEvent* ev );
+    void mousePressEvent( QMouseEvent* ev );
+    void mouseReleaseEvent( QMouseEvent* ev );
+    
+    struct PlaneDragInfo;
+    std::unique_ptr< PlaneDragInfo > currentPlane;
+    
+    struct PlaneMovement;
+    std::unique_ptr< PlaneMovement > planeMovement;
+};
+
+
+struct MPRDisplay::Details::PlaneDragInfo
+{
+    PlaneDragInfo( const base::Geometry& plane, bool horizontal, int direction );
+    base::Geometry& plane;
+    const bool horizontal;
+    const int direction;
+};
+
+
+MPRDisplay::Details::PlaneDragInfo::PlaneDragInfo( const base::Geometry& plane, bool horizontal, int direction )
+    /* This 'const_cast' is okay because the plane belongs to another 'MPRDisplay'
+     * that this one could just as well query from the common 'MPR', but this is
+     * faster and easier.
+     */
+    : plane( const_cast< base::Geometry& >( plane ) )
+    , horizontal( horizontal )
+    , direction( direction )
+{
+}
+
+
+struct MPRDisplay::Details::PlaneMovement
+{
+    int previousFrameCoordinate;
 };
 
 
@@ -120,6 +155,16 @@ bool MPRDisplay::Details::eventFilter( QObject* obj, QEvent* ev )
             mouseMoveEvent( static_cast< QMouseEvent* >( ev ) );
             break;
         }
+        case QEvent::MouseButtonPress:
+        {
+            mousePressEvent( static_cast< QMouseEvent* >( ev ) );
+            break;
+        }
+        case QEvent::MouseButtonRelease:
+        {
+            mouseReleaseEvent( static_cast< QMouseEvent* >( ev ) );
+            break;
+        }
     }
     
     /* Process the event in default way.
@@ -132,34 +177,70 @@ void MPRDisplay::Details::mouseMoveEvent( QMouseEvent* ev )
 {
     if( display->hasRenderer() )
     {
-        const base::Viewport& vp = display->renderer().viewport();
-        const unsigned int planeMargin = 10; // pixels
-        
         /* Map the frame coordinates to clipping coordinates.
          */
+        const base::Viewport& vp = display->renderer().viewport();
         const float clippingX =  ( ( static_cast< float >( ev->x() - vp.marginLeft() ) / vp.width () ) * 2 - 1 );
         const float clippingY = -( ( static_cast< float >( ev->y() - vp.marginTop () ) / vp.height() ) * 2 - 1 );
         
-        /* Perform hit test with projected planes.
-         */
-        const MPRStage::ProjectedPlane& horizontal = mprRenderStage->horizontal();
-        const MPRStage::ProjectedPlane& vertical   = mprRenderStage->  vertical();
-        const float planeMarginH = static_cast< float >( planeMargin ) / vp.width();
-        const float planeMarginV = static_cast< float >( planeMargin ) / vp.height();
-        if( horizontal.plane != nullptr && std::abs( horizontal.clippingCoordinate - clippingY ) <= planeMarginV )
+        if( planeMovement.get() == nullptr )
         {
-            display->setCursor( Qt::SizeVerCursor );
+            const unsigned int planeMargin = 10; // pixels
+            
+            /* Perform hit test with projected planes.
+             */
+            const MPRStage::ProjectedPlane& horizontal = mprRenderStage->horizontal();
+            const MPRStage::ProjectedPlane& vertical   = mprRenderStage->  vertical();
+            const float planeMarginH = static_cast< float >( planeMargin ) / ( vp. width() - 1 );
+            const float planeMarginV = static_cast< float >( planeMargin ) / ( vp.height() - 1 );
+            const float offsetV = horizontal.clippingCoordinate - clippingY;
+            const float offsetH =   vertical.clippingCoordinate - clippingX;
+            if( horizontal.plane != nullptr && std::abs( offsetV ) <= planeMarginV )
+            {
+                display->setCursor( Qt::SizeVerCursor );
+                currentPlane.reset( new PlaneDragInfo( *horizontal.plane, true, horizontal.direction ) );
+            }
+            else
+            if( vertical.plane != nullptr && std::abs( offsetH ) <= planeMarginH )
+            {
+                display->setCursor( Qt::SizeHorCursor );
+                currentPlane.reset( new PlaneDragInfo( *vertical.plane, false, vertical.direction ) );
+            }
+            else
+            {
+                display->setCursor( Qt::ArrowCursor );
+                currentPlane.reset();
+            }
         }
         else
-        if( vertical.plane != nullptr && std::abs( vertical.clippingCoordinate - clippingX ) <= planeMarginH )
+        if( currentPlane.get() != nullptr )
         {
-            display->setCursor( Qt::SizeHorCursor );
-        }
-        else
-        {
-            display->setCursor( Qt::ArrowCursor );
+            const int currentFrameCoordinate = currentPlane->horizontal ? ev->y() : ev->x();
+            const int deltaFrameCoordinate = currentFrameCoordinate - planeMovement->previousFrameCoordinate;
+            planeMovement->previousFrameCoordinate = currentFrameCoordinate;
+            
+            const int direction = currentPlane->direction * ( currentPlane->horizontal ? +1 : -1 );
+            const float displacement = projControl->zoomFactor() * ( deltaFrameCoordinate * direction );
+            currentPlane->plane.localTransform *= base::math::translation4f( 0, 0, displacement );
+            currentPlane->plane.invalidate();
         }
     }
+}
+
+
+void MPRDisplay::Details::mousePressEvent( QMouseEvent* ev )
+{
+    if( ev->button() == Qt::LeftButton && currentPlane.get() != nullptr )
+    {
+        planeMovement.reset( new PlaneMovement() );
+        planeMovement->previousFrameCoordinate = currentPlane->horizontal ? ev->y() : ev->x();
+    }
+}
+
+
+void MPRDisplay::Details::mouseReleaseEvent( QMouseEvent* ev )
+{
+    planeMovement.reset();
 }
 
 

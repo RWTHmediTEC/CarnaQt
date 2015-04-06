@@ -223,6 +223,7 @@ void MPRStage::render( const base::Renderable& renderable )
     MPRDataFeature& feature = static_cast< MPRDataFeature& >( renderable.geometry().feature( ROLE_PLANE_DATA ) );
     if( !base::math::isEqual( a.z(), b.z() ) )
     {
+        const base::math::Vector4f c = modelViewProjection * base::math::Vector4f( 0, 0, +100, 1 );
         const base::Color* color = &MPRDisplay::DEFAULT_PLANE_COLOR;
         if( renderable.geometry().hasFeature( ROLE_PLANE_DATA ) )
         {
@@ -240,6 +241,7 @@ void MPRStage::render( const base::Renderable& renderable )
             pimpl->vr->lineMesh->render();
             pimpl->vertical.plane = &renderable.geometry();
             pimpl->vertical.clippingCoordinate = a.x();
+            pimpl->vertical.direction = ( a.x() - c.x() ) < 0 ? -1 : +1;
         }
         else
         if( base::math::isEqual( a.y(), b.y() ) )
@@ -250,6 +252,7 @@ void MPRStage::render( const base::Renderable& renderable )
             pimpl->vr->lineMesh->render();
             pimpl->horizontal.plane = &renderable.geometry();
             pimpl->horizontal.clippingCoordinate = a.y();
+            pimpl->horizontal.direction = ( a.y() - c.y() ) < 0 ? -1 : +1;
         }
     }
 }

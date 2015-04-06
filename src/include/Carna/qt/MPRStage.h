@@ -58,6 +58,7 @@ public:
         ProjectedPlane();
         const base::Geometry* plane;
         float clippingCoordinate;
+        float direction;
     };
     
     const ProjectedPlane& horizontal() const;
