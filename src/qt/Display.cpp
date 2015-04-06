@@ -26,12 +26,38 @@
 #include <QWheelEvent>
 #include <QTimer>
 #include <set>
+#include <typeinfo>
+
+#ifndef _MSC_VER
+#include <cxxabi.h> // for 'demangledName' function below
+#endif
 
 namespace Carna
 {
 
 namespace qt
 {
+
+
+
+// ----------------------------------------------------------------------------------
+// demangledName
+// ----------------------------------------------------------------------------------
+
+template< typename T >
+std::string demangledName( const T& x )
+{
+    const char* name = typeid( x ).name();
+#ifdef _MSC_VER
+    return std::string( name );
+#else
+    int status;
+    char* demangled = abi::__cxa_demangle( name, 0, 0, &status );
+    const std::string str( demangled );
+    free( demangled );
+    return str;
+#endif
+}
 
 
 
@@ -49,7 +75,6 @@ struct Display::Details : public base::NodeListener
     static std::map< const base::FrameRenderer*, Display* > displaysByRenderer;
     
     std::string logTag;
-    std::string formatLogMessage( const std::string& msg ) const;
 
     static std::set< const Display* > sharingDisplays;
     static const Display* pickSharingDisplay();
@@ -174,19 +199,6 @@ bool Display::Details::fitSquare() const
     default:
         CARNA_FAIL( "Unknown ViewportMode value." );
         
-    }
-}
-
-
-std::string Display::Details::formatLogMessage( const std::string& msg ) const
-{
-    if( logTag.empty() )
-    {
-        return msg;
-    }
-    else
-    {
-        return "Display '" + logTag + "': " + msg;
     }
 }
 
@@ -327,6 +339,7 @@ const base::Camera& Display::camera() const
 
 void Display::initializeGL()
 {
+    CARNA_LOG_TAG_SCOPE( logTag() );
     CARNA_ASSERT( pimpl->glc.get() == nullptr );
     pimpl->glc.reset( new Details::GLContext() );
 }
@@ -334,6 +347,7 @@ void Display::initializeGL()
 
 void Display::resizeGL( int w, int h )
 {
+    CARNA_LOG_TAG_SCOPE( logTag() );
     CARNA_ASSERT( pimpl->glc.get() != nullptr );
     const unsigned int width  = static_cast< unsigned int >( w );
     const unsigned int height = static_cast< unsigned int >( h );
@@ -345,17 +359,31 @@ void Display::resizeGL( int w, int h )
         pimpl->updateProjection( *this );
         Details::displaysByRenderer[ pimpl->renderer.get() ] = this;
         
+        /* Log debug message which stages are used.
+         */
+        std::stringstream msg;
+        msg << "Initialized Display with following rendering stages:";
+        for( std::size_t rsIdx = 0; rsIdx < pimpl->renderer->stages(); ++rsIdx )
+        {
+            msg << std::endl << "  "
+                << ( rsIdx + 1 ) << ". "
+                << demangledName( pimpl->renderer->stageAt( rsIdx ) );
+        }
+        base::Log::instance().record( base::Log::debug, msg.str() );
+        
+        /* Log debug message whether drag-&-drop is enabled.
+         */
         if( pimpl->mccs != nullptr )
         {
             base::Log::instance().record
                 ( base::Log::debug
-                , pimpl->formatLogMessage( "Drag-&-Drop behaviour for mesh-typed geometry ENABLED." ) );
+                , "Drag-&-Drop behaviour for mesh-typed geometry ENABLED." );
         }
         else
         {
             base::Log::instance().record
                 ( base::Log::debug
-                , pimpl->formatLogMessage( "Drag-&-Drop behaviour for mesh-typed geometry DISABLED." ) );
+                , "Drag-&-Drop behaviour for mesh-typed geometry DISABLED." );
         }
     }
     else
@@ -368,11 +396,12 @@ void Display::resizeGL( int w, int h )
 
 void Display::paintGL()
 {
+    CARNA_LOG_TAG_SCOPE( logTag() );
     CARNA_ASSERT( pimpl->renderer.get() != nullptr );
     
     if( pimpl->cam == nullptr )
     {
-        base::Log::instance().record( base::Log::debug, pimpl->formatLogMessage( "Display has no camera but should render." ) );
+        base::Log::instance().record( base::Log::debug, "Display has no camera but should render." );
     }
     else
     {

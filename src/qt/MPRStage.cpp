@@ -168,6 +168,12 @@ MPRStage::~MPRStage()
 }
 
 
+MPRStage* MPRStage::clone() const
+{
+    CARNA_FAIL( "MPRSTage::clone not implemented!" );
+}
+
+
 const MPRStage::ProjectedPlane& MPRStage::horizontal() const
 {
     return pimpl->horizontal;

@@ -31,11 +31,13 @@ int main( int argc, char** argv )
     /* Create MPR displays.
      */
     const qt::MPRDisplay::Parameters params( GEOMETRY_TYPE_VOLUMETRIC, GEOMETRY_TYPE_PLANES );
+    
     qt::MPRDisplay front( params );
     qt::MPRDisplay left ( params );
     qt::MPRDisplay top  ( params );
-    left.setRotation( base::math::rotation3f( 0, 1, 0, base::math::deg2rad( +90 ) ) );
-    top .setRotation( base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) ) );
+    
+    left.setRotation( qt::MPRDisplay::ROTATION_LEFT );
+    top .setRotation( qt::MPRDisplay::ROTATION_TOP  );
     
     /* Lets name the displays and configure distinct colors for convenience.
      */
@@ -46,6 +48,12 @@ int main( int argc, char** argv )
     front.setPlaneColor( base::Color::BLUE  );
     left .setPlaneColor( base::Color::RED   );
     top  .setPlaneColor( base::Color::GREEN );
+    
+    /* We may also supply log tags to distinguish debug messages.
+     */
+    front.setLogTag( front.windowTitle().toStdString() );
+    left .setLogTag( left .windowTitle().toStdString() );
+    top  .setLogTag( top  .windowTitle().toStdString() );
     
     /* Interconnect the displays.
      */

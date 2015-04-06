@@ -15,6 +15,7 @@
 #include <Carna/qt/CarnaQt.h>
 #include <Carna/qt/MPR.h>
 #include <Carna/base/math.h>
+#include <Carna/base/RenderStageSequence.h>
 #include <QWidget>
 #include <memory>
 #include <vector>
@@ -58,6 +59,9 @@ public:
     const static float DEFAULT_VISIBLE_DISTANCE;
     const static base::Color DEFAULT_PLANE_COLOR;
     
+    const static base::math::Matrix3f ROTATION_LEFT;
+    const static base::math::Matrix3f ROTATION_TOP;
+    
     struct Parameters
     {
         Parameters( unsigned int geometryTypeVolume, unsigned int geometryTypePlanes );
@@ -66,11 +70,17 @@ public:
         unsigned int geometryTypePlanes;
         float unzoomedVisibleSideLength;
         float visibleDistance;
-        
-        std::vector< base::RenderStage* > extraRenderStages;
+    };
+    
+    struct Factory
+    {
+        Factory( const Parameters& params );
+        virtual ~Factory();
+        const Parameters& parameters;
+        virtual void addExtraStages( base::RenderStageSequence& to ) const;
     };
 
-    explicit MPRDisplay( const Parameters& params, QWidget* parent = nullptr );
+    explicit MPRDisplay( const Factory& factory, QWidget* parent = nullptr );
         
     virtual ~MPRDisplay();
 
@@ -84,6 +94,18 @@ public:
     void setRotation( const base::math::Matrix3f& rotation );
     
     void invalidate();
+    
+    /** \brief
+      * Denotes that \a tag is to be used within logged messages to identify this
+      * `%MPRDisplay` instance.
+      */
+    void setLogTag( const std::string& tag );
+    
+    /** \brief
+      * Tells which tag annotates log messages to identify this `%MPRDisplay`
+      * instance.
+      */
+    const std::string& logTag() const;
     
     void attachPivot( base::Node& to );
     

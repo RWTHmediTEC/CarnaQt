@@ -13,7 +13,6 @@
 #include <Carna/qt/MPRStage.h>
 #include <Carna/qt/MPRDataFeature.h>
 #include <Carna/qt/Display.h>
-#include <Carna/qt/FrameRendererFactory.h>
 #include <Carna/presets/CuttingPlanesStage.h>
 #include <Carna/presets/OrthogonalControl.h>
 #include <Carna/presets/CameraNavigationControl.h>
@@ -46,13 +45,13 @@ struct MPRDisplay::Details : public QObject
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     
     MPRDisplay& self;
-    Details( MPRDisplay& self, const Parameters& params );
+    Details( MPRDisplay& self, const Factory& factory );
     MPR* mpr;
     MPRDataFeature planeData;
     MPRStage* mprRenderStage;
 
     Display* const display;
-    static Display* createDisplay( const Parameters& params, MPRStage* mprRenderStage );
+    static Display* createDisplay( const Factory& factory, MPRStage* mprRenderStage );
     
     base::math::Matrix4f pivotRotation;
     base::math::Matrix4f pivotBaseTransform;
@@ -102,12 +101,12 @@ struct MPRDisplay::Details::PlaneMovement
 };
 
 
-MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
+MPRDisplay::Details::Details( MPRDisplay& self, const Factory& factory )
     : self( self )
     , mpr( nullptr )
-    , mprRenderStage( new MPRStage( params.geometryTypePlanes ) )
-    , display( createDisplay( params, mprRenderStage ) )
-    , plane( new base::Geometry( params.geometryTypePlanes ) )
+    , mprRenderStage( new MPRStage( factory.parameters.geometryTypePlanes ) )
+    , display( createDisplay( factory, mprRenderStage ) )
+    , plane( new base::Geometry( factory.parameters.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
     , pivotRotation( base::math::identity4f() )
@@ -125,9 +124,9 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Parameters& params )
     /* Configure the camera.
      */
     projControl->setZoomStrength( 1e-2f );
-    cam->localTransform = base::math::translation4f( 0, 0, params.visibleDistance / 2 );
+    cam->localTransform = base::math::translation4f( 0, 0, factory.parameters.visibleDistance / 2 );
     projControl->setMinimumVisibleDistance( 0 );
-    projControl->setMaximumVisibleDistance( params.visibleDistance );
+    projControl->setMaximumVisibleDistance( factory.parameters.visibleDistance );
     projControl->setRotationEnabled( false );
     
     /* Configure the display.
@@ -244,16 +243,14 @@ void MPRDisplay::Details::mouseReleaseEvent( QMouseEvent* ev )
 }
 
 
-Display* MPRDisplay::Details::createDisplay( const Parameters& params, MPRStage* mprRenderStage )
+Display* MPRDisplay::Details::createDisplay( const Factory& factory, MPRStage* mprRenderStage )
 {
     FrameRendererFactory* const frFactory = new FrameRendererFactory();
-    helpers::FrameRendererHelper< > frHelper( *frFactory );
-    frHelper << new presets::CuttingPlanesStage( params.geometryTypeVolume, params.geometryTypePlanes );
-    for( auto rsItr = params.extraRenderStages.begin(); rsItr != params.extraRenderStages.end(); ++rsItr )
-    {
-        frHelper << *rsItr;
-    }
-    frHelper.commit();
+    const Parameters& params = factory.parameters;
+    presets::CuttingPlanesStage* const cps = new presets::CuttingPlanesStage( params.geometryTypeVolume, params.geometryTypePlanes );
+    frFactory->appendStage( cps );
+    factory.addExtraStages( *frFactory );
+    CARNA_ASSERT_EX( &frFactory->stageAt( 0 ) == cps, "MPRDisplay::Factory cleared stage sequence!" );
     frFactory->appendStage( mprRenderStage );
     Display* const display = new Display( frFactory );
     return display;
@@ -282,18 +279,41 @@ MPRDisplay::Parameters::Parameters( unsigned int geometryTypeVolume, unsigned in
 
 
 // ----------------------------------------------------------------------------------
+// MPRDisplay :: Factory
+// ----------------------------------------------------------------------------------
+
+MPRDisplay::Factory::Factory( const Parameters& params )
+    : parameters( params )
+{
+}
+
+
+MPRDisplay::Factory::~Factory()
+{
+}
+
+
+void MPRDisplay::Factory::addExtraStages( base::RenderStageSequence& to ) const
+{
+}
+
+
+
+// ----------------------------------------------------------------------------------
 // MPRDisplay
 // ----------------------------------------------------------------------------------
 
 const float MPRDisplay::DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH = 500;
 const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
 const base::Color MPRDisplay::DEFAULT_PLANE_COLOR( 255, 255, 255, 255 );
+const base::math::Matrix3f MPRDisplay::ROTATION_LEFT = base::math::rotation3f( 0, 1, 0, base::math::deg2rad( -90 ) );
+const base::math::Matrix3f MPRDisplay::ROTATION_TOP  = base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) );
 
 
-MPRDisplay::MPRDisplay( const Parameters& params, QWidget* parent )
+MPRDisplay::MPRDisplay( const Factory& factory, QWidget* parent )
     : QWidget( parent )
-    , pimpl( new Details( *this, params ) )
-    , parameters( params )
+    , pimpl( new Details( *this, factory ) )
+    , parameters( factory.parameters )
 {
     setLayout( new QVBoxLayout() );
     this->layout()->addWidget( pimpl->display );
@@ -332,6 +352,18 @@ void MPRDisplay::setRotation( const base::math::Matrix3f& rotation )
 void MPRDisplay::invalidate()
 {
     pimpl->display->invalidate();
+}
+
+
+void MPRDisplay::setLogTag( const std::string& tag )
+{
+    pimpl->display->setLogTag( tag );
+}
+
+
+const std::string& MPRDisplay::logTag() const
+{
+    return pimpl->display->logTag();
 }
 
 

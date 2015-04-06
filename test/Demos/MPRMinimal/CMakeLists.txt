@@ -1,4 +1,4 @@
-project( MPRDisplay )
+project( MPRMinimal )
 
 set( SRC
         main.cpp

@@ -47,6 +47,8 @@ public:
     explicit MPRStage( unsigned int geometryTypePlanes );
         
     virtual ~MPRStage();
+    
+    virtual MPRStage* clone() const override;
 
     virtual void renderPass
         ( const base::math::Matrix4f& viewTransform
