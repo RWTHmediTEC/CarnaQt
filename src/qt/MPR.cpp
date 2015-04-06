@@ -12,6 +12,7 @@
 #include <Carna/qt/MPR.h>
 #include <Carna/base/Node.h>
 #include <Carna/base/NodeListener.h>
+#include <Carna/presets/CuttingPlanesStage.h>
 #include <set>
 
 namespace Carna
@@ -47,6 +48,9 @@ struct MPR::Details : public base::NodeListener
     virtual void onNodeDelete( const base::Node& node ) override;
     virtual void onTreeChange( base::Node& node, bool inThisSubtree ) override;
     virtual void onTreeInvalidated( base::Node& subtree ) override;
+    
+    base::HUV windowingLevel;
+    unsigned int windowingWidth;
 };
 
 
@@ -54,6 +58,8 @@ MPR::Details::Details( MPR& self )
     : self( self )
     , root( nullptr )
     , volume( nullptr )
+    , windowingLevel( presets::CuttingPlanesStage::DEFAULT_WINDOWING_LEVEL )
+    , windowingWidth( presets::CuttingPlanesStage::DEFAULT_WINDOWING_WIDTH )
 {
 }
 
@@ -220,6 +226,8 @@ void MPR::addDisplay( MPRDisplay& mprDisplay )
     if( originalDisplaysCount != pimpl->displays.size() )
     {
         mprDisplay.setMPR( *this );
+        mprDisplay.setWindowingLevel( pimpl->windowingLevel );
+        mprDisplay.setWindowingWidth( pimpl->windowingWidth );
         if( pimpl->root != nullptr )
         {
             mprDisplay.attachPivot( *pimpl->root );
@@ -278,6 +286,40 @@ const base::Spatial& MPR::volume() const
 {
     CARNA_ASSERT( hasVolume() );
     return *pimpl->volume;
+}
+
+
+void MPR::setWindowingLevel( base::HUV windowingLevel )
+{
+    pimpl->windowingLevel = windowingLevel;
+    for( auto displayItr = pimpl->displays.begin(); displayItr != pimpl->displays.end(); ++displayItr )
+    {
+        MPRDisplay& display = **displayItr;
+        display.setWindowingLevel( windowingLevel );
+    }
+}
+
+
+void MPR::setWindowingWidth( unsigned int windowingWidth )
+{
+    pimpl->windowingWidth = windowingWidth;
+    for( auto displayItr = pimpl->displays.begin(); displayItr != pimpl->displays.end(); ++displayItr )
+    {
+        MPRDisplay& display = **displayItr;
+        display.setWindowingWidth( windowingWidth );
+    }
+}
+
+
+base::HUV MPR::windowingLevel() const
+{
+    return pimpl->windowingLevel;
+}
+
+
+unsigned int MPR::windowingWidth() const
+{
+    return pimpl->windowingWidth;
 }
 
 

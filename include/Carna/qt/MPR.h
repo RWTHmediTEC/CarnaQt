@@ -49,7 +49,7 @@ public:
 
     explicit MPR( unsigned int geometryTypeVolume );
         
-    virtual ~MPR();
+    ~MPR();
     
     const unsigned int geometryTypeVolume;
     
@@ -64,6 +64,26 @@ public:
     base::Spatial& volume();
     
     const base::Spatial& volume() const;
+
+    /** \brief
+      * Sets windowing level to \a windowingLevel on all attached displays.
+      */
+    void setWindowingLevel( base::HUV windowingLevel );
+    
+    /** \brief
+      * Sets windowing level to \a windowingWidth on all attached displays.
+      */
+    void setWindowingWidth( unsigned int windowingWidth );
+
+    /** \brief
+      * Tells the windowing level.
+      */
+    base::HUV windowingLevel() const;
+    
+    /** \brief
+      * Tells the windowing width.
+      */
+    unsigned int windowingWidth() const;
 
 }; // MPR
 

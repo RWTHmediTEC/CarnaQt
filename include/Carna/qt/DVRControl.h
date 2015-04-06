@@ -54,7 +54,7 @@ namespace qt
   * \author Leonid Kostrykin
   * \date   2.4.15 - 3.4.15
   */
-class CARNAQT_LIB DVRControl : public VolumeRenderingControl
+class CARNAQT_LIB DVRControl : protected VolumeRenderingControl
 {
 
     Q_OBJECT

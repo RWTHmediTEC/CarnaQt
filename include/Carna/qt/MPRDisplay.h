@@ -121,6 +121,36 @@ public:
     
     const base::Color& planeColor() const;
 
+    /** \brief
+      * Sets windowing level to \a windowingLevel.
+      */
+    void setWindowingLevel( base::HUV windowingLevel );
+    
+    /** \brief
+      * Sets windowing level to \a windowingWidth.
+      */
+    void setWindowingWidth( unsigned int windowingWidth );
+
+    /** \brief
+      * Tells the windowing level.
+      */
+    base::HUV windowingLevel() const;
+    
+    /** \brief
+      * Tells the windowing width.
+      */
+    unsigned int windowingWidth() const;
+
+    /** \brief
+      * Tells the lowest HUV that is mapped to gray, but not to black or white.
+      */
+    base::HUV minimumHUV() const;
+    
+    /** \brief
+      * Tells the highest HUV that is mapped to gray, but not to black or white.
+      */
+    base::HUV maximumHUV() const;
+
 }; // MPRDisplay
 
 

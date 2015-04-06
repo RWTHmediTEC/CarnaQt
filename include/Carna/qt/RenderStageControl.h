@@ -45,7 +45,7 @@ class CARNAQT_LIB RenderStageControl
     struct Details;
     const std::unique_ptr< Details > pimpl;
 
-protected:
+public:
 
     explicit RenderStageControl( base::RenderStage& rs );
     
@@ -57,6 +57,8 @@ protected:
     base::RenderStage& renderStage;
     
     void invalidate();
+
+protected:
     
     virtual void onRenderingStarted();
     

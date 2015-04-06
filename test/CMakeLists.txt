@@ -20,7 +20,7 @@ set( TESTS
 	)
 	
 set( TESTS_MISC_FILES
-#		UnitTests/configure.cmake
+		UnitTests/configure.cmake
 #		ModuleTests/configure.cmake
 #		IntegrationTests/configure.cmake
 	)

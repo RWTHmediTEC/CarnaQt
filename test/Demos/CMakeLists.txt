@@ -5,4 +5,5 @@ add_subdirectory( DVRControl )
 add_subdirectory( MIPControl )
 add_subdirectory( MPRMinimal )
 add_subdirectory( MPRExtended )
+add_subdirectory( WindowingControl )
 

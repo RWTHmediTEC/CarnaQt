@@ -2,6 +2,7 @@
 #include <Carna/qt/Application.h>
 #include <Carna/qt/MPR.h>
 #include <Carna/qt/MPRDisplay.h>
+#include <Carna/qt/WindowingControl.h>
 #include <Carna/presets/OpaqueRenderingStage.h>
 #include <Carna/presets/MeshColorCodingStage.h>
 #include <Carna/presets/OccludedRenderingStage.h>
@@ -116,6 +117,10 @@ int main( int argc, char** argv )
     left .setMPR( mpr );
     top  .setMPR( mpr );
     
+    /* Lets create a predefined window for windowing.
+     */
+    qt::WindowingControl windowingControl( new qt::WindowingControl::GenericWindowingAdapter< qt::MPR >( mpr ) );
+    
     /* The 'TestScene' object simply holds the root node of the scene.
      */
     mpr.setRoot( scene.root() );
@@ -125,6 +130,7 @@ int main( int argc, char** argv )
     front.show();
     left .show();
     top  .show();
+    windowingControl.show();
     return QApplication::exec();
 }
 //! [mpr_main]

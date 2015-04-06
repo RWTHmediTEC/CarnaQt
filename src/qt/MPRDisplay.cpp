@@ -26,8 +26,6 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
-#include <Carna/base/text.h>
-
 namespace Carna
 {
 
@@ -49,9 +47,10 @@ struct MPRDisplay::Details : public QObject
     MPR* mpr;
     MPRDataFeature planeData;
     MPRStage* mprRenderStage;
+    presets::CuttingPlanesStage* planes;
 
     Display* const display;
-    static Display* createDisplay( const Factory& factory, MPRStage* mprRenderStage );
+    static Display* createDisplay( const Factory& factory, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes );
     
     base::math::Matrix4f pivotRotation;
     base::math::Matrix4f pivotBaseTransform;
@@ -105,7 +104,8 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Factory& factory )
     : self( self )
     , mpr( nullptr )
     , mprRenderStage( new MPRStage( factory.parameters.geometryTypePlanes ) )
-    , display( createDisplay( factory, mprRenderStage ) )
+    , planes( new presets::CuttingPlanesStage( factory.parameters.geometryTypeVolume, factory.parameters.geometryTypePlanes ) )
+    , display( createDisplay( factory, mprRenderStage, planes ) )
     , plane( new base::Geometry( factory.parameters.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
@@ -254,14 +254,13 @@ void MPRDisplay::Details::mouseReleaseEvent( QMouseEvent* ev )
 }
 
 
-Display* MPRDisplay::Details::createDisplay( const Factory& factory, MPRStage* mprRenderStage )
+Display* MPRDisplay::Details::createDisplay( const Factory& factory, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes )
 {
     FrameRendererFactory* const frFactory = new FrameRendererFactory();
     const Parameters& params = factory.parameters;
-    presets::CuttingPlanesStage* const cps = new presets::CuttingPlanesStage( params.geometryTypeVolume, params.geometryTypePlanes );
-    frFactory->appendStage( cps );
+    frFactory->appendStage( planes );
     factory.addExtraStages( *frFactory );
-    CARNA_ASSERT_EX( &frFactory->stageAt( 0 ) == cps, "MPRDisplay::Factory cleared stage sequence!" );
+    CARNA_ASSERT_EX( &frFactory->stageAt( 0 ) == planes, "MPRDisplay::Factory cleared stage sequence!" );
     frFactory->appendStage( mprRenderStage );
     Display* const display = new Display( frFactory );
     return display;
@@ -431,6 +430,44 @@ void MPRDisplay::setPlaneColor( const base::Color& color )
 const base::Color& MPRDisplay::planeColor() const
 {
     return pimpl->planeData.color;
+}
+
+
+void MPRDisplay::setWindowingLevel( base::HUV windowingLevel )
+{
+    pimpl->planes->setWindowingLevel( windowingLevel );
+    invalidate();
+}
+
+
+void MPRDisplay::setWindowingWidth( unsigned int windowingWidth )
+{
+    pimpl->planes->setWindowingWidth( windowingWidth );
+    invalidate();
+}
+
+
+base::HUV MPRDisplay::windowingLevel() const
+{
+    return pimpl->planes->windowingLevel();
+}
+
+
+unsigned int MPRDisplay::windowingWidth() const
+{
+    return pimpl->planes->windowingWidth();
+}
+
+
+base::HUV MPRDisplay::minimumHUV() const
+{
+    return pimpl->planes->minimumHUV();
+}
+
+
+base::HUV MPRDisplay::maximumHUV() const
+{
+    return pimpl->planes->maximumHUV();
 }
 
 

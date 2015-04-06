@@ -74,6 +74,7 @@ namespace Carna
         class SpatialListModel;
         class VolumeRenderingControl;
         class WideColorPicker;
+        class WindowingControl;
     }
 
 }  // namespace Carna

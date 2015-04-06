@@ -117,6 +117,7 @@ set( PUBLIC_QOBJECT_HEADERS
         include/Carna/qt/MIPLayerEditor.h
         include/Carna/qt/MIPControlLayer.h
         include/Carna/qt/MIPControl.h
+        include/Carna/qt/WindowingControl.h
 )
 set( PUBLIC_HEADERS
         ${PUBLIC_QOBJECT_HEADERS}
@@ -176,6 +177,7 @@ set( SRC
         src/qt/MPRStage.cpp
         src/qt/MPRDataFeature.cpp
         src/qt/MPR.cpp
+        src/qt/WindowingControl.cpp
     )
 set( FORMS
         ""
