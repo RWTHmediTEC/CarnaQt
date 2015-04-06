@@ -41,7 +41,7 @@ namespace qt
   *
   * \section MIPControlExample Example
   *
-  *  -# Start with including headers from base %Carna and this packge:
+  *  -# Start with including headers from base %Carna and this package:
   *     \snippet Demos/MIPControl/main.cpp mip_includes
   *  -# Lets stick with a single geometry type for simplicity:
   *     \snippet Demos/MIPControl/main.cpp mip_constants

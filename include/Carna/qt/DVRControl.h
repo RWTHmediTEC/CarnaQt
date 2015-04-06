@@ -42,7 +42,7 @@ namespace qt
   *
   * \section DVRControlExample Example
   *
-  *  -# Start with including headers from base %Carna and this packge:
+  *  -# Start with including headers from base %Carna and this package:
   *     \snippet Demos/DVRControl/main.cpp dvr_includes
   *  -# Lets stick with a single geometry type for simplicity:
   *     \snippet Demos/DVRControl/main.cpp dvr_constants

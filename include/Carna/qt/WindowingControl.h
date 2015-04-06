@@ -35,6 +35,31 @@ namespace qt
 // WindowingControl
 // ----------------------------------------------------------------------------------
 
+/** \brief
+  * Defines widget that controls HU windowing.
+  *
+  * This is the widget illustrated and used in the \ref MPR examples.
+  *
+  * \section WindowingControlExample Example
+  *
+  * This example shows the `%qt::WindowingControl` widget using an
+  * `presets::CuttingPlanesStage` instance. The
+  * \ref MPRExtendedExample "extended MPR example" shows its usage for multiplanar
+  * reformats.
+  *
+  *  -# Start with including headers from base %Carna and this package:
+  *     \snippet Demos/WindowingControl/main.cpp windowing_includes
+  *  -# The cutting-planes rendering stage requires us to define two geometry types
+  *     at least:
+  *     \snippet Demos/WindowingControl/main.cpp windowing_constants
+  *     For explanation on the concept of geometry types, refer to the base %Carna
+  *     documentation.
+  *  -# Now we implement a short program:
+  *     \snippet Demos/WindowingControl/main.cpp windowing_main
+  *
+  * \author Leonid Kostrykin
+  * \date   6.4.15
+  */
 class CARNAQT_LIB WindowingControl : public QWidget
 {
 

@@ -34,6 +34,31 @@ namespace qt
 /** \brief
   * Interconnects multiple \ref MPRDisplay instances.
   *
+  * \image html MPR.png "examplary screenshot from the extended example below"
+  *
+  * \section MPRMinimalExample Minimal Example
+  *
+  *  -# Start with including headers from base %Carna and this package:
+  *     \snippet Demos/MPRMinimal/main.cpp mpr_includes
+  *  -# We must define two geometry types at least:
+  *     \snippet Demos/MPRMinimal/main.cpp mpr_constants
+  *     For explanation on the concept of geometry types, refer to the base %Carna
+  *     documentation.
+  *  -# Now we implement a short program:
+  *     \snippet Demos/MPRMinimal/main.cpp mpr_main
+  *
+  * \section MPRExtendedExample Extended Example
+  *
+  *  -# Again, start with including headers from base %Carna and this package:
+  *     \snippet Demos/MPRExtended/main.cpp mpr_includes
+  *  -# Lets define an extra geometry type for opaque mesh-based geomtries:
+  *     \snippet Demos/MPRExtended/main.cpp mpr_constants
+  *  -# Lets also use some extra rendering stages to achieve renderings as shown in
+  *     the screenshot above:
+  *     \snippet Demos/MPRExtended/main.cpp mpr_extra_stages
+  *  -# Now we implement a short program that also uses a \ref WindowingControl:
+  *     \snippet Demos/MPRExtended/main.cpp mpr_main
+  *
   * \author Leonid Kostrykin
   * \date   5.4.15
   */

@@ -14,9 +14,23 @@ namespace Carna
   * \section QuickStart Quick Start
   *
   * The following examples are also available as demos that you can run:
-  *   \ref DRRControlExample "DRRControl"
-  * | \ref DVRControlExample "DVRControl"
-  * | \ref MIPControlExample "MIPControl"
+  *
+  *   - The \ref DRRControlExample "DRRControl" defines a widget that controls
+  *     `presets::DRR` parameters.
+  *   - The \ref DVRControlExample "DVRControl" controls lighting and colormap for
+  *     `presets::DVR` volume renderings.
+  *   - The \ref MIPControlExample "MIPControl" implements a widget that allows to
+  *     manage the `presets::MIPLayer` objects of an `presets::MIPStage` instance.
+  *   - There is a \ref MPRMinimalExample "minimal" and an
+  *     \ref MPRExtendedExample "extended" example on *multiplanar reformats*.
+  *   - The \ref WindowingControlExample "WindowingControl" defines a widget that
+  *     controls the HU windowing of diverse other components.
+  *
+  * Other classes that this package provides:
+  *
+  *   - The \ref Display class is utilized by all the examples above.
+  *   - \ref ColorPicker and \ref WideColorPicker
+  *   - \ref SpatialListModel
   */
 
 }

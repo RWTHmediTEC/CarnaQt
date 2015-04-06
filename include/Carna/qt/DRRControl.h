@@ -43,7 +43,7 @@ namespace qt
   *
   * \section DRRControlExample Example
   *
-  *  -# Start with including headers from base %Carna and this packge:
+  *  -# Start with including headers from base %Carna and this package:
   *     \snippet Demos/DRRControl/main.cpp drr_includes
   *  -# Lets stick with a single geometry type for simplicity:
   *     \snippet Demos/DRRControl/main.cpp drr_constants
