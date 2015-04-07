@@ -1,12 +1,15 @@
-Carna
+CarnaQt
 ========
 
-Carna is a lightweight library for simple and fast visualization of CT data.
+Carna provides classes for simple and fast visualization of CT data.
 It is named after the greek god of organs (yup, they really did have even one for organs).
+It is based on OpenGL 3.3 and Eigen 3.
 
-Go to: [Library Documentation](https://rwthmeditec.github.io/Carna/)
+This package provides auxiliary classes for using Carna ≥3.0.0 with Qt ≥4.8.
 
-<img src="https://rwthmeditec.github.io/Carna/XRay01.png">
+Go to: [Library Documentation](https://rwthmeditec.github.io/CarnaQt/)
+
+<img src="https://rwthmeditec.github.io/Carna/MPR.png">
 
 ---
 ## Contents
@@ -32,8 +35,6 @@ Go to: [Library Documentation](https://rwthmeditec.github.io/Carna/)
 
 Compilation process has been tested with following tool chains:
 
-* **GCC 4.6** works but is known to have a bug in the C++11 regex
-  module that prevents the test suite from operating properly.
 * **GCC 4.9:** is known to be fully supported.
 * **Visual Studio 2010** is known to be fully supported.
 
@@ -47,6 +48,7 @@ This section explains three ways of building Carna:
 1. Creating Visual Studio project files and building it from the IDE
 2. Building Carna directly through CMake from command line
 3. If you are a colleague from MediTEC, you can use the batch script.
+4. On Linux you can run the `linux_build.sh` script.
 
 Regardless which build method you pick,
 first thing you need to do is to fetch the latest stable version.
@@ -55,10 +57,10 @@ you can simply run following command
 from within the directory where you want to download the sources:
 
 ```bat
-git clone https://github.com/RWTHmediTEC/Carna.git
+git clone https://github.com/RWTHmediTEC/CarnaQt.git
 ```
     
-After a few seconds there should be a new folder named `Carna`
+After a few seconds there should be a new folder named `CarnaQt`
 at your current working directory.
 
 ### 2.1. Creating Visual Studio project files
@@ -66,7 +68,7 @@ at your current working directory.
 First create the directory where the Visual Studio files should go to:
 
 ```bat
-cd Carna
+cd CarnaQt
 
 mkdir build
 mkdir build\VisualStudio2010
@@ -80,7 +82,7 @@ Then initialize the Visual Studio environment:
 call "%VS100COMNTOOLS%\vsvars32.bat"
 ```
     
-And finnaly invoke CMake like this:
+And finally invoke CMake like this:
 
 ```bat
 cmake -G"Visual Studio 10" -DCMAKE_INSTALL_PREFIX="C:\Libs" ..\..
@@ -92,7 +94,7 @@ In this case the default installation directory will be set,
 which is the value of the environmental variable `%ProgramFiles%` on Windows.
 
 At this point the Visual Studio project files are ready.
-You can proceed by opening the solution file `Carna.sln`
+You can proceed by opening the solution file `CarnaQt.sln`
 that was created in `Carna\build\VisualStudio2010`.
 Note that building the `INSTALL` project from the solution
 actually triggers the installation routine
@@ -106,14 +108,14 @@ You can use any names you like for the directories,
 it's only important to distinguish between "debug" and "release" files:
 
 ```bat
-cd Carna
+cd CarnaQt
 
 mkdir build
 mkdir build\debug
 mkdir build\release
 ```
 
-Then initialize the building enviroment.
+Then initialize the building environment.
 Use the command below if you are going to use Visual Studio for compilation:
 
 ```bat
@@ -157,9 +159,10 @@ you can specify the destinations for the
 headers, the library and the generated CMake files
 by passing particular parameters to `cmake`:
 
-* `INSTALL_CMAKE_DIR` specifies where the `FindCarna.cmake` file goes to.
+* `INSTALL_CMAKE_DIR` specifies where the `FindCarnaQt.cmake` file goes to.
 * `INSTALL_LIBRARY_DIR` specifies where the built binary files go to.
 * `INSTALL_HEADERS_DIR` specifies where the headers are going to installed to.
+* `INSTALL_DOC_DIR` specifies where the HTML documentation is going to be installed.
 
 If you use relative paths for these parameters,
 they will be resolved relatively to `CMAKE_INSTALL_PREFIX`.
@@ -185,37 +188,37 @@ or you have fetched the binaries and the corresponding headers from somewhere.
 Add a `find_package` directive to your project's `CMakeLists.txt` file, e.g.:
 
 ```CMake
-find_package( Carna REQUIRED )
-include_directories( ${CARNA_INCLUDE_DIR} )
+find_package( CarnaQt REQUIRED )
+include_directories( ${CARNAQT_INCLUDE_DIR} )
 ```
 
-If you need to put a constraint on the version, use `find_package(Carna 2.5.0 REQUIRED)`
-to pick a package with a version *compatible* to 2.5.0,
-or use `find_package(Carna 2.5.0 EXACT REQUIRED)` to pick a package by the exact version.
+If you need to put a constraint on the version, use `find_package(CarnaQt 1.0.0 REQUIRED)`
+to pick a package with a version *compatible* to 1.0.0,
+or use `find_package(CarnaQt 1.0.0 EXACT REQUIRED)` to pick a package by the exact version.
 
-You also need to add the headers (usually *only* the headers) from TRTK and Eigen:
+You also need to add the headers from Eigen and Carna:
 
 ```CMake
 # Eigen
 find_package( Eigen3 3.0.5 REQUIRED )
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-# TRTK
-find_package( TRTK 0.13.1 REQUIRED )
-include_directories( ${TRTK_INCLUDE_DIR} )
+# Carna
+find_package( Carna 3.0.0 REQUIRED )
+include_directories( ${CARNA_INCLUDE_DIR} )
 ```
 
-Finally add Carna to the linking stage:
+Finally add Carna and CarnaQt to the linking stage:
 
 ```CMake
-target_link_libraries( ${TARGET_NAME} ${SOME_OTHER_LIBRARIES} ${CARNA_LIBRARIES} )
+target_link_libraries( ${TARGET_NAME} ${SOME_OTHER_LIBRARIES} ${CARNA_LIBRARIES} ${CARNAQT_LIBRARIES} )
 ```
 
-This method relies on CMake being able to locate the proper `FindCarna.cmake` file.
-If you've built Carna from source,
-than you have determined it's location either through `CMAKE_INSTALL_PREFIX`
+This method relies on CMake being able to locate the proper `FindCarna.cmake` and `FindCarnaQt.cmake` files.
+If you've built Carna and CarnaQt from source,
+than you have determined its location either through `CMAKE_INSTALL_PREFIX`
 or `INSTALL_CMAKE_DIR` as described in ["installation notes"](#23-installation-notes).
-You can specify the paths CMake searches for `FindCarna.cmake` by adjustung the
+You can specify the paths CMake searches for `FindCarna.cmake` and `FindCarnaQt.cmake` by adjusting the
 `CMAKE_MODULE_PATH` variable, e.g.:
 
 ```CMake
@@ -224,29 +227,26 @@ list( APPEND CMAKE_MODULE_PATH "C:/CMake/Modules" )
 
 ### 3.2 The MediTEC-way
 
-If you are a colleague from MediTEC, you must also add the following line of code
-*before* `find_package`, otherwise CMake will not find Carna:
+If you are a colleague from MediTEC, you must also add the following two lines of code
+*before* `find_package`, otherwise CMake will not find Carna and CarnaQt:
 
 ```CMake
-list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/Carna/2.5")
+list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/Carna/3.0")
+list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/CarnaQt/1.0")
 ```
 
 ### 3.3. Manually
 
-Find where your header files are located. You might look for `Carna.h` or `Version.h`.
+Find where your header files are located. You might look for `qt/CarnaQt.h` or `qt/Version.h`.
 Both of these files are contained by a directory named `Carna`.
 Add the *parent* directory of the `Carna` directory,
-that contains `Carna.h` and `Version.h` in turn,
+that contains `qt/Carna.h` and `qt/Version.h` in turn,
 to your project's include directories.
 
 Then find the appropriate library file.
-It's name depends on your platform and Carna version,
-e.g. `Carna-2.5.0.lib` for the release and `Carna-2.5.0d.lib`
-for the debug version respectively of Carna 2.5.0 on Windows.
-Add both of these files to your project's linker stage.
+It's name depends on your platform and CarnaQt version,
+e.g. `CarnaQt-1.0.0.lib` for the release and `CarnaQt-1.0.0d.lib`
+for the debug version respectively of CarnaQt 1.0.0 on Windows.
+Add both of these files to your project's linking stage.
 
----
-## 4. See also
-
-The additional [Carna-DICOM module](https://github.com/RWTHmediTEC/Carna-DICOM)
-provides classes for loading DICOM data sets.
+Note that you must also add the header and library files from Carna.
