@@ -118,8 +118,9 @@ public:
     virtual ~Display();
     
     /** \brief
-      * Posts an `updateGL` invocation to the message queue if such hasn't been
-      * posted yet.
+      * Denotes that this display should update its rendering.
+      *
+      * An appropriate event is posted to the Qt message queue.
       */
     void invalidate();
     

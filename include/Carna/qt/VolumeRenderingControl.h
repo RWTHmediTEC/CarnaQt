@@ -35,6 +35,16 @@ namespace qt
 // VolumeRenderingControl
 // ----------------------------------------------------------------------------------
 
+/** \brief
+  * Base class of `presets::%VolumeRenderingStage` controlling widgets.
+  *
+  * Supplies a \ref sbSampleRate "widget" that controls the sample rate of the
+  * controlled `presets::%VolumeRenderingStage` object. Either add this widget to a
+  * layout or delete it.
+  *
+  * \author Leonid Kostrykin
+  * \date   16.4.12 - 2.4.15
+  */
 class CARNAQT_LIB VolumeRenderingControl : public QWidget, protected RenderStageControl
 {
 
@@ -53,14 +63,25 @@ public:
       */
     virtual ~VolumeRenderingControl();
 
+    /** \brief
+      * References the controlled rendering stage.
+      */
     presets::VolumeRenderingStage& stage;
     
 public slots:
 
+    /** \brief
+      * Invokes the `setSampleRate` with \a samplesPerPixel method on the controlled
+      * `presets::VolumeRenderingStage` object.
+      */
     void setSampleRate( int samplesPerPixel );
 
 protected:
 
+    /** \brief
+      * References a widget that is connected to \ref setSampleRate. Either add this
+      * widget to a layout or delete it.
+      */
     QSpinBox* const sbSampleRate;
 
 }; // VolumeRenderingControl

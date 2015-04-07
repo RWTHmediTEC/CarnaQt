@@ -28,9 +28,11 @@ namespace Carna
   *
   * Other classes that this package provides:
   *
-  *   - The \ref Display class is utilized by all the examples above.
-  *   - \ref ColorPicker and \ref WideColorPicker
-  *   - \ref SpatialListModel
+  *   - The \ref qt::Display class is utilized by all the examples above.
+  *   - The \ref qt::ColorPicker and \ref qt::WideColorPicker widgets let the user
+  *     choose colors.
+  *   - The \ref qt::SpatialListModel can be used with `%QComboBox` for example to
+  *     let the user choose `base::Spatial` objects from a list.
   */
 
 }

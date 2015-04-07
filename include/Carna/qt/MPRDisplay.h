@@ -152,7 +152,7 @@ public:
     void setRotation( const base::math::Matrix3f& rotation );
     
     /** \brief
-      * Denotes that the display should update its rendering.
+      * Denotes that this display should update its rendering.
       *
       * An appropriate event is posted to the Qt message queue.
       */

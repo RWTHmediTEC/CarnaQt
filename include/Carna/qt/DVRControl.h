@@ -71,20 +71,50 @@ public:
       */
     virtual ~DVRControl();
 
+    /** \brief
+      * References the controlled rendering stage.
+      */
     presets::DVRStage& dvr;
     
 public slots:
 
+    /** \brief
+      * Delegates to \ref dvr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setTranslucence( double translucence );
     
+    /** \brief
+      * Delegates to \ref dvr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setDiffuseLight( double diffuseLight );
     
+    /** \brief
+      * Updates the UI based on the `%isLightingUsed` state of \ref dvr.
+      */
     void updateLightingState();
+
+public slots:
+
+    /** \brief
+      * Prompts the user for an XML output file and saves current color map there.
+      */
+    void saveColorConfig();
+
+    /** \brief
+      * Prompts the user for an XML input file and loads color map from there.
+      */
+    void loadColorConfig();
     
 protected:
 
+    /** \brief
+      * Invokes \ref updateLightingState.
+      */
     virtual void showEvent( QShowEvent* event ) override;
     
+    /** \brief
+      * Invokes \ref updateLightingState.
+      */
     virtual void onRenderingFinished();
 
 private:
@@ -96,16 +126,6 @@ private:
     ColorMapEditor* const colorMapEditor;
 
 private slots:
-
-    /** \brief
-      * Prompts the user for an XML output file and saves current channels there.
-      */
-    void saveColorConfig();
-
-    /** \brief
-      * Prompts the user for an XML input file and loads channels from there.
-      */
-    void loadColorConfig();
 
     void updateColorMap();
     

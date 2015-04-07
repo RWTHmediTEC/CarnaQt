@@ -73,18 +73,36 @@ public:
       */
     virtual ~MIPControl();
     
+    /** \brief
+      * References the controlled rendering stage.
+      */
     presets::MIPStage& mip;
     
+    /** \brief
+      * Appends \a layer to \ref mip.
+      */
     void appendLayer( presets::MIPLayer* layer );
     
 public slots:
 
+    /** \brief
+      * Appends new layer with default parameters to \ref mip.
+      */
     void appendLayer();
     
+    /** \brief
+      * Removes all layers from \ref mip.
+      */
     void clearLayers();
     
+    /** \brief
+      * Prompts the user for an XML output file and saves current layers there.
+      */
     void saveColorConfig();
     
+    /** \brief
+      * Prompts the user for an XML input file and loads layers from there.
+      */
     void loadColorConfig();
 
 }; // MIPControl

@@ -75,20 +75,41 @@ public:
       */
     virtual ~DRRControl();
     
+    /** \brief
+      * References the controlled rendering stage.
+      */
     presets::DRRStage& drr;
 
 public slots:
 
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setWaterAttenuation( double muWater );
 
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setBaseIntensity( double baseIntensity );
 
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setLowerThreshold( int lowerThreshold );
 
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setUpperThreshold( int upperThreshold );
 
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setUpperMultiplier( double upperMultiplier );
     
+    /** \brief
+      * Delegates to \ref drr and \ref RenderStageControl::invalidate "invalidates".
+      */
     void setRenderingInverse( int renderingInverse );
 
 }; // DRRControl

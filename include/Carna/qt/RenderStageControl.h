@@ -32,7 +32,11 @@ namespace qt
 // ----------------------------------------------------------------------------------
 
 /** \brief
-  * Defines base class of `base::%RenderStage` controllers.
+  * Basic `base::%RenderStage` control class.
+  *
+  * Defines \ref invalidate "invalidation routine" that updates the corresponding
+  * `%Display` of the controlled rendering stage. Also provides callbacks for when
+  * the rendering, that was triggered by that method, starts and ends.
   *
   * \author Leonid Kostrykin
   * \date   2.4.15
@@ -47,6 +51,9 @@ class CARNAQT_LIB RenderStageControl
 
 public:
 
+    /** \brief
+      * Instantiates.
+      */
     explicit RenderStageControl( base::RenderStage& rs );
     
     /** \brief
@@ -54,14 +61,28 @@ public:
       */
     ~RenderStageControl();
     
+    /** \brief
+      * References the controlled rendering stage.
+      */
     base::RenderStage& renderStage;
     
+    /** \brief
+      * Denotes that the corresponding display should update its rendering.
+      *
+      * An appropriate event is posted to the Qt message queue.
+      */
     void invalidate();
 
 protected:
     
+    /** \brief
+      * Invoked right before rendering starts that was triggered by \ref invalidate.
+      */
     virtual void onRenderingStarted();
     
+    /** \brief
+      * Invoked right after rendering ends that was triggered by \ref invalidate.
+      */
     virtual void onRenderingFinished();
 
 }; // RenderStageControl
