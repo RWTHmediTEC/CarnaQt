@@ -9,7 +9,7 @@ This package provides auxiliary classes for using Carna ≥3.0.0 with Qt ≥4.8.
 
 Go to: [Library Documentation](https://rwthmeditec.github.io/CarnaQt/)
 
-<img src="https://rwthmeditec.github.io/Carna/MPR.png">
+<img src="https://rwthmeditec.github.io/CarnaQt/MPR.png">
 
 ---
 ## Contents
