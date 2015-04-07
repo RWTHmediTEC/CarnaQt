@@ -36,9 +36,13 @@ namespace qt
 // ----------------------------------------------------------------------------------
 
 /** \brief
-  * Defines widget that controls HU windowing.
+  * Defines widget that controls HU windowing. This is the widget illustrated and
+  * used in the \ref MPR examples.
   *
-  * This is the widget illustrated and used in the \ref MPR examples.
+  * Objects that `%WindowingControl` control must implement the \ref Windowing
+  * interface. The predefined \ref GenericWindowingAdapter can be used to achieve
+  * this through compile-time polymorphism, as the
+  * \ref MPRExtendedExample "extended MPR example" shows.
   *
   * \section WindowingControlExample Example
   *
@@ -71,19 +75,60 @@ class CARNAQT_LIB WindowingControl : public QWidget
 
 public:
 
+    /** \brief
+      * Defines the interface that \ref WindowingControl controls.
+      */
     struct Windowing
     {
+        /** \brief
+          * Does nothing.
+          */
         virtual ~Windowing();
+        
+        /** \brief
+          * Updates windowing.
+          */
         virtual void setWindowing( base::HUV windowingLevel, unsigned int windowingWidth ) = 0;
+        
+        /** \brief
+          * Tells current windowing level.
+          */
         virtual base::HUV windowingLevel() const = 0;
+        
+        /** \brief
+          * Tells current windowing width.
+          */
         virtual unsigned int windowingWidth() const = 0;
     };
     
+    /** \brief
+      * Implements the \ref Windowing interface as an adapter to \a WindowingType in
+      * terms of compile-time polymorphism.
+      *
+      * The unspecialized version expects \a WindowingType to support the following
+      * methods in UML notation:
+      *
+      *   - `setWindowingLevel(level : base::HUV)`
+      *   - `setWindowingWidth(width : unsigned int)`
+      *   - `%windowingLevel() : base::HUV`
+      *   - `%windowingWidth() : unsigned int`
+      *
+      * Specialize the template to overcome this expectations.
+      */
     template< typename WindowingType >
     struct GenericWindowingAdapter : public Windowing
     {
+        /** \brief
+          * Instanciates object that will delegate the \ref Windowing interface to
+          * \a windowing. 
+          */
         GenericWindowingAdapter( WindowingType& windowing );
+        
+        /** \brief
+          * The object that the \ref Windowing interface is delegated to.
+          */
         WindowingType& windowing;
+        
         virtual void setWindowing( base::HUV windowingLevel, unsigned int windowingWidth ) override;
         virtual base::HUV windowingLevel() const override;
         virtual unsigned int windowingWidth() const override;
@@ -108,14 +153,25 @@ public:
       */
     virtual ~WindowingControl();
     
+    /** \brief
+      * References the controlled object.
+      */
     Windowing& windowing();
     
+    /** \overload
+      */
     const Windowing& windowing() const;
     
 public slots:
 
+    /** \brief
+      * Updates UI and invokes \ref Windowing::setWindowing on \ref windowing.
+      */
     void setWindowingLevel( int windowingLevel );
 
+    /** \brief
+      * Updates UI and invokes \ref Windowing::setWindowing on \ref windowing.
+      */
     void setWindowingWidth( int windowingWidth );
 
 }; // WindowingControl

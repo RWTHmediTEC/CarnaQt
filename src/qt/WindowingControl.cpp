@@ -117,12 +117,20 @@ const WindowingControl::Windowing& WindowingControl::windowing() const
 
 void WindowingControl::setWindowingLevel( int windowingLevel )
 {
+    if( pimpl->slLevel->value() != windowingLevel )
+    {
+        pimpl->slLevel->setValue( windowingLevel );
+    }
     windowing().setWindowing( windowingLevel, windowing().windowingWidth() );
 }
 
 
 void WindowingControl::setWindowingWidth( int windowingWidth )
 {
+    if( pimpl->slWidth->value() != windowingWidth )
+    {
+        pimpl->slWidth->setValue( windowingWidth );
+    }
     windowing().setWindowing( windowing().windowingLevel(), windowingWidth );
 }
 
