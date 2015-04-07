@@ -11,6 +11,18 @@ Go to: [Library Documentation](https://rwthmeditec.github.io/CarnaQt/)
 
 <img src="https://rwthmeditec.github.io/CarnaQt/MPR.png">
 
+Provided classes:
+
+* The `qt::DRRControl` defines a widget that controls `presets::DRR` parameters.
+* The `qt::DVRControl` controls lighting and colormap for `presets::DVR` volume renderings.
+* The `qt::MIPControl` implements a widget that allows to manage the `presets::MIPLayer` objects of an `presets::MIPStage` instance.
+* The `qt::MPR` and `qt::MPRDisplay` classes implement *multiplanar reformats*.
+* The `qt::WindowingControl` defines a widget that controls the HU windowing of diverse other components.
+* The `qt::Display` widget provides a `base::GLContext` object and encapsulates a `base::FrameRenderer` that it uses for rendering itself.
+* The `qt::ColorPicker` and `qt::WideColorPicker` widgets let the user choose colors.
+* The widget `qt::ExpandableGroupBox` is a container that can hide its contents in order to save UI space.
+* The `qt::SpatialListModel` can be used with `QComboBox` for example to let the user choose `base::Spatial` objects from a list.
+
 ---
 ## Contents
 
