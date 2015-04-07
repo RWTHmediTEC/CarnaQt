@@ -333,8 +333,9 @@ void MPRDisplay::Configurator::addExtraStages( base::RenderStageSequence& to ) c
 
 const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
 const base::Color MPRDisplay::DEFAULT_PLANE_COLOR( 255, 255, 255, 255 );
-const base::math::Matrix3f MPRDisplay::ROTATION_LEFT = base::math::rotation3f( 0, 1, 0, base::math::deg2rad( -90 ) );
-const base::math::Matrix3f MPRDisplay::ROTATION_TOP  = base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) );
+const base::math::Matrix3f MPRDisplay::ROTATION_FRONT = base::math::identity3f();
+const base::math::Matrix3f MPRDisplay::ROTATION_LEFT  = base::math::rotation3f( 0, 1, 0, base::math::deg2rad( -90 ) );
+const base::math::Matrix3f MPRDisplay::ROTATION_TOP   = base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) );
 
 
 MPRDisplay::MPRDisplay( const Configurator& cfg, QWidget* parent )

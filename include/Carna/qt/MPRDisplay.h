@@ -67,11 +67,20 @@ class CARNAQT_LIB MPRDisplay : public QWidget
 
 public:
     
+    /** \brief
+      * Holds default distance between far and near clipping planes.
+      */
     const static float DEFAULT_VISIBLE_DISTANCE;
+    
+    /** \brief
+      * Holds default illustration color of the cutting plane from this `%MPRDisplay`
+      * within other displays.
+      */
     const static base::Color DEFAULT_PLANE_COLOR;
     
-    const static base::math::Matrix3f ROTATION_LEFT;
-    const static base::math::Matrix3f ROTATION_TOP;
+    const static base::math::Matrix3f ROTATION_FRONT; ///< Predefines \ref setRotation "rotation" for a "from front" view.
+    const static base::math::Matrix3f ROTATION_LEFT;  ///< Predefines \ref setRotation "rotation" for a "from left" view.
+    const static base::math::Matrix3f ROTATION_TOP;   ///< Predefines \ref setRotation "rotation" for a "from top" view.
     
     /** \brief
       * Specifies the configuration parameters of a \ref MPRDisplay.
@@ -83,9 +92,9 @@ public:
           */
         Parameters( unsigned int geometryTypeVolume, unsigned int geometryTypePlanes );
         
-        unsigned int geometryTypeVolume;
-        unsigned int geometryTypePlanes;
-        float visibleDistance;
+        unsigned int geometryTypeVolume; ///< Holds the geometry type of the volumetric data.
+        unsigned int geometryTypePlanes; ///< Holds the geometry type to use for cutting planes.
+        float visibleDistance;           ///< Holds the distance between the far and near clipping planes.
     };
     
     /** \brief
@@ -94,14 +103,30 @@ public:
       */
     struct Configurator
     {
+        /** \brief
+          * Instantiates.
+          */
         Configurator( const Parameters& params );
+        
+        /** \brief
+          * Deletes.
+          */
         virtual ~Configurator();
-        const Parameters& parameters;
-        virtual void addExtraStages( base::RenderStageSequence& to ) const;
+        
+        /** \brief
+          * Holds the configuration parameters that were passed to the constructor.
+          */
+        const Parameters parameters;
+        
+        /** \brief
+          * Adds arbitrary rendering stages \a toSequence.
+          */
+        virtual void addExtraStages( base::RenderStageSequence& toSequence ) const;
     };
 
     /** \brief
-      * Instantiates.
+      * Instantiates. \ref setRotation "Sets rotation" to \ref ROTATION_FRONT
+      * initially.
       */
     explicit MPRDisplay( const Configurator& cfg, QWidget* parent = nullptr );
 
