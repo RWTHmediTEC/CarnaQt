@@ -130,9 +130,6 @@ protected:
 
     /** \brief
       * Updates the layouting of the \ref ColorMapTrackerEditor instances.
-      *
-      * This is done by the invocation of
-      * \ref ColorMapEditor::layoutSpanConfigWidgets.
       */
     virtual void resizeEvent( QResizeEvent* ) override;
 

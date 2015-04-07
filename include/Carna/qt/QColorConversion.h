@@ -32,6 +32,9 @@ namespace qt
 // toQColor
 // ----------------------------------------------------------------------------------
 
+/** \brief
+  * Translates `base::Color` to `QColor`.
+  */
 inline QColor toQColor( const base::Color& color )
 {
     return QColor( color.r, color.g, color.b, color.a );
@@ -43,6 +46,9 @@ inline QColor toQColor( const base::Color& color )
 // toColor
 // ----------------------------------------------------------------------------------
 
+/** \brief
+  * Translates `QColor` to `base::Color`.
+  */
 inline base::Color toColor( const QColor& qc )
 {
     return base::Color( qc.red(), qc.green(), qc.blue(), qc.alpha() );

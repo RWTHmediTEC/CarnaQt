@@ -47,8 +47,8 @@ class CARNAQT_LIB MIPLayerEditor : public QFrame
 
 public:
 
-    const static unsigned int FUNCTION_REPLACE = 0;
-    const static unsigned int FUNCTION_ADD     = 1;
+    const static unsigned int FUNCTION_REPLACE = 0; ///< Indentifies `presets::MIPLayer::LAYER_FUNCTION_REPLACE`.
+    const static unsigned int FUNCTION_ADD     = 1; ///< Indentifies `presets::MIPLayer::LAYER_FUNCTION_ADD`.
 
     /** \brief
       * Instantiates.
@@ -65,26 +65,53 @@ public:
       */
     presets::MIPLayer& layer;
     
+    /** \brief
+      * Tells human-readable name for the layer function \a functionIndex identifies.
+      */
     static std::string functionName( unsigned int functionIndex );
     
+    /** \brief
+      * Identifies the layer function by its human-readable \a functionName.
+      */
     static unsigned int functionIndex( const std::string& functionName );
     
+    /** \brief
+      * Identifies the layer function by its \a function parameters.
+      */
     static unsigned int functionIndex( const base::BlendFunction& function );
     
+    /** \brief
+      * References the layer function \a functionIndex identifies.
+      */
     static const base::BlendFunction& function( unsigned int functionIndex );
     
 public slots:
 
+    /** \brief
+      * Updates the layer function on \ref layer and emits \ref changed.
+      */
     void setFunction( int functionIndex );
     
+    /** \brief
+      * Delegates to \ref layer and emits \ref changed.
+      */
     void setHuvMin( int huvMin );
     
+    /** \brief
+      * Delegates to \ref layer and emits \ref changed.
+      */
     void setHuvMax( int huvMax );
     
+    /** \brief
+      * Delegates to \ref layer and emits \ref changed.
+      */
     void setColor( const QColor& color );
     
 signals:
 
+    /** \brief
+      * Emitted whenever \ref layer changes.
+      */
     void changed();
 
 private:

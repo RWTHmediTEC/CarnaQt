@@ -13,7 +13,7 @@
 #define COLORMAPTRACKEREDITOR_H_0874895466
 
 /** \file   ColorMapTrackerEditor.h
-  * \brief  Defines \ref Carna::VolumeRenderings::DVR::ColorMapTrackerEditor.
+  * \brief  Defines \ref Carna::qt::ColorMapTrackerEditor.
   */
 
 #include <Carna/qt/CarnaQt.h>
@@ -82,10 +82,6 @@ public slots:
 
     /** \brief
       * Sets current HUV setting for the editor.
-      *
-      * The associated tracker will be updated immediately if the HUV setting is
-      * valid. In this case, also \ref ColorMapTrackerEditor::validState will be set
-      * to `true`. Otherwise it will be set to `false`.
       */
     void setCurrentHuv( int huv );
 
@@ -93,9 +89,6 @@ protected:
 
     /** \brief
       * Paints the widget.
-      *
-      * If \ref ColorMapTrackerEditor::validState is set to `false`, a red background
-      * will be painted.
       */
     virtual void paintEvent( QPaintEvent* );
 

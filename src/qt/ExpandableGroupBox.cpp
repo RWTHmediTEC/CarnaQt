@@ -37,7 +37,7 @@ public:
 
     QString text;
 
-    bool expended;
+    bool expanded;
 
     QVBoxLayout* const global;
 
@@ -47,27 +47,27 @@ public:
 
 private:
 
-    QMargins expendedCaptionMargins, collapsedCaptionMargins;
+    QMargins expandedCaptionMargins, collapsedCaptionMargins;
 
 }; // ExpandableGroupBox :: Details
 
 
 ExpandableGroupBox::Details::Details()
     : caption( new QLabel() )
-    , expended( false )
+    , expanded( false )
     , global( new QVBoxLayout() )
     , child( nullptr )
 {
-    expendedCaptionMargins = collapsedCaptionMargins = caption->contentsMargins();
-    expendedCaptionMargins.setBottom( collapsedCaptionMargins.bottom() + 5 );
+    expandedCaptionMargins = collapsedCaptionMargins = caption->contentsMargins();
+    expandedCaptionMargins.setBottom( collapsedCaptionMargins.bottom() + 5 );
 }
 
 
 void ExpandableGroupBox::Details::updateCaption()
 {
-    const QString prefix = expended ? "&#9660;" : "&#9658;";
+    const QString prefix = expanded ? "&#9660;" : "&#9658;";
     caption->setText( prefix + " <a href=\"#\">" + text + "</a>" );
-    caption->setContentsMargins( expended ? expendedCaptionMargins : collapsedCaptionMargins );
+    caption->setContentsMargins( expanded ? expandedCaptionMargins : collapsedCaptionMargins );
 }
 
 
@@ -76,12 +76,12 @@ void ExpandableGroupBox::Details::updateCaption()
 // ExpandableGroupBox
 // ----------------------------------------------------------------------------------
 
-ExpandableGroupBox::ExpandableGroupBox( const QString& text, bool expended, QWidget* parent )
+ExpandableGroupBox::ExpandableGroupBox( const QString& text, bool expanded, QWidget* parent )
     : QFrame( parent )
     , pimpl( new Details() )
 {
     this->setText( text );
-    this->setExpended( expended );
+    this->setExpanded( expanded );
 
     this->setLayout( pimpl->global );
     pimpl->global->addWidget( pimpl->caption );
@@ -115,39 +115,39 @@ const QString& ExpandableGroupBox::text() const
 }
 
 
-void ExpandableGroupBox::setExpended( bool expended )
+void ExpandableGroupBox::setExpanded( bool expanded )
 {
-    pimpl->expended = expended;
+    pimpl->expanded = expanded;
     pimpl->updateCaption();
 
     if( pimpl->child )
     {
-        pimpl->child->setVisible( pimpl->expended );
+        pimpl->child->setVisible( pimpl->expanded );
     }
 }
 
 
-bool ExpandableGroupBox::isExpended() const
+bool ExpandableGroupBox::isExpanded() const
 {
-    return pimpl->expended;
+    return pimpl->expanded;
 }
 
 
 bool ExpandableGroupBox::isCollapsed() const
 {
-    return !isExpended();
+    return !isExpanded();
 }
 
 
-void ExpandableGroupBox::expend()
+void ExpandableGroupBox::expand()
 {
-    setExpended( true );
+    setExpanded( true );
 }
 
 
 void ExpandableGroupBox::collapse()
 {
-    setExpended( false );
+    setExpanded( false );
 }
 
 
@@ -185,7 +185,7 @@ void ExpandableGroupBox::setChild( QWidget* child )
         pimpl->child->setVisible( false );
     }
     pimpl->global->addWidget( pimpl->child );
-    if( isExpended() )
+    if( isExpanded() )
     {
         pimpl->child->setVisible( true );
     }
@@ -194,7 +194,7 @@ void ExpandableGroupBox::setChild( QWidget* child )
 
 void ExpandableGroupBox::toggle()
 {
-    setExpended( !isExpended() );
+    setExpanded( !isExpanded() );
 }
 
 

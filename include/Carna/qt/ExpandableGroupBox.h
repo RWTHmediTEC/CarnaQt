@@ -70,9 +70,9 @@ class CARNAQT_LIB ExpandableGroupBox : public QFrame
 public:
 
     /** \brief
-      * Instantiates, either \a expended or collapsed initially.
+      * Instantiates, either \a expanded or collapsed initially.
       */
-    explicit ExpandableGroupBox( const QString& text = "", bool expended = false, QWidget* parent = nullptr );
+    explicit ExpandableGroupBox( const QString& text = "", bool expanded = false, QWidget* parent = nullptr );
 
     /** \brief
       * Deletes.
@@ -85,12 +85,12 @@ public:
     const QString& text() const;
 
     /** \brief
-      * Tells whether the group box is currently expended.
+      * Tells whether the group box is currently expanded.
       */
-    bool isExpended() const;
+    bool isExpanded() const;
     
     /** \brief
-      * Tells whether the group box is currently collapsed (not expended).
+      * Tells whether the group box is currently collapsed (not expanded).
       */
     bool isCollapsed() const;
 
@@ -118,7 +118,7 @@ public:
 signals:
 
     /** \brief
-      * The group box has been expended.
+      * The group box has been expanded.
       */
     void expanded();
     
@@ -136,20 +136,20 @@ public slots:
     void setText( const QString& );
 
     /** \brief
-      * Expends or collapses the group box.
+      * Expands or collapses the group box.
       *
-      * Emits either the \ref expended or the \ref collapsed signal.
+      * Emits either the \ref expanded or the \ref collapsed signal.
       */
-    void setExpended( bool );
+    void setExpanded( bool );
 
     /** \brief
-      * Expends the group box.
+      * Expands the group box.
       *
-      * If the group box is expended already, nothing happens.
+      * If the group box is expanded already, nothing happens.
       *
-      * Emits the \ref expended signal.
+      * Emits the \ref expanded signal.
       */
-    void expend();
+    void expand();
     
     /** \brief
       * Collapses the group box.
@@ -161,9 +161,9 @@ public slots:
     void collapse();
 
     /** \brief
-      * Switches the group box from 'collapsed' into 'expended' state and vice-versa.
+      * Switches the group box from 'collapsed' into 'expanded' state and vice-versa.
       *
-      * Emits either the \ref expended or the \ref collapsed signal.
+      * Emits either the \ref expanded or the \ref collapsed signal.
       */
     void toggle();
 

@@ -70,20 +70,41 @@ public:
 
 public slots:
 
+    /** \brief
+      * Removes the represented `presets::MIPLayer` from the controlled \ref stage.
+      * Emits the \ref removed and \ref changed signals.
+      */
     void remove();
 
+    /** \brief
+      * Ascends the represented `presets::MIPLayer` on the controlled \ref stage.
+      * Emits the \ref ascended and \ref changed signals.
+      */
     void ascend();
 
+    /** \brief
+      * Descends the represented `presets::MIPLayer` on the controlled \ref stage.
+      * Emits the \ref descended and \ref changed signals.
+      */
     void descend();
     
 signals:
 
+    /** Emitted when the represented `presets::MIPLayer` is removed, ascended or
+      * descended.
+      */
     void changed();
     
+    /** Emitted when the represented `presets::MIPLayer` is ascended.
+      */
     void ascended( MIPControlLayer& );
     
+    /** Emitted when the represented `presets::MIPLayer` is descended.
+      */
     void descended( MIPControlLayer& );
     
+    /** Emitted when the represented `presets::MIPLayer` is removed.
+      */
     void removed( MIPControlLayer& );
     
 private slots:

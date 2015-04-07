@@ -72,7 +72,8 @@ namespace qt
   *  -# Lets also use some extra rendering stages to achieve renderings as shown in
   *     the screenshot above:
   *     \snippet Demos/MPRExtended/main.cpp mpr_extra_stages
-  *  -# Now we implement a short program that also uses a \ref WindowingControl:
+  *  -# Now we implement a short program that also uses an \ref WindowingControl
+  *     instance:
   *     \snippet Demos/MPRExtended/main.cpp mpr_main
   *
   * \author Leonid Kostrykin

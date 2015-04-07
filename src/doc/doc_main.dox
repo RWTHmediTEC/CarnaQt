@@ -31,6 +31,8 @@ namespace Carna
   *   - The \ref qt::Display class is utilized by all the examples above.
   *   - The \ref qt::ColorPicker and \ref qt::WideColorPicker widgets let the user
   *     choose colors.
+  *   - The widget \ref qt::ExpandableGroupBox is a container that can hide its
+  *     contents in order to save UI space.
   *   - The \ref qt::SpatialListModel can be used with `%QComboBox` for example to
   *     let the user choose `base::Spatial` objects from a list.
   */

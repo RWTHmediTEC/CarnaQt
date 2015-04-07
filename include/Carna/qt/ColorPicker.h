@@ -35,8 +35,6 @@ namespace qt
 /** \brief
   * Implements widget for selecting colors with or without alpha values.
   *
-  * \ingroup Widgets
-  *
   * Examples:
   *
   * \image html ColorPicker01.png
