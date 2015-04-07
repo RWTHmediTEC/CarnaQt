@@ -177,7 +177,7 @@ public slots:
 private:
 
     class Details;
-    std::unique_ptr< Details > pimpl;
+    const std::unique_ptr< Details > pimpl;
 
 private slots:
 

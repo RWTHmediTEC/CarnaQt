@@ -40,8 +40,6 @@ namespace qt
 
 struct MPRDisplay::Details : public QObject
 {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    
     MPRDisplay& self;
     Details( MPRDisplay& self, const Configurator& cfg );
     MPR* mpr;
@@ -52,8 +50,8 @@ struct MPRDisplay::Details : public QObject
     Display* const display;
     static Display* createDisplay( const Configurator& cfg, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes );
     
-    base::math::Matrix4f pivotRotation;
-    base::math::Matrix4f pivotBaseTransform;
+    const std::unique_ptr< base::math::Matrix4f > pivotRotation;
+    const std::unique_ptr< base::math::Matrix4f > pivotBaseTransform;
     base::Node pivot;
     base::Geometry* const plane;
     base::Camera* const cam;
@@ -124,10 +122,11 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Configurator& cfg )
     , mprRenderStage( new MPRStage( cfg.parameters.geometryTypePlanes ) )
     , planes( new presets::CuttingPlanesStage( cfg.parameters.geometryTypeVolume, cfg.parameters.geometryTypePlanes ) )
     , display( createDisplay( cfg, mprRenderStage, planes ) )
+    , pivotRotation( new base::math::Matrix4f( base::math::identity4f() ) )
+    , pivotBaseTransform( new base::math::Matrix4f() )
     , plane( new base::Geometry( cfg.parameters.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
-    , pivotRotation( base::math::identity4f() )
 {
     /* Configure the 'pivot' node.
      */
@@ -288,7 +287,7 @@ Display* MPRDisplay::Details::createDisplay( const Configurator& cfg, MPRStage* 
 
 void MPRDisplay::Details::updatePivot()
 {
-    pivot.localTransform = pivotBaseTransform * pivotRotation;
+    pivot.localTransform = ( *pivotBaseTransform ) * ( *pivotRotation );
 }
 
 
@@ -371,7 +370,7 @@ QSize MPRDisplay::minimumSizeHint() const
 
 void MPRDisplay::setRotation( const base::math::Matrix3f& rotation )
 {
-    pimpl->pivotRotation.topLeftCorner( 3, 3 ) = rotation;
+    pimpl->pivotRotation->topLeftCorner( 3, 3 ) = rotation;
     pimpl->updatePivot();
     invalidate();
 }
@@ -411,7 +410,7 @@ void MPRDisplay::detachPivot()
 
 void MPRDisplay::updatePivot( const base::math::Matrix4f& baseTransform )
 {
-    pimpl->pivotBaseTransform = baseTransform;
+    *pimpl->pivotBaseTransform = baseTransform;
     pimpl->updatePivot();
     invalidate();
 }

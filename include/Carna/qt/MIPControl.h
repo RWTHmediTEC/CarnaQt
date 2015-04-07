@@ -58,7 +58,7 @@ class CARNAQT_LIB MIPControl : public VolumeRenderingControl
 
     Q_OBJECT
     
-    struct Details;
+    class Details;
     const std::unique_ptr< Details > pimpl;
 
 public:

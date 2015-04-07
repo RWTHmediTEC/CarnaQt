@@ -19,6 +19,8 @@
 #include <Carna/base/Composition.h>
 #include <Carna/base/VertexBuffer.h>
 #include <Carna/base/IndexBuffer.h>
+#include <Carna/base/RenderState.h>
+#include <Carna/base/RenderTask.h>
 #include <map>
 #include <QFile>
 #include <QTextStream>

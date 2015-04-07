@@ -46,7 +46,7 @@ class CARNAQT_LIB RenderStageControl
 
     NON_COPYABLE
     
-    struct Details;
+    class Details;
     const std::unique_ptr< Details > pimpl;
 
 public:

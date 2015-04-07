@@ -38,7 +38,7 @@ class MPRStage : public base::GeometryStage< void >
     NON_COPYABLE
     
     struct Details;
-    std::unique_ptr< Details > pimpl;
+    const std::unique_ptr< Details > pimpl;
 
 public:
 

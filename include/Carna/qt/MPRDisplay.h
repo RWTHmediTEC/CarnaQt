@@ -63,7 +63,7 @@ class CARNAQT_LIB MPRDisplay : public QWidget
     NON_COPYABLE
     
     struct Details;
-    std::unique_ptr< Details > pimpl;
+    const std::unique_ptr< Details > pimpl;
 
 public:
     
@@ -85,7 +85,7 @@ public:
     /** \brief
       * Specifies the configuration parameters of a \ref MPRDisplay.
       */
-    struct Parameters
+    struct CARNAQT_LIB Parameters
     {
         /** \brief
           * Sets \ref visibleDistance to \ref DEFAULT_VISIBLE_DISTANCE.
@@ -101,7 +101,7 @@ public:
       * Configures a \ref MPRDisplay actively by supplying additional rendering
       * stages.
       */
-    struct Configurator
+    struct CARNAQT_LIB Configurator
     {
         /** \brief
           * Instantiates.

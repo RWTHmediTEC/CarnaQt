@@ -29,8 +29,6 @@ namespace qt
 
 struct MPR::Details : public base::NodeListener
 {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    
     MPR& self;
     Details( MPR& self );
 
@@ -41,7 +39,7 @@ struct MPR::Details : public base::NodeListener
     void attachPivots();
     void detachPivots();
     void updatePivots();
-    base::math::Matrix4f basePivotTransform;
+    const std::unique_ptr< base::math::Matrix4f > basePivotTransform;
     
     std::set< MPRDisplay* > displays;
     
@@ -58,6 +56,7 @@ MPR::Details::Details( MPR& self )
     : self( self )
     , root( nullptr )
     , volume( nullptr )
+    , basePivotTransform( new base::math::Matrix4f() )
     , windowingLevel( presets::CuttingPlanesStage::DEFAULT_WINDOWING_LEVEL )
     , windowingWidth( presets::CuttingPlanesStage::DEFAULT_WINDOWING_WIDTH )
 {
@@ -153,10 +152,10 @@ void MPR::Details::updatePivots()
          * i.e. rotation and translation become the same, but the volume is still
          * scaled w.r.t. to the pivot.
          */
-        basePivotTransform = base::math::identity4f();
+        ( *basePivotTransform ) = base::math::identity4f();
         for( base::Spatial* current = &volume->parent(); current != root; current = &current->parent() )
         {
-            basePivotTransform = current->localTransform * basePivotTransform;
+            ( *basePivotTransform ) = current->localTransform * ( *basePivotTransform );
         }
         
         /* Notify all displays to update their pivots.
@@ -164,7 +163,7 @@ void MPR::Details::updatePivots()
         for( auto displayItr = displays.begin(); displayItr != displays.end(); ++displayItr )
         {
             MPRDisplay& display = **displayItr;
-            display.updatePivot( basePivotTransform );
+            display.updatePivot( *basePivotTransform );
         }
     }
 }
@@ -233,7 +232,7 @@ void MPR::addDisplay( MPRDisplay& mprDisplay )
             mprDisplay.attachPivot( *pimpl->root );
             if( pimpl->volume != nullptr )
             {
-                mprDisplay.updatePivot( pimpl->basePivotTransform );
+                mprDisplay.updatePivot( *pimpl->basePivotTransform );
             }
         }
     }

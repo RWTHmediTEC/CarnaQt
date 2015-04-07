@@ -277,6 +277,7 @@ include( "misc/compiler_specific.cmake" )
 target_link_libraries( ${TARGET_NAME}
             ${OPENGL_LIBRARIES}
             ${GLEW_LIBRARIES}
+            ${CARNA_LIBRARIES}
             ${QT_LIBRARIES}
         )
 

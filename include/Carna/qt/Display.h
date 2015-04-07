@@ -69,7 +69,7 @@ class CARNAQT_LIB Display : public QGLWidget
     NON_COPYABLE
     
     struct Details;
-    std::unique_ptr< Details > pimpl;
+    const std::unique_ptr< Details > pimpl;
 
 public:
 

@@ -78,7 +78,7 @@ public:
     /** \brief
       * Defines the interface that \ref WindowingControl controls.
       */
-    struct Windowing
+    struct CARNAQT_LIB Windowing
     {
         /** \brief
           * Does nothing.
