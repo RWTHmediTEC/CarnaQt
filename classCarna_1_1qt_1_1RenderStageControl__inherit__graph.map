@@ -1,0 +1,6 @@
+<map id="Carna::qt::RenderStageControl" name="Carna::qt::RenderStageControl">
+<area shape="rect" id="node3" href="$classCarna_1_1qt_1_1VolumeRenderingControl.html" title="Base class of presets::VolumeRenderingStage controlling widgets. " alt="" coords="168,83,355,130"/>
+<area shape="rect" id="node5" href="$classCarna_1_1qt_1_1DRRControl.html" title="Defines presets::DRRStage controlling widget. " alt="" coords="5,179,160,208"/>
+<area shape="rect" id="node7" href="$classCarna_1_1qt_1_1DVRControl.html" title="Defines presets::DVRStage controlling widget. " alt="" coords="184,179,339,208"/>
+<area shape="rect" id="node9" href="$classCarna_1_1qt_1_1MIPControl.html" title="Defines presets::MIPStage controlling widget. " alt="" coords="363,179,512,208"/>
+</map>

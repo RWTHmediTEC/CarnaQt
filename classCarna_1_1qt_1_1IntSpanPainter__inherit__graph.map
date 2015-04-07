@@ -1,0 +1,4 @@
+<map id="Carna::qt::IntSpanPainter" name="Carna::qt::IntSpanPainter">
+<area shape="rect" id="node3" href="$classCarna_1_1qt_1_1ColorMapSpanPainter.html" title="Implements IntSpanPainter s.t. it visualizes color gradients. " alt="" coords="5,83,216,112"/>
+<area shape="rect" id="node5" href="$classCarna_1_1qt_1_1NullIntSpanPainter.html" title="Null&#45;implementation of IntSpanPainter. " alt="" coords="240,83,432,112"/>
+</map>

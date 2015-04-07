@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classCarna_1_1qt_1_1RenderStageControl.html" title="Basic base::RenderStage control class. " alt="" coords="5,59,208,88"/>
+<area shape="rect" id="node3" href="$classCarna_1_1qt_1_1VolumeRenderingControl.html" title="Base class of presets::VolumeRenderingStage controlling widgets. " alt="" coords="256,50,443,97"/>
+<area shape="rect" id="node5" href="$classCarna_1_1qt_1_1DRRControl.html" title="Defines presets::DRRStage controlling widget. " alt="" coords="492,5,647,35"/>
+<area shape="rect" id="node7" href="$classCarna_1_1qt_1_1DVRControl.html" title="Defines presets::DVRStage controlling widget. " alt="" coords="492,59,647,88"/>
+<area shape="rect" id="node9" href="$classCarna_1_1qt_1_1MIPControl.html" title="Defines presets::MIPStage controlling widget. " alt="" coords="495,112,644,141"/>
+</map>
