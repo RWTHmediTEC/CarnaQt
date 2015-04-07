@@ -72,15 +72,15 @@ public:
         float visibleDistance;
     };
     
-    struct Factory
+    struct Configurator
     {
-        Factory( const Parameters& params );
-        virtual ~Factory();
+        Configurator( const Parameters& params );
+        virtual ~Configurator();
         const Parameters& parameters;
         virtual void addExtraStages( base::RenderStageSequence& to ) const;
     };
 
-    explicit MPRDisplay( const Factory& factory, QWidget* parent = nullptr );
+    explicit MPRDisplay( const Configurator& cfg, QWidget* parent = nullptr );
         
     virtual ~MPRDisplay();
 

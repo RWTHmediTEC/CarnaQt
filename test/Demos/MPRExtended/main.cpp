@@ -30,10 +30,10 @@ const static unsigned int GEOMETRY_TYPE_OPAQUE     = 2;
 
 //! [mpr_extra_stages]
 using namespace Carna;
-struct MPRFactory : public qt::MPRDisplay::Factory
+struct MPRConfig : public qt::MPRDisplay::Configurator
 {
-    MPRFactory( const qt::MPRDisplay::Parameters& params )
-        : qt::MPRDisplay::Factory( params )
+    MPRConfig( const qt::MPRDisplay::Parameters& params )
+        : qt::MPRDisplay::Configurator( params )
     {
     }
     
@@ -43,10 +43,7 @@ struct MPRFactory : public qt::MPRDisplay::Factory
         rsHelper << new presets::OpaqueRenderingStage( GEOMETRY_TYPE_OPAQUE );
         rsHelper << new presets::MeshColorCodingStage();
         rsHelper << new presets::OccludedRenderingStage();
-        
-        /* We are not allowed to remove stages already added:
-         */
-        rsHelper.commit( false );
+        rsHelper.commit();
     }
 };
 //! [mpr_extra_stages]
@@ -64,11 +61,11 @@ int main( int argc, char** argv )
     /* Create MPR displays.
      */
     const qt::MPRDisplay::Parameters params( GEOMETRY_TYPE_VOLUMETRIC, GEOMETRY_TYPE_PLANES );
-    const MPRFactory mprFactory( params );
+    const MPRConfig mprCfg( params );
     
-    qt::MPRDisplay front( mprFactory );
-    qt::MPRDisplay left ( mprFactory );
-    qt::MPRDisplay top  ( mprFactory );
+    qt::MPRDisplay front( mprCfg );
+    qt::MPRDisplay left ( mprCfg );
+    qt::MPRDisplay top  ( mprCfg );
     
     left.setRotation( qt::MPRDisplay::ROTATION_LEFT );
     top .setRotation( qt::MPRDisplay::ROTATION_TOP  );

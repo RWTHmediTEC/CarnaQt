@@ -43,14 +43,14 @@ struct MPRDisplay::Details : public QObject
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     
     MPRDisplay& self;
-    Details( MPRDisplay& self, const Factory& factory );
+    Details( MPRDisplay& self, const Configurator& cfg );
     MPR* mpr;
     MPRDataFeature planeData;
     MPRStage* mprRenderStage;
     presets::CuttingPlanesStage* planes;
 
     Display* const display;
-    static Display* createDisplay( const Factory& factory, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes );
+    static Display* createDisplay( const Configurator& cfg, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes );
     
     base::math::Matrix4f pivotRotation;
     base::math::Matrix4f pivotBaseTransform;
@@ -65,12 +65,30 @@ struct MPRDisplay::Details : public QObject
     bool mousePressEvent( QMouseEvent* ev );
     void mouseReleaseEvent( QMouseEvent* ev );
     
+    struct ExtraRenderStageSequence;
+    
     struct PlaneDragInfo;
     std::unique_ptr< PlaneDragInfo > currentPlane;
     
     struct PlaneMovement;
     std::unique_ptr< PlaneMovement > planeMovement;
 };
+
+
+struct MPRDisplay::Details::ExtraRenderStageSequence : public base::RenderStageSequence
+{
+    void moveStagesTo( base::RenderStageSequence& dst );
+};
+
+
+void MPRDisplay::Details::ExtraRenderStageSequence::moveStagesTo( base::RenderStageSequence& dst )
+{
+    for( std::size_t rsIdx = 0; rsIdx < stages(); ++rsIdx )
+    {
+        dst.appendStage( &stageAt( rsIdx ) );
+    }
+    this->releaseStages();
+}
 
 
 struct MPRDisplay::Details::PlaneDragInfo
@@ -100,13 +118,13 @@ struct MPRDisplay::Details::PlaneMovement
 };
 
 
-MPRDisplay::Details::Details( MPRDisplay& self, const Factory& factory )
+MPRDisplay::Details::Details( MPRDisplay& self, const Configurator& cfg )
     : self( self )
     , mpr( nullptr )
-    , mprRenderStage( new MPRStage( factory.parameters.geometryTypePlanes ) )
-    , planes( new presets::CuttingPlanesStage( factory.parameters.geometryTypeVolume, factory.parameters.geometryTypePlanes ) )
-    , display( createDisplay( factory, mprRenderStage, planes ) )
-    , plane( new base::Geometry( factory.parameters.geometryTypePlanes ) )
+    , mprRenderStage( new MPRStage( cfg.parameters.geometryTypePlanes ) )
+    , planes( new presets::CuttingPlanesStage( cfg.parameters.geometryTypeVolume, cfg.parameters.geometryTypePlanes ) )
+    , display( createDisplay( cfg, mprRenderStage, planes ) )
+    , plane( new base::Geometry( cfg.parameters.geometryTypePlanes ) )
     , cam( new base::Camera() )
     , projControl( new presets::OrthogonalControl( new presets::CameraNavigationControl() ) )
     , pivotRotation( base::math::identity4f() )
@@ -124,9 +142,9 @@ MPRDisplay::Details::Details( MPRDisplay& self, const Factory& factory )
     /* Configure the camera.
      */
     projControl->setZoomStrength( 1e-2f );
-    cam->localTransform = base::math::translation4f( 0, 0, factory.parameters.visibleDistance / 2 );
+    cam->localTransform = base::math::translation4f( 0, 0, cfg.parameters.visibleDistance / 2 );
     projControl->setMinimumVisibleDistance( 0 );
-    projControl->setMaximumVisibleDistance( factory.parameters.visibleDistance );
+    projControl->setMaximumVisibleDistance( cfg.parameters.visibleDistance );
     projControl->setRotationEnabled( false );
     
     /* Configure the display.
@@ -254,13 +272,14 @@ void MPRDisplay::Details::mouseReleaseEvent( QMouseEvent* ev )
 }
 
 
-Display* MPRDisplay::Details::createDisplay( const Factory& factory, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes )
+Display* MPRDisplay::Details::createDisplay( const Configurator& cfg, MPRStage* mprRenderStage, presets::CuttingPlanesStage* planes )
 {
     FrameRendererFactory* const frFactory = new FrameRendererFactory();
-    const Parameters& params = factory.parameters;
+    const Parameters& params = cfg.parameters;
     frFactory->appendStage( planes );
-    factory.addExtraStages( *frFactory );
-    CARNA_ASSERT_EX( &frFactory->stageAt( 0 ) == planes, "MPRDisplay::Factory cleared stage sequence!" );
+    ExtraRenderStageSequence extraRenderStageSequence;
+    cfg.addExtraStages( extraRenderStageSequence );
+    extraRenderStageSequence.moveStagesTo( *frFactory );
     frFactory->appendStage( mprRenderStage );
     Display* const display = new Display( frFactory );
     return display;
@@ -289,21 +308,21 @@ MPRDisplay::Parameters::Parameters( unsigned int geometryTypeVolume, unsigned in
 
 
 // ----------------------------------------------------------------------------------
-// MPRDisplay :: Factory
+// MPRDisplay :: Configurator
 // ----------------------------------------------------------------------------------
 
-MPRDisplay::Factory::Factory( const Parameters& params )
+MPRDisplay::Configurator::Configurator( const Parameters& params )
     : parameters( params )
 {
 }
 
 
-MPRDisplay::Factory::~Factory()
+MPRDisplay::Configurator::~Configurator()
 {
 }
 
 
-void MPRDisplay::Factory::addExtraStages( base::RenderStageSequence& to ) const
+void MPRDisplay::Configurator::addExtraStages( base::RenderStageSequence& to ) const
 {
 }
 
@@ -320,10 +339,10 @@ const base::math::Matrix3f MPRDisplay::ROTATION_LEFT = base::math::rotation3f( 0
 const base::math::Matrix3f MPRDisplay::ROTATION_TOP  = base::math::rotation3f( 1, 0, 0, base::math::deg2rad( -90 ) );
 
 
-MPRDisplay::MPRDisplay( const Factory& factory, QWidget* parent )
+MPRDisplay::MPRDisplay( const Configurator& cfg, QWidget* parent )
     : QWidget( parent )
-    , pimpl( new Details( *this, factory ) )
-    , parameters( factory.parameters )
+    , pimpl( new Details( *this, cfg ) )
+    , parameters( cfg.parameters )
 {
     setLayout( new QVBoxLayout() );
     this->layout()->addWidget( pimpl->display );
