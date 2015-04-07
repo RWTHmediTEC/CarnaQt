@@ -300,7 +300,6 @@ void MPRDisplay::Details::updatePivot()
 MPRDisplay::Parameters::Parameters( unsigned int geometryTypeVolume, unsigned int geometryTypePlanes )
     : geometryTypeVolume( geometryTypeVolume )
     , geometryTypePlanes( geometryTypePlanes )
-    , unzoomedVisibleSideLength( DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH )
     , visibleDistance( DEFAULT_VISIBLE_DISTANCE )
 {
 }
@@ -332,7 +331,6 @@ void MPRDisplay::Configurator::addExtraStages( base::RenderStageSequence& to ) c
 // MPRDisplay
 // ----------------------------------------------------------------------------------
 
-const float MPRDisplay::DEFAULT_UNZOOMED_VISIBLE_SIDE_LENGTH = 500;
 const float MPRDisplay::DEFAULT_VISIBLE_DISTANCE = 2000;
 const base::Color MPRDisplay::DEFAULT_PLANE_COLOR( 255, 255, 255, 255 );
 const base::math::Matrix3f MPRDisplay::ROTATION_LEFT = base::math::rotation3f( 0, 1, 0, base::math::deg2rad( -90 ) );
@@ -487,6 +485,12 @@ base::HUV MPRDisplay::minimumHUV() const
 base::HUV MPRDisplay::maximumHUV() const
 {
     return pimpl->planes->maximumHUV();
+}
+
+
+float MPRDisplay::zoomFactor() const
+{
+    return pimpl->projControl->zoomFactor();
 }
 
 
