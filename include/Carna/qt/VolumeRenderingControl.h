@@ -35,7 +35,7 @@ namespace qt
 // VolumeRenderingControl
 // ----------------------------------------------------------------------------------
 
-class CARNAQT_LIB VolumeRenderingControl : public QWidget, public RenderStageControl
+class CARNAQT_LIB VolumeRenderingControl : public QWidget, protected RenderStageControl
 {
 
     Q_OBJECT

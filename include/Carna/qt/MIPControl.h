@@ -53,7 +53,7 @@ namespace qt
   * \author Leonid Kostrykin
   * \date   16.4.12 - 3.4.15
   */
-class CARNAQT_LIB MIPControl : protected VolumeRenderingControl
+class CARNAQT_LIB MIPControl : public VolumeRenderingControl
 {
 
     Q_OBJECT
