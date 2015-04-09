@@ -1,10 +1,10 @@
 ############################################
-# Locates Carna library.
+# Locates CarnaQt library.
 #-------------------------------------------
 # The following variables are set:
-#	CARNA_INCLUDE_DIR   points to headers
-#	CARNA_LIBRARIES     points to lib files
-#	CARNA_FOUND         indicates success
+#	CARNAQT_INCLUDE_DIR  points to headers
+#	CARNAQT_LIBRARIES    points to lib files
+#	CARNAQT_FOUND        indicates success
 #-------------------------------------------
 # Leonid Kostrykin, 12.12.2014
 ############################################
