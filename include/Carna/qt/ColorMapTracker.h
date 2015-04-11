@@ -16,6 +16,7 @@
   * \brief  Defines \ref Carna::qt::ColorMapTracker.
   */
 
+#include <Carna/qt/CarnaQt.h>
 #include <Carna/qt/MultiSpanSliderTracker.h>
 
 namespace Carna

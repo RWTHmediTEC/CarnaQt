@@ -16,6 +16,7 @@
   * \brief  Defines \ref Carna::qt::ColorMapEditor.
   */
 
+#include <Carna/qt/CarnaQt.h>
 #include <Carna/qt/MultiSpanSlider.h>
 #include <Carna/base/RotatingColor.h>
 #include <deque>

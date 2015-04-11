@@ -16,7 +16,7 @@
   * \brief  Defines \ref Carna::qt::ExpandableGroupBox.
   */
 
-#include <Carna/Carna.h>
+#include <Carna/qt/CarnaQt.h>
 #include <QFrame>
 #include <memory>
 

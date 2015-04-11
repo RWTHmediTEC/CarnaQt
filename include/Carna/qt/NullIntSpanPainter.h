@@ -16,6 +16,7 @@
   * \brief  Defines \ref Carna::qt::NullIntSpanPainter.
   */
 
+#include <Carna/qt/CarnaQt.h>
 #include <Carna/qt/IntSpanPainter.h>
 
 namespace Carna
