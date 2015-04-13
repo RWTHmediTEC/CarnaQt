@@ -252,7 +252,7 @@ list(APPEND CMAKE_MODULE_PATH "${MEDITEC_LIBS}/CarnaQt/1.0")
 Find where your header files are located. You might look for `qt/CarnaQt.h` or `qt/Version.h`.
 Both of these files are contained by a directory named `Carna`.
 Add the *parent* directory of the `Carna` directory,
-that contains `qt/Carna.h` and `qt/Version.h` in turn,
+that contains `qt/CarnaQt.h` and `qt/Version.h` in turn,
 to your project's include directories.
 
 Then find the appropriate library file.
