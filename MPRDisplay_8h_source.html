@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">CarnaQt
-   &#160;<span id="projectnumber">Version 1.0.0</span>
+   &#160;<span id="projectnumber">Version 1.0.1</span>
    </div>
   </td>
  </tr>
@@ -141,7 +141,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    NON_COPYABLE</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    </div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">struct </span>Details;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::unique_ptr&lt; Details &gt; pimpl;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">const</span> std::unique_ptr&lt; Details &gt; pimpl;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    </div>
@@ -153,7 +153,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classCarna_1_1qt_1_1MPRDisplay.html#a3c4ec943bce459e75c326f9e3bd4812c">   82</a></span>&#160;    <span class="keyword">const</span> <span class="keyword">static</span> base::math::Matrix3f <a class="code" href="classCarna_1_1qt_1_1MPRDisplay.html#a3c4ec943bce459e75c326f9e3bd4812c">ROTATION_LEFT</a>;  </div>
 <div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classCarna_1_1qt_1_1MPRDisplay.html#a4ef3e2bc184bad6cc34f163a64f46dca">   83</a></span>&#160;    <span class="keyword">const</span> <span class="keyword">static</span> base::math::Matrix3f <a class="code" href="classCarna_1_1qt_1_1MPRDisplay.html#a4ef3e2bc184bad6cc34f163a64f46dca">ROTATION_TOP</a>;   </div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    </div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">   88</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">Parameters</a></div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">   88</a></span>&#160;    <span class="keyword">struct </span>CARNAQT_LIB <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">Parameters</a></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    {</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">Parameters</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> geometryTypeVolume, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> geometryTypePlanes );</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        </div>
@@ -162,11 +162,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html#a42351a239117cc0e4cd279085b5eb5c5">   97</a></span>&#160;        <span class="keywordtype">float</span> <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html#a42351a239117cc0e4cd279085b5eb5c5">visibleDistance</a>;           </div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    };</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    </div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">  104</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">Configurator</a></div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">  104</a></span>&#160;    <span class="keyword">struct </span>CARNAQT_LIB <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">Configurator</a></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    {</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">Configurator</a>( <span class="keyword">const</span> <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">Parameters</a>&amp; params );</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keyword">virtual</span> ~<a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html">Configurator</a>();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keyword">virtual</span> ~Configurator();</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        </div>
 <div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html#a39e16b74461f323b7cc91fc5f2a5b3d5">  119</a></span>&#160;        <span class="keyword">const</span> <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Parameters.html">Parameters</a> <a class="code" href="structCarna_1_1qt_1_1MPRDisplay_1_1Configurator.html#a39e16b74461f323b7cc91fc5f2a5b3d5">parameters</a>;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        </div>

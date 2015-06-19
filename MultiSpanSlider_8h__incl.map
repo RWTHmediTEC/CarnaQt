@@ -1,7 +1,7 @@
 <map id="include/Carna/qt/MultiSpanSlider.h" name="include/Carna/qt/MultiSpanSlider.h">
-<area shape="rect" id="node3" href="$CarnaQt_8h_source.html" title="Carna/qt/CarnaQt.h" alt="" coords="110,275,246,304"/>
-<area shape="rect" id="node9" href="$NullIntSpanPainter_8h.html" title="Defines Carna::qt::NullIntSpanPainter. " alt="" coords="194,101,389,131"/>
-<area shape="rect" id="node15" href="$MultiSpanSliderTracker_8h.html" title="Defines Carna::qt::MultiSpanSliderTracker. " alt="" coords="463,179,629,226"/>
-<area shape="rect" id="node21" href="$MultiSpanSliderModelViewMapping_8h.html" title="Defines Carna::qt::MultiSpanSliderModelViewMapping. " alt="" coords="26,179,191,226"/>
-<area shape="rect" id="node11" href="$IntSpanPainter_8h.html" title="Defines Carna::qt::IntSpanPainter. " alt="" coords="215,188,389,217"/>
+<area shape="rect" id="node3" href="$CarnaQt_8h_source.html" title="Carna/qt/CarnaQt.h" alt="" coords="191,275,327,304"/>
+<area shape="rect" id="node9" href="$NullIntSpanPainter_8h.html" title="Defines Carna::qt::NullIntSpanPainter. " alt="" coords="285,101,480,131"/>
+<area shape="rect" id="node16" href="$MultiSpanSliderTracker_8h.html" title="Defines Carna::qt::MultiSpanSliderTracker. " alt="" coords="493,179,659,226"/>
+<area shape="rect" id="node22" href="$MultiSpanSliderModelViewMapping_8h.html" title="Defines Carna::qt::MultiSpanSliderModelViewMapping. " alt="" coords="5,179,171,226"/>
+<area shape="rect" id="node12" href="$IntSpanPainter_8h.html" title="Defines Carna::qt::IntSpanPainter. " alt="" coords="296,188,469,217"/>
 </map>
