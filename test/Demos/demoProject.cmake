@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.0.2)
 
 ############################################
 # It is important to use the root binary directory,
@@ -22,9 +22,24 @@ set( TARGET_NAME	${PROJECT_NAME}-${FULL_VERSION} )
 ############################################
 
 # Qt
-find_package( Qt4 4.8.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED )
-include( ${QT_USE_FILE} )
-add_definitions( ${QT_DEFINITIONS} )
+find_package( Qt5Core QUIET )
+find_package( Qt5Widgets QUIET )
+find_package( Qt5Gui QUIET )
+find_package( Qt5OpenGL QUIET )
+if(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND)
+    set(Qt5_FOUND TRUE)
+    set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Gui Qt5::OpenGL)
+    include_directories(
+            ${Qt5Core_INCLUDE_DIRS}
+            ${Qt5Widgets_INCLUDE_DIRS}
+            ${Qt5Gui_INCLUDE_DIRS}
+            ${Qt5OpenGL_INCLUDE_DIRS}
+        )
+else()
+    find_package( Qt4 4.8.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED )
+    include( ${QT_USE_FILE} )
+    add_definitions( ${QT_DEFINITIONS} )
+endif()
 
 # Boost
 set(Boost_USE_MULTITHREADED ON)
@@ -81,50 +96,56 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 if(Boost_FOUND)
 	
-	unset( RESOURCES_RCC )
-	QT4_WRAP_CPP( QOBJECT_HEADERS_MOC ${QOBJECT_HEADERS} )
-	QT4_WRAP_UI( FORMS_HEADERS ${FORMS} )
-	QT4_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+    unset( RESOURCES_RCC )
+    if(Qt5_FOUND)
+        QT5_WRAP_CPP( QOBJECT_HEADERS_MOC ${QOBJECT_HEADERS} )
+        QT5_WRAP_UI( FORMS_HEADERS ${FORMS} )
+        QT5_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+    else(Qt5_FOUND)
+        QT4_WRAP_CPP( QOBJECT_HEADERS_MOC ${QOBJECT_HEADERS} )
+        QT4_WRAP_UI( FORMS_HEADERS ${FORMS} )
+        QT4_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+    endif(Qt5_FOUND)
 
-	add_definitions(
-			-DNOMINMAX
-			-DBOOST_IOSTREAMS_NO_LIB
-			-D_SCL_SECURE_NO_WARNINGS
-			-DEXPECTED_MAJOR_VERSION=${MAJOR_VERSION}
-			-DEXPECTED_MINOR_VERSION=${MINOR_VERSION}
-			-DEXPECTED_RELEASE_VERSION=${PATCH_VERSION}
-			-DSOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../.."
-		)
-	remove_definitions( -DCARNAQT_EXPORT )
-	
-	add_executable( ${TARGET_NAME} WIN32
-			${SRC}
-			${HEADERS}
-			${QOBJECT_HEADERS}
-			${QOBJECT_HEADERS_MOC}
-			${FORMS_HEADERS}
-			${RESOURCES_RCC}
-		)
-
-	include( "../../../misc/compiler_specific.cmake" )
-
-	target_link_libraries( ${TARGET_NAME}
-			${OPENGL_LIBRARIES}
-			${GLEW_LIBRARIES}
-			${QT_LIBRARIES}
-			${CARNA_LIBRARIES}
-			${Boost_LIBRARIES}
-			optimized	CarnaQt-${FULL_VERSION}
-			debug		CarnaQt-${FULL_VERSION}${CMAKE_DEBUG_POSTFIX}
-		)
-	
-	if(MSVC)
-		set_target_properties(
-				${TARGET_NAME} PROPERTIES
-				WIN32_EXECUTABLE YES
-				LINK_FLAGS "/ENTRY:mainCRTStartup"
-			)
-	endif(MSVC)
+    add_definitions(
+            -DNOMINMAX
+            -DBOOST_IOSTREAMS_NO_LIB
+            -D_SCL_SECURE_NO_WARNINGS
+            -DEXPECTED_MAJOR_VERSION=${MAJOR_VERSION}
+            -DEXPECTED_MINOR_VERSION=${MINOR_VERSION}
+            -DEXPECTED_RELEASE_VERSION=${PATCH_VERSION}
+            -DSOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../.."
+    	)
+    remove_definitions( -DCARNAQT_EXPORT )
+    
+    add_executable( ${TARGET_NAME} WIN32
+            ${SRC}
+            ${HEADERS}
+            ${QOBJECT_HEADERS}
+            ${QOBJECT_HEADERS_MOC}
+            ${FORMS_HEADERS}
+            ${RESOURCES_RCC}
+    	)
+    
+    include( "../../../misc/compiler_specific.cmake" )
+    
+    target_link_libraries( ${TARGET_NAME}
+            ${OPENGL_LIBRARIES}
+            ${GLEW_LIBRARIES}
+            ${QT_LIBRARIES}
+            ${CARNA_LIBRARIES}
+            ${Boost_LIBRARIES}
+            optimized   CarnaQt-${FULL_VERSION}
+            debug       CarnaQt-${FULL_VERSION}${CMAKE_DEBUG_POSTFIX}
+    	)
+    
+    if(MSVC)
+        set_target_properties(
+                ${TARGET_NAME} PROPERTIES
+                WIN32_EXECUTABLE YES
+                LINK_FLAGS "/ENTRY:mainCRTStartup"
+    	    )
+    endif(MSVC)
 
 else(Boost_FOUND)
 
