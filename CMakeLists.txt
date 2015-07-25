@@ -3,7 +3,7 @@ project(CarnaQt)
 
 set(MAJOR_VERSION   1)
 set(MINOR_VERSION   0)
-set(PATCH_VERSION   1)
+set(PATCH_VERSION   2)
 
 ############################################
 
@@ -83,9 +83,26 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/misc/Find${PROJECT_NAME}.cmake.in
 ############################################
 
 # Qt
-find_package( Qt4 4.8.0 COMPONENTS QtCore QtGui QtOpenGL QtXml REQUIRED )
-include( ${QT_USE_FILE} )
-add_definitions( ${QT_DEFINITIONS} )
+find_package( Qt5Core )
+find_package( Qt5Widgets )
+find_package( Qt5Gui )
+find_package( Qt5OpenGL )
+find_package( Qt5Xml )
+if(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Xml_FOUND)
+    set(Qt5_FOUND TRUE)
+    set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Gui Qt5::OpenGL Qt5::Xml)
+    include_directories(
+            ${Qt5Core_INCLUDE_DIRS}
+            ${Qt5Widgets_INCLUDE_DIRS}
+            ${Qt5Gui_INCLUDE_DIRS}
+            ${Qt5OpenGL_INCLUDE_DIRS}
+            ${Qt5Xml_INCLUDE_DIRS}
+        )
+else()
+    find_package( Qt4 4.8.0 COMPONENTS QtCore QtGui QtOpenGL QtXml REQUIRED )
+    include( ${QT_USE_FILE} )
+    add_definitions( ${QT_DEFINITIONS} )
+endif()
 
 # GLEW
 find_package( GLEW 1.7.0 REQUIRED )
@@ -183,8 +200,8 @@ set( FORMS
         ""
     )
 set( RESOURCES
-		src/res.qrc
-	)
+	src/res.qrc
+    )
 set( DOC_SRC
         src/doc/Doxyfile.in
         src/doc/doc_extra.css
@@ -194,10 +211,17 @@ set( DOC_SRC
 
 ############################################
 
-QT4_WRAP_CPP( PUBLIC_HEADERS_MOC ${PUBLIC_QOBJECT_HEADERS} )
-QT4_WRAP_CPP( PRIVATE_HEADERS_MOC ${PRIVATE_QOBJECT_HEADERS} )
-QT4_WRAP_UI( FORMS_HEADERS ${FORMS} )
-QT4_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+if(Qt5_FOUND)
+    QT5_WRAP_CPP( PUBLIC_HEADERS_MOC ${PUBLIC_QOBJECT_HEADERS} )
+    QT5_WRAP_CPP( PRIVATE_HEADERS_MOC ${PRIVATE_QOBJECT_HEADERS} )
+    QT5_WRAP_UI( FORMS_HEADERS ${FORMS} )
+    QT5_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+else(Qt5_FOUND)
+    QT4_WRAP_CPP( PUBLIC_HEADERS_MOC ${PUBLIC_QOBJECT_HEADERS} )
+    QT4_WRAP_CPP( PRIVATE_HEADERS_MOC ${PRIVATE_QOBJECT_HEADERS} )
+    QT4_WRAP_UI( FORMS_HEADERS ${FORMS} )
+    QT4_ADD_RESOURCES( RESOURCES_RCC ${RESOURCES} )
+endif(Qt5_FOUND)
 
 ############################################
 # Setup Visual Studio filters
