@@ -41,6 +41,7 @@ Provided classes:
 ---
 ## 1. Dependencies
 
+* Qt5 or Qt4.8
 * [Eigen](http://eigen.tuxfamily.org/) ≥ 3.0.5
 * OpenGL 3.3
 * GLEW ≥ 1.7
