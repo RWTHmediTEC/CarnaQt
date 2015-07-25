@@ -83,11 +83,11 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/misc/Find${PROJECT_NAME}.cmake.in
 ############################################
 
 # Qt
-find_package( Qt5Core )
-find_package( Qt5Widgets )
-find_package( Qt5Gui )
-find_package( Qt5OpenGL )
-find_package( Qt5Xml )
+find_package( Qt5Core QUIET )
+find_package( Qt5Widgets QUIET )
+find_package( Qt5Gui QUIET )
+find_package( Qt5OpenGL QUIET )
+find_package( Qt5Xml QUIET )
 if(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Xml_FOUND)
     set(Qt5_FOUND TRUE)
     set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Gui Qt5::OpenGL Qt5::Xml)
